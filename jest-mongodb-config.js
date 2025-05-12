@@ -5,7 +5,7 @@ export default {
     },
     autoStart: false,
     instance: {
-      dbName: 'cdp-node-backend-template'
+      dbName: 'apha-apps-perms-case-mgmt-api'
     }
   },
   mongoURLEnvName: 'MONGO_URI',
