@@ -19,7 +19,7 @@ export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
     ? section?.questionAnswers?.find(
         (question) => question.questionKey === questionKey
       )
-    : {}
+    : undefined
   return question
 }
 
