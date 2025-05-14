@@ -116,6 +116,62 @@ const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+
+  notify: {
+    url: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default:
+        'https://api.notifications.service.gov.uk/v2/notifications/email',
+      nullable: false,
+      env: 'NOTIFY_URL'
+    },
+    apiKey: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'NOTIFY_API_KEY'
+    },
+    timeout: {
+      doc: 'Timeout for notify requests in milliseconds',
+      format: Number,
+      default: 10_000,
+      env: 'NOTIFY_TIMEOUT'
+    },
+    fileRetention: {
+      doc: 'How long to retain files for in GOV Notify',
+      format: String,
+      default: '1 week',
+      env: 'NOTIFY_FILE_RETENTION'
+    },
+    confirmDownloadConfirmation: {
+      doc: 'Does the user have to type destination email address before download starts?',
+      format: Boolean,
+      default: false,
+      env: 'NOTIFY_EMAIL_DOWNLOAD_CONFIRMATION'
+    },
+    caseDelivery: {
+      templateId: /** @type {SchemaObj<string | null>} */ {
+        format: String,
+        default: null,
+        nullable: true,
+        env: 'NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+      },
+      emailAddress: /** @type {SchemaObj<string | null>} */ {
+        format: String,
+        default: null,
+        nullable: true,
+        env: 'NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+      }
+    },
+    applicantConfirmation: {
+      templateId: /** @type {SchemaObj<string | null>} */ {
+        format: String,
+        default: null,
+        nullable: true,
+        env: 'NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
+      }
+    }
   }
 })
 
