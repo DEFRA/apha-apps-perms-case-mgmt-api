@@ -61,33 +61,17 @@ describe('getQuestionFromSections', () => {
     expect(result).toBeUndefined()
   })
 
-  it('should return undefined if sections is not an array', () => {
-    // @ts-ignore
-    const result = getQuestionFromSections(questionOneKey, sectionOneKey, null)
-    expect(result).toBeUndefined()
-  })
-})
+  describe('getSectionsFromPayload', () => {
+    it('should return the sections array from the payload', () => {
+      const payload = { sections }
+      const result = getSectionsFromPayload(payload)
+      expect(result).toBe(sections)
+    })
 
-describe('getSectionsFromPayload', () => {
-  it('should return sections if payload contains a sections property', () => {
-    const payload = { sections }
-    const result = getSectionsFromPayload(payload)
-    expect(result).toEqual(payload.sections)
-  })
-
-  it('should return undefined if payload does not contain a sections property', () => {
-    const payload = { data: 'some data' }
-    const result = getSectionsFromPayload(payload)
-    expect(result).toBeUndefined()
-  })
-
-  it('should return undefined if payload is not an object', () => {
-    const result = getSectionsFromPayload(null)
-    expect(result).toBeUndefined()
-  })
-
-  it('should return undefined if payload is an empty object', () => {
-    const result = getSectionsFromPayload({})
-    expect(result).toBeUndefined()
+    it('should return an empty array if payload.sections is an empty array', () => {
+      const payload = { sections: [] }
+      const result = getSectionsFromPayload(payload)
+      expect(result).toEqual([])
+    })
   })
 })

@@ -17,27 +17,15 @@
  * @returns {QuestionAnswerData|undefined}
  */
 export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
-  const section = Array.isArray(sections)
-    ? sections?.find((section) => section.sectionKey === sectionKey)
-    : {}
-  const question = Array.isArray(section?.questionAnswers)
-    ? section?.questionAnswers?.find(
-        (question) => question.questionKey === questionKey
-      )
-    : undefined
-  return question
+  return sections
+    .find((section) => section.sectionKey === sectionKey)
+    ?.questionAnswers.find((question) => question.questionKey === questionKey)
 }
 
 /**
  * @param {object} payload
- * @returns {SectionData[]|undefined}
+ * @returns {SectionData[]}
  */
 export const getSectionsFromPayload = (payload) => {
-  if (
-    typeof payload === 'object' &&
-    payload !== null &&
-    'sections' in payload
-  ) {
-    return payload.sections
-  }
+  return payload.sections
 }
