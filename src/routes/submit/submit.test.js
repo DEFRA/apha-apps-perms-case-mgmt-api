@@ -3,7 +3,7 @@ import {
   sendEmailToApplicant,
   sendEmailToCaseWorker
 } from '../../common/connectors/notify/notify.js'
-import { getApplicationReference } from '../../common/helpers/application-reference/index.js'
+import { getApplicationReference } from '../../common/helpers/application-reference/application-reference.js'
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
 import { generateEmailContent } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
