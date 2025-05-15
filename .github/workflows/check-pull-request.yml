@@ -29,6 +29,7 @@ jobs:
           npm audit --omit=dev
           npm run format:check
           npm run lint
+          npm run lint:types
           npm test
 
       - name: Test Docker Image Build
