@@ -4,8 +4,8 @@ import { createToken } from './notify-token-utils.js'
 import { statusCodes } from '../../constants/status-codes.js'
 
 /**
- * @typedef {{file: string, filename: string, confirm_email_before_download: boolean, retention_period: string}} linkToFileData
- * @typedef {{ content: string, link_to_file?: linkToFileData | string}} CaseWorkerEmailParams
+ * @typedef {{file: string, filename: string, confirm_email_before_download: boolean, retention_period: string}} LinkToFileData
+ * @typedef {{ content: string, link_to_file?: LinkToFileData | string}} CaseWorkerEmailParams
  * @typedef {{ applicant_name: string, application_reference_number: string }} ApplicantEmailParams
  * @typedef {{ email: string, fullName: string, reference: string }} ApplicantEmailData
  * @typedef {{ template_id: string, email_address: string, personalisation: CaseWorkerEmailParams | ApplicantEmailParams }} NotifyPayload
