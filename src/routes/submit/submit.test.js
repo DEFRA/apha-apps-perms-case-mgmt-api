@@ -7,6 +7,7 @@ import { getApplicationReference } from '../../common/helpers/application-refere
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
 import { generateEmailContent } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 
 jest.mock('../../common/connectors/notify/notify.js')
 jest.mock('../../common/helpers/application-reference/index.js', () => ({
@@ -79,7 +80,7 @@ describe('submit route', () => {
     expect(mockResponse.response).toHaveBeenCalledWith({
       error: 'INVALID_REQUEST'
     })
-    expect(mockResponse.code).toHaveBeenCalledWith(400)
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
 
   it('should return 400 if the payload is invalid', async () => {
@@ -91,7 +92,7 @@ describe('submit route', () => {
     expect(mockResponse.response).toHaveBeenCalledWith({
       error: 'INVALID_PAYLOAD'
     })
-    expect(mockResponse.code).toHaveBeenCalledWith(400)
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
 
   it('should send emails and return 201 with reference', async () => {
@@ -126,6 +127,6 @@ describe('submit route', () => {
     expect(mockResponse.response).toHaveBeenCalledWith({
       message: testReferenceNumber
     })
-    expect(mockResponse.code).toHaveBeenCalledWith(201)
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
   })
 })
