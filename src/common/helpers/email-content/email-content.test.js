@@ -19,7 +19,7 @@ describe('generateEmailContent', () => {
             {
               question: 'Question 2',
               questionKey: 'question2',
-              answer: { value: 'value', displayText: 'Answer 2' }
+              answer: { type: 'text', value: 'value', displayText: 'Answer 2' }
             }
           ]
         },
