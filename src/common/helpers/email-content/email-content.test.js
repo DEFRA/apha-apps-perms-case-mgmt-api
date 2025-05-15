@@ -4,22 +4,37 @@ const testReference = 'TB12345678'
 
 describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
+    /** @type {import('../data-extract/data-extract.js').ApplicationData} */
     const payload = {
-      sections: {
-        section1: {
+      sections: [
+        {
+          sectionKey: 'section1',
           title: 'Section 1 Title',
           questionAnswers: [
-            { question: 'Question 1', answer: { displayText: 'Answer 1' } },
-            { question: 'Question 2', answer: { displayText: 'Answer 2' } }
+            {
+              question: 'Question 1',
+              questionKey: 'question1',
+              answer: { type: 'text', value: 'value', displayText: 'Answer 1' }
+            },
+            {
+              question: 'Question 2',
+              questionKey: 'question2',
+              answer: { type: 'text', value: 'value', displayText: 'Answer 2' }
+            }
           ]
         },
-        section2: {
+        {
+          sectionKey: 'section2',
           title: 'Section 2 Title',
           questionAnswers: [
-            { question: 'Question 3', answer: { displayText: 'Answer 3' } }
+            {
+              question: 'Question 3',
+              questionKey: 'question3',
+              answer: { type: 'text', value: 'value', displayText: 'Answer 3' }
+            }
           ]
         }
-      }
+      ]
     }
 
     const result = generateEmailContent(payload, testReference)
@@ -48,7 +63,7 @@ describe('generateEmailContent', () => {
 
   it('should handle empty sections gracefully', () => {
     const payload = {
-      sections: {}
+      sections: []
     }
 
     const result = generateEmailContent(payload, testReference)
@@ -65,12 +80,13 @@ describe('generateEmailContent', () => {
 
   it('should handle sections with no questionAnswers gracefully', () => {
     const payload = {
-      sections: {
-        section1: {
+      sections: [
+        {
+          sectionKey: 'section1',
           title: 'Section 1 Title',
           questionAnswers: []
         }
-      }
+      ]
     }
 
     const result = generateEmailContent(payload, testReference)
