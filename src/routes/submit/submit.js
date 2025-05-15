@@ -13,10 +13,10 @@ export const submit = [
     path: '/submit',
     handler: async (request, h) => {
       if (!isValidRequest(request)) {
-        return h.response({ error: 'Invalid request' }).code(400)
+        return h.response({ error: 'INVALID_REQUEST' }).code(400)
       }
       if (!isValidPayload(request)) {
-        return h.response({ error: 'Invalid payload' }).code(400)
+        return h.response({ error: 'INVALID_PAYLOAD' }).code(400)
       }
 
       const reference = getApplicationReference()

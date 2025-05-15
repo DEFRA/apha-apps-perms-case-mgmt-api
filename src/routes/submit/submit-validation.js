@@ -2,7 +2,7 @@ import { getQuestionFromSections } from '../../common/helpers/data-extract/data-
 
 /**
  * @import {Request} from "@hapi/hapi/lib/types/request.js"
- * @import {SectionData, QuestionAnswerData} from "../../common/helpers/data-extract/data-extract.js"
+ * @import {ApplicationData} from "../../common/helpers/data-extract/data-extract.js"
  */
 
 /**
@@ -12,37 +12,33 @@ import { getQuestionFromSections } from '../../common/helpers/data-extract/data-
 export const isValidRequest = (request) => {
   const headers = request.headers
   const contentType = headers['content-type'] || headers['Content-Type']
-  const isValidContentType =
-    contentType && contentType.includes('application/json')
-  if (!isValidContentType) {
-    request.logger.warn(
-      'Invalid request. Content-Type header is missing or it does not include application/json'
-    )
+  if (!contentType) {
+    request.logger.warn('Invalid request. Content-Type header is missing')
+    return false
   }
-  return !!isValidContentType
+  if (!contentType.includes('application/json')) {
+    request.logger.warn(
+      'Invalid request. Content-Type header does not include application/json'
+    )
+    return false
+  }
+  return true
 }
 
 /**
- * @param {Request} request
- * @returns {boolean}
- */
-/**
- * @param {object} request
- * @param {object} request.payload
- * @param {SectionData[]} request.payload.sections
- * @param {object} request.logger
+ * @param {{payload: ApplicationData, logger: object}} request
  * @returns {boolean}
  */
 export const isValidPayload = (request) => {
-  const emailAddress = /** @type {QuestionAnswerData} */ (
-    getQuestionFromSections(
-      'emailAddress',
-      'licence',
-      request.payload?.sections
-    )
+  const emailAddress = getQuestionFromSections(
+    'emailAddress',
+    'licence',
+    request.payload?.sections
   )?.answer.displayText
-  const fullName = /** @type {QuestionAnswerData} */ (
-    getQuestionFromSections('fullName', 'licence', request.payload?.sections)
+  const fullName = getQuestionFromSections(
+    'fullName',
+    'licence',
+    request.payload?.sections
   )?.answer.displayText
   if (!emailAddress) {
     request.logger.warn(

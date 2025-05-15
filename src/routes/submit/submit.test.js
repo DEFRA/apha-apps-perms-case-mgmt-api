@@ -77,7 +77,7 @@ describe('submit route', () => {
     await handler(mockRequest, mockResponse)
 
     expect(mockResponse.response).toHaveBeenCalledWith({
-      error: 'Invalid request'
+      error: 'INVALID_REQUEST'
     })
     expect(mockResponse.code).toHaveBeenCalledWith(400)
   })
@@ -89,7 +89,7 @@ describe('submit route', () => {
     await handler(mockRequest, mockResponse)
 
     expect(mockResponse.response).toHaveBeenCalledWith({
-      error: 'Invalid payload'
+      error: 'INVALID_PAYLOAD'
     })
     expect(mockResponse.code).toHaveBeenCalledWith(400)
   })

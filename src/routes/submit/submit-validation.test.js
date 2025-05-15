@@ -62,7 +62,7 @@ describe('submit-validation', () => {
       const result = isValidRequest(mockRequest)
       expect(result).toBe(false)
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
-        'Invalid request. Content-Type header is missing or it does not include application/json'
+        'Invalid request. Content-Type header is missing'
       )
     })
 
@@ -74,7 +74,7 @@ describe('submit-validation', () => {
       const result = isValidRequest(mockRequest)
       expect(result).toBe(false)
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
-        'Invalid request. Content-Type header is missing or it does not include application/json'
+        'Invalid request. Content-Type header does not include application/json'
       )
     })
   })

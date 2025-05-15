@@ -8,6 +8,7 @@
  * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
+ * @typedef {{ sections: SectionData[]}} ApplicationData
  */
 
 /**
@@ -23,7 +24,7 @@ export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
 }
 
 /**
- * @param {object} payload
+ * @param {ApplicationData} payload
  * @returns {SectionData[]}
  */
 export const getSectionsFromPayload = (payload) => {

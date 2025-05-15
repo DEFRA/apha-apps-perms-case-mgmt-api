@@ -1,5 +1,7 @@
+/** @import {ApplicationData} from '../data-extract/data-extract.js' */
+
 /**
- * @param {object} payload
+ * @param {ApplicationData} payload
  * @param {string} reference
  * @returns {string}
  */
