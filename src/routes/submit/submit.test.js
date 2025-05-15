@@ -10,9 +10,12 @@ import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 jest.mock('../../common/connectors/notify/notify.js')
-jest.mock('../../common/helpers/application-reference/index.js', () => ({
-  getApplicationReference: jest.fn().mockReturnValue(testReferenceNumber)
-}))
+jest.mock(
+  '../../common/helpers/application-reference/application-reference.js',
+  () => ({
+    getApplicationReference: jest.fn().mockReturnValue(testReferenceNumber)
+  })
+)
 jest.mock('../../common/helpers/data-extract/data-extract.js', () => ({
   getQuestionFromSections: jest.fn().mockImplementation((id) => {
     if (id === 'emailAddress') {
