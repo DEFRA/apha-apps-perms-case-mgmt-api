@@ -1,4 +1,4 @@
-import { getApplicationReference } from './index.js'
+import { getApplicationReference } from './application-reference.js'
 
 describe('#Application reference generation', () => {
   it('Should generate a reference with the correct format', () => {

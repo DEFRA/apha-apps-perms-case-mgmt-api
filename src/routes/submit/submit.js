@@ -1,8 +1,9 @@
+import { statusCodes } from '../../common/constants/status-codes.js'
 import {
   sendEmailToApplicant,
   sendEmailToCaseWorker
 } from '../../common/connectors/notify/notify.js'
-import { getApplicationReference } from '../../common/helpers/application-reference/index.js'
+import { getApplicationReference } from '../../common/helpers/application-reference/application-reference.js'
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
 import { generateEmailContent } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
@@ -13,10 +14,14 @@ export const submit = [
     path: '/submit',
     handler: async (request, h) => {
       if (!isValidRequest(request)) {
-        return h.response({ error: 'INVALID_REQUEST' }).code(400)
+        return h
+          .response({ error: 'INVALID_REQUEST' })
+          .code(statusCodes.badRequest)
       }
       if (!isValidPayload(request)) {
-        return h.response({ error: 'INVALID_PAYLOAD' }).code(400)
+        return h
+          .response({ error: 'INVALID_PAYLOAD' })
+          .code(statusCodes.badRequest)
       }
 
       const reference = getApplicationReference()
@@ -41,7 +46,7 @@ export const submit = [
         fullName: applicantFullName ?? '',
         reference: reference ?? ''
       })
-      return h.response({ message: reference }).code(201)
+      return h.response({ message: reference }).code(statusCodes.ok)
     }
   }
 ]
