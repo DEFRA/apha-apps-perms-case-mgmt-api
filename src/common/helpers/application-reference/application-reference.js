@@ -39,7 +39,7 @@ const pick = () => {
 }
 
 const generateSegment = () => {
-  return new Array(4).fill(null).map(pick).join('')
+  return Array.from({ length: 4 }).map(pick).join('')
 }
 
 export const getApplicationReference = () => {
