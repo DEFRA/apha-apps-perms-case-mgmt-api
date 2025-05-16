@@ -107,11 +107,10 @@ git config --global core.autocrlf false
 
 ## API endpoints
 
-| Endpoint             | Description                    |
-| :------------------- | :----------------------------- |
-| `GET: /health`       | Health                         |
-| `GET: /example    `  | Example API (remove as needed) |
-| `GET: /example/<id>` | Example API (remove as needed) |
+| Endpoint        | Description                                                                                                                                               |
+| :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET: /health`  | Health                                                                                                                                                    |
+| `POST: /submit` | Endpoint that will generate an application reference, send emails to CSC case workers and to the applicant and return the generated application reference |
 
 ## Development helpers
 
@@ -231,7 +230,7 @@ the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github
 
 ### SonarCloud
 
-Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties)
+The project has been set up to run SonarCloud checks on every Pull Request. The configuration can be found in [sonar-project.properties](./sonar-project.properties)
 
 ## Licence
 
