@@ -5,8 +5,15 @@ import {
 } from '../../common/connectors/notify/notify.js'
 import { getApplicationReference } from '../../common/helpers/application-reference/application-reference.js'
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
-import { generateEmailContent } from '../../common/helpers/email-content/email-content.js'
+import {
+  generateEmailContent,
+  getFileProps
+} from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
+import { handleUploadedFile } from '../../common/helpers/file/file-utils.js'
+import { NotImplementedError } from '../../common/helpers/not-implemented-error.js'
+
+/** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
 
 export const submit = [
   {
@@ -40,7 +47,43 @@ export const submit = [
         reference
       )
 
-      await sendEmailToCaseWorker({ content: caseWorkerEmailContent })
+      let linkToFile = null
+      const fileAnswer = /** @type {FileAnswer} */ (
+        getQuestionFromSections(
+          'upload-plan',
+          'biosecurity-map',
+          request.payload?.sections
+        )?.answer
+      )
+
+      if (fileAnswer) {
+        if (String(fileAnswer.value?.skipped).toLowerCase() === 'true') {
+          throw new NotImplementedError()
+        } else {
+          const { file, extension, fileSizeInMB } = await handleUploadedFile(
+            request,
+            fileAnswer
+          )
+
+          if (fileSizeInMB > 10) {
+            return h
+              .response({ error: 'FILE_TOO_LARGE' })
+              .code(statusCodes.contentTooLarge)
+          }
+
+          if (fileSizeInMB > 2) {
+            return h
+              .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
+              .code(statusCodes.contentTooLarge)
+          }
+          linkToFile = getFileProps(file, extension)
+        }
+      }
+
+      await sendEmailToCaseWorker({
+        content: caseWorkerEmailContent,
+        ...(linkToFile ? { link_to_file: linkToFile } : {})
+      })
       await sendEmailToApplicant({
         email: applicantEmail ?? '',
         fullName: applicantFullName ?? '',

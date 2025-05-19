@@ -8,6 +8,7 @@ convict.addFormats(convictFormatWithValidator)
 
 const isProduction = process.env.NODE_ENV === 'production'
 const isTest = process.env.NODE_ENV === 'test'
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 const config = convict({
   serviceVersion: {
@@ -48,6 +49,11 @@ const config = convict({
     ],
     default: 'local',
     env: 'ENVIRONMENT'
+  },
+  isDevelopment: {
+    doc: 'If this application running in the development environment',
+    format: Boolean,
+    default: isDevelopment
   },
   log: {
     isEnabled: {
@@ -117,7 +123,6 @@ const config = convict({
       env: 'TRACING_HEADER'
     }
   },
-
   notify: {
     url: /** @type {SchemaObj<string | null>} */ {
       format: String,
@@ -171,6 +176,26 @@ const config = convict({
         nullable: true,
         env: 'NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
       }
+    }
+  },
+  aws: {
+    region: {
+      doc: 'AWS region to use',
+      format: String,
+      default: 'eu-west-2',
+      env: 'AWS_REGION'
+    },
+    s3Endpoint: {
+      doc: 'AWS S3 endpoint',
+      format: String,
+      default: 'http://127.0.0.1:4566',
+      env: 'S3_ENDPOINT'
+    },
+    bucket: {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'S3_BUCKET'
     }
   }
 })
