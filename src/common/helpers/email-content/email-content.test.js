@@ -1,4 +1,5 @@
-import { generateEmailContent } from './email-content.js'
+import { spyOnConfig } from '../../test-helpers/config.js'
+import { generateEmailContent, getFileProps } from './email-content.js'
 
 const testReference = 'TB12345678'
 
@@ -102,5 +103,51 @@ describe('generateEmailContent', () => {
     ].join('\n')
 
     expect(result).toBe(expectedContent)
+  })
+})
+
+describe('getFileProps', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should return correct file props with base64 file, filename, confirmation and retention', async () => {
+    spyOnConfig('notify', {
+      fileRetention: '7 days',
+      confirmDownloadConfirmation: true
+    })
+
+    const fakeBuffer = Buffer.from('test content')
+    const fileData = {
+      file: fakeBuffer,
+      contentType: 'application/pdf',
+      fileSizeInMB: 1
+    }
+
+    const result = getFileProps(fileData)
+
+    expect(result).toEqual({
+      file: fakeBuffer.toString('base64'),
+      filename: 'Biosecurity-map.pdf',
+      confirm_email_before_download: true,
+      retention_period: '7 days'
+    })
+  })
+
+  it('should use the provided extension in the filename', async () => {
+    spyOnConfig('notify', {
+      fileRetention: '14 days',
+      confirmDownloadConfirmation: true
+    })
+
+    const fakeBuffer = Buffer.from('abc')
+    const fileData = {
+      file: fakeBuffer,
+      contentType: 'other',
+      fileSizeInMB: 1
+    }
+    const result = getFileProps(fileData)
+
+    expect(result.filename).toBe('Biosecurity-map.jpg')
   })
 })

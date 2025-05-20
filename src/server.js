@@ -9,6 +9,7 @@ import { secureContext } from './common/helpers/secure-context/index.js'
 import { pulse } from './common/helpers/pulse.js'
 import { requestTracing } from './common/helpers/request-tracing.js'
 import { setupProxy } from './common/helpers/proxy/setup-proxy.js'
+import { s3Client } from './plugins/s3/index.js'
 
 async function createServer() {
   setupProxy()
@@ -45,13 +46,15 @@ async function createServer() {
   // pulse          - provides shutdown handlers
   // mongoDb        - sets up mongo connection pool and attaches to `server` and `request` objects
   // router         - routes used in the app
+  // s3Client       - sets up S3 client and attaches to `server` and `request` objects
   await server.register([
     requestLogger,
     requestTracing,
     secureContext,
     pulse,
     mongoDb,
-    router
+    router,
+    s3Client
   ])
 
   return server
