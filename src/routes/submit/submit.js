@@ -57,7 +57,7 @@ export const submit = [
       )
 
       if (fileAnswer) {
-        if (String(fileAnswer.value?.skipped).toLowerCase() === 'true') {
+        if (fileAnswer.value?.skipped) {
           throw new NotImplementedError()
         } else {
           const { file, extension, fileSizeInMB } = await handleUploadedFile(

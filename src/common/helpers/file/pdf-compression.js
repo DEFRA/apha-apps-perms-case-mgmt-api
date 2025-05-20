@@ -12,12 +12,8 @@ import {
  * @param {Buffer} buffer - The buffer of the PDF file to be compressed.
  * @returns {Promise<object>} An object containing the following properties:
  *   - {Buffer} file: The resulting buffer after compression (or the original buffer if no compression was applied).
- *   - {number} start: The timestamp (in milliseconds) when the compression process started.
- *   - {number} end: The timestamp (in milliseconds) when the compression process ended.
  *   - {number} duration: The duration (in milliseconds) of the compression process.
- *   - {number} originalSize: The size (in bytes) of the original buffer.
  *   - {number} reduction: The percentage reduction in file size after compression.
- *   - {number} size: The size (in bytes) of the resulting buffer.
  */
 export const compressPdf = async (buffer) => {
   const originalSize = buffer.length
@@ -34,11 +30,7 @@ export const compressPdf = async (buffer) => {
 
   return {
     file: finalBuffer,
-    start,
-    end,
     duration: end - start,
-    originalSize,
-    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length),
-    size: finalBuffer.length
+    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length)
   }
 }

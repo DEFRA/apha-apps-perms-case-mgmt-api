@@ -24,8 +24,6 @@ describe('PDF Compression', () => {
       compatibilityLevel: 1.4
     })
     expect(result.file).toBe(compressedBuffer)
-    expect(result.originalSize).toBe(mediumBuffer.length)
-    expect(result.size).toBe(compressedBuffer.length)
     expect(result.reduction).toBe(
       100 - (compressedBuffer.length * 100) / mediumBuffer.length
     )
@@ -39,8 +37,6 @@ describe('PDF Compression', () => {
 
     expect(compress).not.toHaveBeenCalled()
     expect(result.file).toBe(smallBuffer)
-    expect(result.originalSize).toBe(smallBuffer.length)
-    expect(result.size).toBe(smallBuffer.length)
     expect(result.reduction).toBe(0)
     expect(result.duration).toBeGreaterThanOrEqual(0)
   })
@@ -50,8 +46,6 @@ describe('PDF Compression', () => {
 
     expect(compress).not.toHaveBeenCalled()
     expect(result.file).toBe(largeBuffer)
-    expect(result.originalSize).toBe(largeBuffer.length)
-    expect(result.size).toBe(largeBuffer.length)
     expect(result.reduction).toBe(0)
     expect(result.duration).toBeGreaterThanOrEqual(0)
   })

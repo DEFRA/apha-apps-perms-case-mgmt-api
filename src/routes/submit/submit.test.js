@@ -188,7 +188,7 @@ describe('submit route', () => {
       ).rejects.toThrow(NotImplementedError)
     })
 
-    it('should return FILE_CANNOT_BE_DELIVERED if file size > 2MB and <= 10MB', async () => {
+    it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
       mockHandleUploadedFile.mockResolvedValue({
         file: 'mock-file',
         extension: '.pdf',
@@ -205,7 +205,7 @@ describe('submit route', () => {
       )
     })
 
-    it('should return FILE_TOO_LARGE if file size > 10MB', async () => {
+    it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
       mockHandleUploadedFile.mockResolvedValue({
         file: 'mock-file',
         extension: '.pdf',
