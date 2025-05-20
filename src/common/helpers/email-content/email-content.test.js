@@ -118,8 +118,13 @@ describe('getFileProps', () => {
     })
 
     const fakeBuffer = Buffer.from('test content')
+    const fileData = {
+      file: fakeBuffer,
+      contentType: 'application/pdf',
+      fileSizeInMB: 1
+    }
 
-    const result = getFileProps(fakeBuffer, 'pdf')
+    const result = getFileProps(fileData)
 
     expect(result).toEqual({
       file: fakeBuffer.toString('base64'),
@@ -136,7 +141,12 @@ describe('getFileProps', () => {
     })
 
     const fakeBuffer = Buffer.from('abc')
-    const result = getFileProps(fakeBuffer, 'jpg')
+    const fileData = {
+      file: fakeBuffer,
+      contentType: 'other',
+      fileSizeInMB: 1
+    }
+    const result = getFileProps(fileData)
 
     expect(result.filename).toBe('Biosecurity-map.jpg')
   })

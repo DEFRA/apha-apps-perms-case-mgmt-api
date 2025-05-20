@@ -10,7 +10,10 @@ import {
   getFileProps
 } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
-import { handleUploadedFile } from '../../common/helpers/file/file-utils.js'
+import {
+  compressFile,
+  fetchFile
+} from '../../common/helpers/file/file-utils.js'
 import { NotImplementedError } from '../../common/helpers/not-implemented-error.js'
 
 /** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
@@ -60,23 +63,23 @@ export const submit = [
         if (fileAnswer.value?.skipped) {
           throw new NotImplementedError()
         } else {
-          const { file, extension, fileSizeInMB } = await handleUploadedFile(
-            request,
-            fileAnswer
-          )
+          const fileData = await fetchFile(fileAnswer, request)
 
-          if (fileSizeInMB > 10) {
+          if (fileData.fileSizeInMB > 10) {
             return h
               .response({ error: 'FILE_TOO_LARGE' })
               .code(statusCodes.contentTooLarge)
           }
 
-          if (fileSizeInMB > 2) {
+          const compressedFileData = await compressFile(fileData, request)
+
+          if (compressedFileData.fileSizeInMB > 2) {
             return h
               .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
               .code(statusCodes.contentTooLarge)
           }
-          linkToFile = getFileProps(file, extension)
+
+          linkToFile = getFileProps(compressedFileData)
         }
       }
 

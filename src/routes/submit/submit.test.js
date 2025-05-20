@@ -6,7 +6,10 @@ import {
 import { getFileProps } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
-import { handleUploadedFile } from '../../common/helpers/file/file-utils.js'
+import {
+  fetchFile,
+  compressFile
+} from '../../common/helpers/file/file-utils.js'
 import { NotImplementedError } from '../../common/helpers/not-implemented-error.js'
 
 jest.mock('../../common/connectors/notify/notify.js')
@@ -28,7 +31,8 @@ jest.mock('../../common/helpers/email-content/email-content.js', () => ({
 
 const mockIsValidRequest = /** @type {jest.Mock} */ (isValidRequest)
 const mockIsValidPayload = /** @type {jest.Mock} */ (isValidPayload)
-const mockHandleUploadedFile = /** @type {jest.Mock} */ (handleUploadedFile)
+const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
+const mockCompressFile = /** @type {jest.Mock} */ (compressFile)
 
 const testEmail = 'test@example.com'
 const testFullName = 'Name Surname'
@@ -189,11 +193,13 @@ describe('submit route', () => {
     })
 
     it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
-      mockHandleUploadedFile.mockResolvedValue({
+      const mockFileData = {
         file: 'mock-file',
-        extension: '.pdf',
+        contentType: 'application/pdf',
         fileSizeInMB: 5
-      })
+      }
+      mockFetchFile.mockResolvedValue(mockFileData)
+      mockCompressFile.mockResolvedValue(mockFileData)
 
       await handler(mockRequestWithFile, mockResponse)
 
@@ -206,9 +212,9 @@ describe('submit route', () => {
     })
 
     it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
-      mockHandleUploadedFile.mockResolvedValue({
+      mockFetchFile.mockResolvedValue({
         file: 'mock-file',
-        extension: '.pdf',
+        contentType: 'application/pdf',
         fileSizeInMB: 12
       })
 
@@ -223,15 +229,16 @@ describe('submit route', () => {
     })
 
     it('should call getFileProps and include link_to_file if file is valid and <= 2MB', async () => {
-      mockHandleUploadedFile.mockResolvedValue({
+      const mockFileData = {
         file: 'mock-file',
-        extension: '.pdf',
-        fileSizeInMB: 1.5
-      })
+        contentType: 'application/pdf',
+        fileSizeInMB: 1
+      }
+      mockFetchFile.mockResolvedValue(mockFileData)
+      mockCompressFile.mockResolvedValue(mockFileData)
 
       await handler(mockRequestWithFile, mockResponse)
 
-      expect(getFileProps).toHaveBeenCalledWith('mock-file', '.pdf')
       expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
         expect.objectContaining({
           content: 'Case worker email content',

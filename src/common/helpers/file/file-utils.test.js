@@ -1,4 +1,4 @@
-import { handleUploadedFile } from './file-utils.js'
+import { fetchFile, compressFile } from './file-utils.js'
 import { compressPdf } from './pdf-compression.js'
 import { config } from '../../../config.js'
 import path from 'node:path'
@@ -9,16 +9,13 @@ import { NotImplementedError } from '../not-implemented-error.js'
  * @import {FileAnswer} from '../data-extract/data-extract.js'
  */
 
+const mockFileSize = 1.5
+const pdfContentType = 'application/pdf'
+
 jest.mock('./pdf-compression.js')
 jest.mock('./size.js')
 jest.mock('@aws-sdk/client-s3')
 jest.mock('../../../config.js')
-
-const mockS3ImageObject = {
-  Body: createReadStream(
-    path.resolve('./src/common/helpers/file/example-portrait.jpg')
-  )
-}
 
 const pdfStream = createReadStream(
   path.resolve('./src/common/helpers/file/example.pdf')
@@ -26,8 +23,11 @@ const pdfStream = createReadStream(
 
 const mockS3ObjectPdf = {
   Body: pdfStream,
-  ContentType: 'application/pdf'
+  ContentType: pdfContentType
 }
+
+const compressedPdfBuffer = Buffer.from('compressed-pdf')
+const pdfBuffer = Buffer.from('mock-pdf')
 
 jest.mock('./pdf-compression.js', () => ({
   compressPdf: jest.fn().mockResolvedValue({
@@ -36,6 +36,7 @@ jest.mock('./pdf-compression.js', () => ({
     reduction: 50
   })
 }))
+
 jest.mock('./size.js', () => ({
   convertBytesToMB: jest.fn().mockReturnValue(1.5)
 }))
@@ -50,7 +51,7 @@ const mockUploadedFile = {
   displayText: 'display text'
 }
 
-describe('handleUploadedFile', () => {
+describe('File Utils', () => {
   let mockReq
 
   beforeEach(() => {
@@ -68,23 +69,44 @@ describe('handleUploadedFile', () => {
     })
   })
 
-  it('should handle PDF files and log compression details', async () => {
-    mockReq.s3.send.mockResolvedValue(mockS3ObjectPdf)
+  describe('fetchFile', () => {
+    it('should fetch the files and return content type and size in MB', async () => {
+      mockReq.s3.send.mockResolvedValue(mockS3ObjectPdf)
 
-    const result = await handleUploadedFile(mockReq, mockUploadedFile)
+      const result = await fetchFile(mockUploadedFile, mockReq)
 
-    expect(mockReq.s3.send).toHaveBeenCalled()
-    expect(compressPdf).toHaveBeenCalled()
-    expect(mockReq.logger.info).toHaveBeenCalledWith(
-      'File compression took 100ms at a reduction of 50% to 1.5 MB'
-    )
-    expect(result.file).toEqual(Buffer.from('compressed-pdf'))
+      expect(mockReq.s3.send).toHaveBeenCalled()
+      expect(result.contentType).toEqual(pdfContentType)
+      expect(result.fileSizeInMB).toEqual(mockFileSize)
+    })
   })
 
-  it('should NOT handle image files and log compression details', async () => {
-    mockReq.s3.send.mockResolvedValue(mockS3ImageObject)
-    await expect(handleUploadedFile(mockReq, mockUploadedFile)).rejects.toThrow(
-      NotImplementedError
-    )
+  describe('compressFile', () => {
+    it('should handle PDF files and log compression details', async () => {
+      const fileData = {
+        file: pdfBuffer,
+        contentType: pdfContentType,
+        fileSizeInMB: mockFileSize
+      }
+
+      const result = await compressFile(fileData, mockReq)
+
+      expect(compressPdf).toHaveBeenCalled()
+      expect(mockReq.logger.info).toHaveBeenCalledWith(
+        'File compression took 100ms at a reduction of 50% to 1.5 MB'
+      )
+      expect(result.file).toEqual(compressedPdfBuffer)
+    })
+
+    it('should NOT handle image files', async () => {
+      const fileData = {
+        file: pdfBuffer,
+        contentType: 'other',
+        fileSizeInMB: mockFileSize
+      }
+      await expect(compressFile(fileData, mockReq)).rejects.toThrow(
+        NotImplementedError
+      )
+    })
   })
 })

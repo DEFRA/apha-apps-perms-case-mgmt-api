@@ -197,6 +197,12 @@ const config = convict({
       nullable: true,
       env: 'S3_BUCKET'
     }
+  },
+  gsPath: {
+    doc: 'Path of the Ghostscript binary',
+    format: String,
+    default: '/usr/bin/gs',
+    env: 'GS_BINARY'
   }
 })
 
