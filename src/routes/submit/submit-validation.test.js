@@ -1,4 +1,5 @@
 import { isValidRequest, isValidPayload } from './submit-validation.js'
+import { ApplicationSchema } from './submit-payload-schema.js'
 import { jest } from '@jest/globals'
 
 /** @type {object} */
@@ -43,6 +44,10 @@ const licenceSectionWithMissingEmailAndFullName = {
 }
 
 describe('submit-validation', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('isValidRequest', () => {
     it('should return true for valid Content-Type header', () => {
       mockRequest = {
@@ -134,6 +139,60 @@ describe('submit-validation', () => {
       )
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
         'Invalid payload. fullName is missing in the payload'
+      )
+    })
+
+    it('should return false and log schema validation errors (including the context of the question with the error) if ApplicationSchema fails', () => {
+      const missingPropertyQuestion = {
+        question: 'Text Question',
+        questionKey: 'textQuestionKey',
+        answer: {
+          type: 'text',
+          value: 'some text'
+          // displayText missing
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [missingPropertyQuestion]
+          }
+        ]
+      }
+      const joiError = {
+        details: [
+          {
+            message: '"sections" is required',
+            path: ['sections', 0, 'questionAnswers', 0, 'displayText'],
+            type: 'any.required',
+            context: payload
+          }
+        ]
+      }
+
+      const validateMock = jest
+        .spyOn(ApplicationSchema, 'validate')
+        .mockReturnValue({
+          // @ts-ignore
+          error: joiError,
+          value: payload
+        })
+
+      mockRequest = {
+        ...mockRequest,
+        payload
+      }
+
+      const result = isValidPayload(mockRequest)
+
+      expect(validateMock).toHaveBeenCalled()
+      expect(result).toBe(false)
+      expect(mockRequest.logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Schema validation failed: "sections" is required. Payload fragment with invalid data: ${JSON.stringify(missingPropertyQuestion)}`
+        )
       )
     })
   })

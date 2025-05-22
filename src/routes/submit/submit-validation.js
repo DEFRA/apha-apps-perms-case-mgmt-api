@@ -1,4 +1,5 @@
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
+import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
  * @import {Request} from "@hapi/hapi/lib/types/request.js"
@@ -30,6 +31,20 @@ export const isValidRequest = (request) => {
  * @returns {boolean}
  */
 export const isValidPayload = (request) => {
+  const { error, value } = ApplicationSchema.validate(request.payload, {
+    abortEarly: false
+  })
+
+  if (error) {
+    error.details.forEach((detail) => {
+      // retrieve the original data at the path where the error occurred excluding the last item in the path to have some context
+      const invalidValue = getValueAtPath(value, detail.path.slice(0, -1))
+      request.logger.warn(
+        `Schema validation failed: ${detail.message}. Payload fragment with invalid data: ${JSON.stringify(invalidValue)}`
+      )
+    })
+  }
+
   const emailAddress = getQuestionFromSections(
     'emailAddress',
     'licence',
@@ -40,6 +55,7 @@ export const isValidPayload = (request) => {
     'licence',
     request.payload?.sections
   )?.answer.displayText
+
   if (!emailAddress) {
     request.logger.warn(
       'Invalid payload. emailAddress is missing in the payload'
@@ -48,5 +64,9 @@ export const isValidPayload = (request) => {
   if (!fullName) {
     request.logger.warn('Invalid payload. fullName is missing in the payload')
   }
-  return !!emailAddress && !!fullName
+  return !error && !!emailAddress && !!fullName
+}
+
+const getValueAtPath = (obj, path) => {
+  return path.reduce((acc, key) => acc[key], obj)
 }
