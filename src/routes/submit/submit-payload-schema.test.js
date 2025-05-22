@@ -316,8 +316,8 @@ describe('ApplicationSchema - answer types', () => {
       expect(error).toBeUndefined()
     })
 
-    it('allows a file answer with no path', () => {
-      const fileSkippedQuestion = {
+    it('allows a file answer with no path when skipped is true', () => {
+      const fileSkippedNoPath = {
         question: 'File Skipped Question',
         questionKey: 'fileSkippedQuestionKey',
         answer: {
@@ -326,17 +326,68 @@ describe('ApplicationSchema - answer types', () => {
           displayText: 'No file uploaded'
         }
       }
-      const payload = {
+      const payloadSkippedNoPath = {
         sections: [
           {
             sectionKey: 'sectionKey',
             title: 'Section Title',
-            questionAnswers: [fileSkippedQuestion]
+            questionAnswers: [fileSkippedNoPath]
           }
         ]
       }
-      const { error } = ApplicationSchema.validate(payload)
+      const { error } = ApplicationSchema.validate(payloadSkippedNoPath)
       expect(error).toBeUndefined()
+    })
+
+    it('fails if file path is missing when skipped is false', () => {
+      const fileNotSkippedNoPath = {
+        question: 'File Not Skipped No Path',
+        questionKey: 'fileNotSkippedNoPathKey',
+        answer: {
+          type: 'file',
+          value: { skipped: false },
+          displayText: 'file.pdf'
+        }
+      }
+      const payloadNotSkippedNoPath = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [fileNotSkippedNoPath]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payloadNotSkippedNoPath)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+      )
+    })
+
+    it('allows a file answer with path when skipped is false', () => {
+      const fileNotSkippedWithPath = {
+        question: 'File Not Skipped With Path',
+        questionKey: 'fileNotSkippedWithPathKey',
+        answer: {
+          type: 'file',
+          value: { skipped: false, path: 'pathToFile' },
+          displayText: 'file.pdf'
+        }
+      }
+      const payloadNotSkippedWithPath = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [fileNotSkippedWithPath]
+          }
+        ]
+      }
+      const { error: errorNotSkippedWithPath } = ApplicationSchema.validate(
+        payloadNotSkippedWithPath
+      )
+      expect(errorNotSkippedWithPath).toBeUndefined()
     })
 
     it('fails if file answer value.skipped is missing', () => {

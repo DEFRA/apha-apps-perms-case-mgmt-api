@@ -31,20 +31,18 @@ export const isValidRequest = (request) => {
  * @returns {boolean}
  */
 export const isValidPayload = (request) => {
-  const { error, value } = ApplicationSchema.validate(request.payload, {
+  const { error } = ApplicationSchema.validate(request.payload, {
     abortEarly: false
   })
 
   if (error) {
     error.details.forEach((detail) => {
-      // retrieve the original data at the path where the error occurred excluding the last item in the path to have some context
-      const invalidValue = getValueAtPath(value, detail.path.slice(0, -1))
-      request.logger.warn(
-        `Schema validation failed: ${detail.message}. Payload fragment with invalid data: ${JSON.stringify(invalidValue)}`
-      )
+      request.logger.warn(`Schema validation failed: ${detail.message}.`)
     })
+    return false
   }
 
+  // continue validation only if schema validation is successful
   const emailAddress = getQuestionFromSections(
     'emailAddress',
     'licence',
@@ -64,9 +62,5 @@ export const isValidPayload = (request) => {
   if (!fullName) {
     request.logger.warn('Invalid payload. fullName is missing in the payload')
   }
-  return !error && !!emailAddress && !!fullName
-}
-
-const getValueAtPath = (obj, path) => {
-  return path.reduce((acc, key) => acc[key], obj)
+  return !!emailAddress && !!fullName
 }

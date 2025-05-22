@@ -4,7 +4,11 @@ const FileAnswerSchema = Joi.object({
   type: Joi.string().valid('file').required(),
   value: Joi.object({
     skipped: Joi.boolean().required(),
-    path: Joi.string().optional()
+    path: Joi.string().when('skipped', {
+      is: true,
+      then: Joi.optional(),
+      otherwise: Joi.required()
+    })
   }).required(),
   displayText: Joi.string().required()
 })

@@ -44,9 +44,7 @@ const licenceSectionWithMissingEmailAndFullName = {
 }
 
 describe('submit-validation', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+  afterEach(jest.clearAllMocks)
 
   describe('isValidRequest', () => {
     it('should return true for valid Content-Type header', () => {
@@ -142,30 +140,13 @@ describe('submit-validation', () => {
       )
     })
 
-    it('should return false and log schema validation errors (including the context of the question with the error) if ApplicationSchema fails', () => {
-      const missingPropertyQuestion = {
-        question: 'Text Question',
-        questionKey: 'textQuestionKey',
-        answer: {
-          type: 'text',
-          value: 'some text'
-          // displayText missing
-        }
-      }
-      const payload = {
-        sections: [
-          {
-            sectionKey: 'sectionKey',
-            title: 'Section Title',
-            questionAnswers: [missingPropertyQuestion]
-          }
-        ]
-      }
+    it('should return false and log schema validation errors if ApplicationSchema fails', () => {
+      const payload = {}
       const joiError = {
         details: [
           {
             message: '"sections" is required',
-            path: ['sections', 0, 'questionAnswers', 0, 'displayText'],
+            path: ['sections'],
             type: 'any.required',
             context: payload
           }
@@ -190,9 +171,7 @@ describe('submit-validation', () => {
       expect(validateMock).toHaveBeenCalled()
       expect(result).toBe(false)
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          `Schema validation failed: "sections" is required. Payload fragment with invalid data: ${JSON.stringify(missingPropertyQuestion)}`
-        )
+        'Schema validation failed: "sections" is required.'
       )
     })
   })
