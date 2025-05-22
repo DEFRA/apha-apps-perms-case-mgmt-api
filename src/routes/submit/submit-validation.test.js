@@ -11,7 +11,7 @@ const emailAddressQuestion = {
   question: 'Email address',
   questionKey: 'emailAddress',
   answer: {
-    type: 'email',
+    type: 'text',
     value: testEmailAddress,
     displayText: testEmailAddress
   }
