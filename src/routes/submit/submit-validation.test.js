@@ -141,29 +141,11 @@ describe('submit-validation', () => {
     })
 
     it('should return false and log schema validation errors if ApplicationSchema fails', () => {
-      const payload = {}
-      const joiError = {
-        details: [
-          {
-            message: '"sections" is required',
-            path: ['sections'],
-            type: 'any.required',
-            context: payload
-          }
-        ]
-      }
-
-      const validateMock = jest
-        .spyOn(ApplicationSchema, 'validate')
-        .mockReturnValue({
-          // @ts-ignore
-          error: joiError,
-          value: payload
-        })
+      const validateMock = jest.spyOn(ApplicationSchema, 'validate')
 
       mockRequest = {
         ...mockRequest,
-        payload
+        payload: {}
       }
 
       const result = isValidPayload(mockRequest)
