@@ -1,8 +1,8 @@
 import { compressPdf } from './pdf-compression.js'
+import { compressImage } from './image-compression.js'
 import { convertBytesToMB } from './size.js'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { config } from '../../../config.js'
-import { NotImplementedError } from '../not-implemented-error.js'
 
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
@@ -44,11 +44,11 @@ export const fetchFile = async (fileAnswer, request) => {
  * @returns {Promise<FileData>}
  */
 export const compressFile = async (fileData, request) => {
-  if (fileData.contentType !== 'application/pdf') {
-    throw new NotImplementedError()
-  }
+  const { file, duration, reduction } =
+    fileData.contentType === 'application/pdf'
+      ? await compressPdf(fileData.file)
+      : await compressImage(fileData.file)
 
-  const { file, duration, reduction } = await compressPdf(fileData.file)
   const fileSizeInMB = convertBytesToMB(file.length)
 
   request.logger.info(
