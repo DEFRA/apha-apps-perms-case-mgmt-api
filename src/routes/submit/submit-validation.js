@@ -1,4 +1,5 @@
 import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
+import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
  * @import {Request} from "@hapi/hapi/lib/types/request.js"
@@ -30,6 +31,18 @@ export const isValidRequest = (request) => {
  * @returns {boolean}
  */
 export const isValidPayload = (request) => {
+  const { error } = ApplicationSchema.validate(request.payload, {
+    abortEarly: false
+  })
+
+  if (error) {
+    request.logger.warn(
+      `Schema validation failed: ${error.details.map((detail) => detail.message).join(', ')}.`
+    )
+    return false
+  }
+
+  // continue validation only if schema validation is successful
   const emailAddress = getQuestionFromSections(
     'emailAddress',
     'licence',
@@ -40,6 +53,7 @@ export const isValidPayload = (request) => {
     'licence',
     request.payload?.sections
   )?.answer.displayText
+
   if (!emailAddress) {
     request.logger.warn(
       'Invalid payload. emailAddress is missing in the payload'

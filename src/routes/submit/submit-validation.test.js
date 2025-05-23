@@ -1,4 +1,5 @@
 import { isValidRequest, isValidPayload } from './submit-validation.js'
+import { ApplicationSchema } from './submit-payload-schema.js'
 import { jest } from '@jest/globals'
 
 /** @type {object} */
@@ -10,7 +11,7 @@ const emailAddressQuestion = {
   question: 'Email address',
   questionKey: 'emailAddress',
   answer: {
-    type: 'email',
+    type: 'text',
     value: testEmailAddress,
     displayText: testEmailAddress
   }
@@ -43,6 +44,8 @@ const licenceSectionWithMissingEmailAndFullName = {
 }
 
 describe('submit-validation', () => {
+  afterEach(jest.clearAllMocks)
+
   describe('isValidRequest', () => {
     it('should return true for valid Content-Type header', () => {
       mockRequest = {
@@ -134,6 +137,23 @@ describe('submit-validation', () => {
       )
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
         'Invalid payload. fullName is missing in the payload'
+      )
+    })
+
+    it('should return false and log schema validation errors if ApplicationSchema fails', () => {
+      const validateMock = jest.spyOn(ApplicationSchema, 'validate')
+
+      mockRequest = {
+        ...mockRequest,
+        payload: {}
+      }
+
+      const result = isValidPayload(mockRequest)
+
+      expect(validateMock).toHaveBeenCalled()
+      expect(result).toBe(false)
+      expect(mockRequest.logger.warn).toHaveBeenCalledWith(
+        'Schema validation failed: "sections" is required.'
       )
     })
   })
