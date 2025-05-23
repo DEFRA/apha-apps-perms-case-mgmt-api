@@ -1,11 +1,15 @@
 import { spyOnConfig } from '../../test-helpers/config.js'
 import { generateEmailContent, getFileProps } from './email-content.js'
 
+/**
+ * @import {ApplicationData} from '../data-extract/data-extract.js'
+ */
+
 const testReference = 'TB12345678'
 
 describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
-    /** @type {import('../data-extract/data-extract.js').ApplicationData} */
+    /** @type {ApplicationData} */
     const payload = {
       sections: [
         {
@@ -103,6 +107,85 @@ describe('generateEmailContent', () => {
     ].join('\n')
 
     expect(result).toBe(expectedContent)
+  })
+
+  describe('should handle file answers correctly', () => {
+    it('should include displayText when skipped is true', () => {
+      /** @type {ApplicationData} */
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'section1',
+            title: 'Section 1 Title',
+            questionAnswers: [
+              {
+                question: 'Upload a file',
+                questionKey: 'file1',
+                answer: {
+                  type: 'file',
+                  value: { skipped: true },
+                  displayText: 'No file uploaded'
+                }
+              }
+            ]
+          }
+        ]
+      }
+
+      const result = generateEmailContent(payload, testReference)
+
+      const expectedContent = [
+        '# Application reference',
+        testReference,
+        '',
+        '---',
+        '# Section 1 Title',
+        '',
+        '---',
+        '## Upload a file',
+        'No file uploaded'
+      ].join('\n')
+
+      expect(result).toBe(expectedContent)
+    })
+
+    it('should ignore displayText when skipped is false', () => {
+      /** @type {ApplicationData} */
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'section1',
+            title: 'Section 1 Title',
+            questionAnswers: [
+              {
+                question: 'Upload a file',
+                questionKey: 'file1',
+                answer: {
+                  type: 'file',
+                  value: { skipped: false },
+                  displayText: 'No file uploaded'
+                }
+              }
+            ]
+          }
+        ]
+      }
+
+      const result = generateEmailContent(payload, testReference)
+
+      const expectedContent = [
+        '# Application reference',
+        testReference,
+        '',
+        '---',
+        '# Section 1 Title',
+        '',
+        '---',
+        '## Upload a file'
+      ].join('\n')
+
+      expect(result).toBe(expectedContent)
+    })
   })
 })
 
