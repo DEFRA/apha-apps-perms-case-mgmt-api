@@ -36,9 +36,9 @@ export const isValidPayload = (request) => {
   })
 
   if (error) {
-    error.details.forEach((detail) => {
-      request.logger.warn(`Schema validation failed: ${detail.message}.`)
-    })
+    request.logger.warn(
+      `Schema validation failed: ${error.details.map((detail) => detail.message).join(', ')}.`
+    )
     return false
   }
 

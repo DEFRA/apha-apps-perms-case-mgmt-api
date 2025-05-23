@@ -92,14 +92,14 @@ describe('ApplicationSchema - answer types', () => {
       expect(error).toBeUndefined()
     })
 
-    it('allows empty text value and displayText', () => {
+    it('allows empty text value', () => {
       const emptyTextQuestion = {
         question: 'Empty Text Question',
         questionKey: 'emptyTextQuestionKey',
         answer: {
           type: 'text',
           value: '',
-          displayText: ''
+          displayText: 'some text'
         }
       }
       const payload = {
@@ -137,7 +137,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value" must be a string'
       )
     })
 
@@ -163,7 +163,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
       )
     })
   })
@@ -228,7 +228,33 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value" must be an array'
+      )
+    })
+
+    it('fails if displayText is missing', () => {
+      const checkboxMissingDisplayText = {
+        question: 'Checkbox Question',
+        questionKey: 'checkboxQuestionKey',
+        answer: {
+          type: 'checkbox',
+          value: ['option1', 'option2']
+          // displayText missing
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [checkboxMissingDisplayText]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
       )
     })
   })
@@ -270,7 +296,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value" is required'
       )
     })
 
@@ -296,7 +322,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
       )
     })
   })
@@ -361,7 +387,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payloadNotSkippedNoPath)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value.path" is required'
       )
     })
 
@@ -412,7 +438,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value.skipped" is required'
       )
     })
 
@@ -438,7 +464,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value.skipped" must be a boolean'
       )
     })
 
@@ -464,7 +490,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value" must be of type object'
       )
     })
 
@@ -490,7 +516,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
       )
     })
   })
@@ -518,8 +544,8 @@ describe('ApplicationSchema - answer types', () => {
           type: 'address',
           value: {
             // addressLine1 missing
-            addressTown: 'London',
-            addressPostcode: 'SW1A 1AA'
+            addressTown: 'London'
+            // addressPostcode missing
           },
           displayText: 'London, SW1A 1AA'
         }
@@ -535,8 +561,12 @@ describe('ApplicationSchema - answer types', () => {
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
+      expect(error?.details.length).toEqual(2)
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value.addressLine1" is required'
+      )
+      expect(error?.details[1].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.addressPostcode" is required'
       )
     })
 
@@ -606,7 +636,33 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value" must be of type object'
+      )
+    })
+
+    it('fails if name answer is missing firstName', () => {
+      const incompleteNameQuestion = {
+        question: 'Incomplete Name Question',
+        questionKey: 'incompleteNameKey',
+        answer: {
+          type: 'name',
+          value: { lastName: 'Surname' }, // firstName missing
+          displayText: 'Surname'
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [incompleteNameQuestion]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.firstName" is required'
       )
     })
 
@@ -632,7 +688,63 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.value.lastName" is required'
+      )
+    })
+
+    it('fails if both firstName and lastName are missing', () => {
+      const nameMissingBoth = {
+        question: 'Name Question',
+        questionKey: 'nameQuestionKey',
+        answer: {
+          type: 'name',
+          value: {}, // both firstName and lastName missing
+          displayText: ''
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [nameMissingBoth]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details.length).toEqual(2)
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.firstName" is required'
+      )
+      expect(error?.details[1].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.lastName" is required'
+      )
+    })
+
+    it('fails if displayText is missing', () => {
+      const nameMissingDisplayText = {
+        question: 'Name Question',
+        questionKey: 'nameQuestionKey',
+        answer: {
+          type: 'name',
+          value: { firstName: 'Name', lastName: 'Surname' }
+          // displayText missing
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [nameMissingDisplayText]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
       )
     })
   })
@@ -660,7 +772,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer" does not match any of the allowed types'
+        '"sections[0].questionAnswers[0].answer.type" must be one of [file, text, radio, address, checkbox, name]'
       )
     })
   })
