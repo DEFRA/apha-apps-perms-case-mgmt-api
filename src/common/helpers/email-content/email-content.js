@@ -32,7 +32,9 @@ export const generateEmailContent = (payload, reference) => {
     lines.push('---')
     section.questionAnswers.forEach(({ question, answer }) => {
       lines.push(`## ${question}`)
-      lines.push(answer.displayText)
+      if (answer.type !== 'file' || answer.value?.skipped) {
+        lines.push(answer.displayText)
+      }
     })
   })
 
