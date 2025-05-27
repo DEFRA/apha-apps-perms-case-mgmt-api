@@ -67,15 +67,19 @@ export const submit = [
             .code(statusCodes.contentTooLarge)
         }
 
-        const compressedFileData = await compressFile(fileData, request)
+        let compressedFileData = null
 
-        if (compressedFileData.fileSizeInMB > 2) {
-          return h
-            .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
-            .code(statusCodes.contentTooLarge)
+        if (fileData.fileSizeInMB > 2) {
+          compressedFileData = await compressFile(fileData, request)
+
+          if (compressedFileData.fileSizeInMB > 2) {
+            return h
+              .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
+              .code(statusCodes.contentTooLarge)
+          }
         }
 
-        linkToFile = getFileProps(compressedFileData)
+        linkToFile = getFileProps(compressedFileData ?? fileData)
       }
 
       await sendEmailToCaseWorker({

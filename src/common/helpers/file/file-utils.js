@@ -61,3 +61,16 @@ export const compressFile = async (fileData, request) => {
     fileSizeInMB
   }
 }
+
+/**
+ * @param {string} contentType
+ * @returns {string}
+ */
+export const getFileExtension = (contentType) => {
+  const contentTypeMap = {
+    'application/pdf': 'pdf',
+    'image/jpeg': 'jpg'
+  }
+
+  return contentTypeMap[contentType] || ''
+}

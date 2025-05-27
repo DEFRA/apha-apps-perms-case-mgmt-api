@@ -1,6 +1,6 @@
 import sharp from 'sharp'
 import {
-  convertBytesToMB,
+  convertMBToBytes,
   fileSizeReductionPercentage
 } from '../../../common/helpers/file/size.js'
 
@@ -98,7 +98,7 @@ export const compressToTargetSize = async (
 export const compressImage = async (buffer) => {
   const originalSize = buffer.length
   const start = Date.now()
-  const targetFileSize = convertBytesToMB(2)
+  const targetFileSize = convertMBToBytes(2)
   const lowerThreshold = targetFileSize * minimumThreshold
   const upperThreshold = targetFileSize
 
