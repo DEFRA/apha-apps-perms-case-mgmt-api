@@ -94,6 +94,7 @@ export const compressToTargetSize = async (
  * - `file` {Buffer}: The compressed image buffer.
  * - `duration` {number}: The duration of the compression process in milliseconds.
  * - `reduction` {number}: The percentage reduction in file size.
+ * - `contentType` {string}: The content type of the compressed image, set to 'image/jpeg'.
  */
 export const compressImage = async (buffer) => {
   const originalSize = buffer.length
@@ -119,6 +120,7 @@ export const compressImage = async (buffer) => {
   return {
     file: finalBuffer,
     duration: end - start,
-    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length)
+    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length),
+    contentType: 'image/jpeg'
   }
 }

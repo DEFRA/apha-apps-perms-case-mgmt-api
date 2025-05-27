@@ -13,6 +13,8 @@ jest.mock('sharp', () => {
   return sharp
 })
 
+const imageContentType = 'image/jpeg'
+
 describe('imageCompression', () => {
   let buffer
 
@@ -42,6 +44,7 @@ describe('imageCompression', () => {
     expect(result.file).toBeInstanceOf(Buffer)
     expect(result).toHaveProperty('duration')
     expect(result).toHaveProperty('reduction')
+    expect(result.contentType).toBe(imageContentType)
   })
 
   it('should resize the image if width is greater than height', async () => {

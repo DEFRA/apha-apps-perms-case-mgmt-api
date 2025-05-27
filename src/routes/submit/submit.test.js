@@ -157,31 +157,13 @@ describe('submit route', () => {
   })
 
   describe('file upload handling', () => {
-    it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
-      const mockFileData = {
-        file: 'mock-file',
-        contentType: 'application/pdf',
-        fileSizeInMB: 5
-      }
-      mockFetchFile.mockResolvedValue(mockFileData)
-      mockCompressFile.mockResolvedValue(mockFileData)
-
-      await handler(mockRequestWithFile, mockResponse)
-
-      expect(mockResponse.response).toHaveBeenCalledWith({
-        error: 'FILE_CANNOT_BE_DELIVERED'
-      })
-      expect(mockResponse.code).toHaveBeenCalledWith(
-        statusCodes.contentTooLarge
-      )
-    })
+    const mockFile = {
+      file: 'mock-file',
+      contentType: 'application/pdf'
+    }
 
     it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
-      mockFetchFile.mockResolvedValue({
-        file: 'mock-file',
-        contentType: 'application/pdf',
-        fileSizeInMB: 12
-      })
+      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
 
       await handler(mockRequestWithFile, mockResponse)
 
@@ -193,17 +175,12 @@ describe('submit route', () => {
       )
     })
 
-    it('should call getFileProps and include link_to_file if file is valid and <= 2MB', async () => {
-      const mockFileData = {
-        file: 'mock-file',
-        contentType: 'application/pdf',
-        fileSizeInMB: 1
-      }
-      mockFetchFile.mockResolvedValue(mockFileData)
-      mockCompressFile.mockResolvedValue(mockFileData)
+    it('should not call compressFile, call getFileProps and include link_to_file if file size is <= 2MB at the point of upload', async () => {
+      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
 
       await handler(mockRequestWithFile, mockResponse)
 
+      expect(mockCompressFile).not.toHaveBeenCalled()
       expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
         expect.objectContaining({
           content: 'Case worker email content',
@@ -214,6 +191,40 @@ describe('submit route', () => {
         message: testReferenceNumber
       })
       expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+    })
+
+    it('should call compressFile, call getFileProps and include link_to_file if file size is <= 2MB after compression', async () => {
+      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 5 })
+      mockCompressFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
+
+      await handler(mockRequestWithFile, mockResponse)
+
+      expect(mockCompressFile).toHaveBeenCalled()
+      expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          content: 'Case worker email content',
+          link_to_file: 'mocked-link-to-file'
+        })
+      )
+      expect(mockResponse.response).toHaveBeenCalledWith({
+        message: testReferenceNumber
+      })
+      expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+    })
+
+    it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
+      const mockFileData = { ...mockFile, fileSizeInMB: 5 }
+      mockFetchFile.mockResolvedValue(mockFileData)
+      mockCompressFile.mockResolvedValue(mockFileData)
+
+      await handler(mockRequestWithFile, mockResponse)
+
+      expect(mockResponse.response).toHaveBeenCalledWith({
+        error: 'FILE_CANNOT_BE_DELIVERED'
+      })
+      expect(mockResponse.code).toHaveBeenCalledWith(
+        statusCodes.contentTooLarge
+      )
     })
 
     it('should not include link_to_file if fileAnswer is not present', async () => {

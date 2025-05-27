@@ -44,7 +44,7 @@ export const fetchFile = async (fileAnswer, request) => {
  * @returns {Promise<FileData>}
  */
 export const compressFile = async (fileData, request) => {
-  const { file, duration, reduction } =
+  const { file, duration, reduction, contentType } =
     fileData.contentType === 'application/pdf'
       ? await compressPdf(fileData.file)
       : await compressImage(fileData.file)
@@ -57,7 +57,7 @@ export const compressFile = async (fileData, request) => {
 
   return {
     file,
-    contentType: fileData.contentType,
+    contentType,
     fileSizeInMB
   }
 }
