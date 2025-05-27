@@ -6,6 +6,7 @@ import { generateEmailContent, getFileProps } from './email-content.js'
  */
 
 const testReference = 'TB12345678'
+const testRetention = '7 days'
 
 describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
@@ -194,9 +195,9 @@ describe('getFileProps', () => {
     jest.clearAllMocks()
   })
 
-  it('should return correct file props with base64 file, filename, confirmation and retention', async () => {
+  it('should return correct file props with base64 file, filename, confirmation and retention for pdf content type', async () => {
     spyOnConfig('notify', {
-      fileRetention: '7 days',
+      fileRetention: testRetention,
       confirmDownloadConfirmation: true
     })
 
@@ -213,24 +214,30 @@ describe('getFileProps', () => {
       file: fakeBuffer.toString('base64'),
       filename: 'Biosecurity-map.pdf',
       confirm_email_before_download: true,
-      retention_period: '7 days'
+      retention_period: testRetention
     })
   })
 
-  it('should use the provided extension in the filename', async () => {
+  it('should return correct file props with base64 file, filename, confirmation and retention for image/jpeg content type', async () => {
     spyOnConfig('notify', {
-      fileRetention: '14 days',
+      fileRetention: testRetention,
       confirmDownloadConfirmation: true
     })
 
     const fakeBuffer = Buffer.from('abc')
     const fileData = {
       file: fakeBuffer,
-      contentType: 'other',
+      contentType: 'image/jpeg',
       fileSizeInMB: 1
     }
+
     const result = getFileProps(fileData)
 
-    expect(result.filename).toBe('Biosecurity-map.jpg')
+    expect(result).toEqual({
+      file: fakeBuffer.toString('base64'),
+      filename: 'Biosecurity-map.jpg',
+      confirm_email_before_download: true,
+      retention_period: testRetention
+    })
   })
 })
