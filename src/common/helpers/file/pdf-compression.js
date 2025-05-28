@@ -14,6 +14,7 @@ import {
  *   - {Buffer} file: The resulting buffer after compression (or the original buffer if no compression was applied).
  *   - {number} duration: The duration (in milliseconds) of the compression process.
  *   - {number} reduction: The percentage reduction in file size after compression.
+ *   - {string} contentType: The content type of the file, which is always 'application/pdf'.
  */
 export const compressPdf = async (buffer) => {
   const originalSize = buffer.length
@@ -31,6 +32,7 @@ export const compressPdf = async (buffer) => {
   return {
     file: finalBuffer,
     duration: end - start,
-    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length)
+    reduction: fileSizeReductionPercentage(originalSize, finalBuffer.length),
+    contentType: 'application/pdf'
   }
 }

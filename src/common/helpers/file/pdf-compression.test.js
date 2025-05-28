@@ -10,6 +10,8 @@ const smallBuffer = Buffer.alloc(1 * 1024 * 1024) // 1MB buffer
 const mediumBuffer = Buffer.alloc(3 * 1024 * 1024) // 3MB buffer
 const largeBuffer = Buffer.alloc(10 * 1024 * 1024) // 10MB buffer
 
+const pdfContentType = 'application/pdf'
+
 describe('PDF Compression', () => {
   it('should compress a PDF file if its size is greater or equal to 2MB and smaller than 10MB', async () => {
     const compressedBuffer = Buffer.from('%PDF-1.4\n...compressed')
@@ -30,6 +32,7 @@ describe('PDF Compression', () => {
     expect(result.duration).toBeGreaterThanOrEqual(0)
     expect(result.reduction).toBeGreaterThan(0)
     expect(result.duration).toBeGreaterThanOrEqual(0)
+    expect(result.contentType).toBe(pdfContentType)
   })
 
   it('should not compress a PDF file if its size is less than or equal to 2MB', async () => {
@@ -39,6 +42,7 @@ describe('PDF Compression', () => {
     expect(result.file).toBe(smallBuffer)
     expect(result.reduction).toBe(0)
     expect(result.duration).toBeGreaterThanOrEqual(0)
+    expect(result.contentType).toBe(pdfContentType)
   })
 
   it('should not compress a PDF file if its size is greater than or equal to 10MB', async () => {
@@ -48,5 +52,6 @@ describe('PDF Compression', () => {
     expect(result.file).toBe(largeBuffer)
     expect(result.reduction).toBe(0)
     expect(result.duration).toBeGreaterThanOrEqual(0)
+    expect(result.contentType).toBe(pdfContentType)
   })
 })

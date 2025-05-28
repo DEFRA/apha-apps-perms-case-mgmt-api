@@ -51,6 +51,7 @@
     "node-fetch": "3.3.2",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
+    "sharp": "0.34.2",
     "undici": "7.9.0"
   },
   "devDependencies": {
