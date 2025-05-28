@@ -10,7 +10,6 @@ import {
   fetchFile,
   compressFile
 } from '../../common/helpers/file/file-utils.js'
-import { NotImplementedError } from '../../common/helpers/not-implemented-error.js'
 
 jest.mock('../../common/connectors/notify/notify.js')
 jest.mock(
@@ -158,40 +157,6 @@ describe('submit route', () => {
   })
 
   describe('file upload handling', () => {
-    it('should throw NotImplementedError if fileAnswer is skipped', async () => {
-      const skippedFileQuestion = {
-        question: 'upload-plan',
-        questionKey: 'upload-plan',
-        answer: {
-          type: 'file',
-          value: {
-            skipped: true
-          },
-          displayText: 'file.pdf'
-        }
-      }
-
-      const mockRequestSkippedFile = {
-        payload: {
-          sections: [
-            {
-              section: 'biosecurity-map',
-              sectionKey: 'biosecurity-map',
-              questionAnswers: [
-                emailQuestion,
-                fullNameQuestion,
-                skippedFileQuestion
-              ]
-            }
-          ]
-        }
-      }
-
-      await expect(
-        handler(mockRequestSkippedFile, mockResponse)
-      ).rejects.toThrow(NotImplementedError)
-    })
-
     it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
       const mockFileData = {
         file: 'mock-file',

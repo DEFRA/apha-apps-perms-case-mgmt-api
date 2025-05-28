@@ -14,7 +14,6 @@ import {
   compressFile,
   fetchFile
 } from '../../common/helpers/file/file-utils.js'
-import { NotImplementedError } from '../../common/helpers/not-implemented-error.js'
 
 /** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
 
@@ -59,28 +58,24 @@ export const submit = [
         )?.answer
       )
 
-      if (fileAnswer) {
-        if (fileAnswer.value?.skipped) {
-          throw new NotImplementedError()
-        } else {
-          const fileData = await fetchFile(fileAnswer, request)
+      if (fileAnswer && !fileAnswer.value?.skipped) {
+        const fileData = await fetchFile(fileAnswer, request)
 
-          if (fileData.fileSizeInMB > 10) {
-            return h
-              .response({ error: 'FILE_TOO_LARGE' })
-              .code(statusCodes.contentTooLarge)
-          }
-
-          const compressedFileData = await compressFile(fileData, request)
-
-          if (compressedFileData.fileSizeInMB > 2) {
-            return h
-              .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
-              .code(statusCodes.contentTooLarge)
-          }
-
-          linkToFile = getFileProps(compressedFileData)
+        if (fileData.fileSizeInMB > 10) {
+          return h
+            .response({ error: 'FILE_TOO_LARGE' })
+            .code(statusCodes.contentTooLarge)
         }
+
+        const compressedFileData = await compressFile(fileData, request)
+
+        if (compressedFileData.fileSizeInMB > 2) {
+          return h
+            .response({ error: 'FILE_CANNOT_BE_DELIVERED' })
+            .code(statusCodes.contentTooLarge)
+        }
+
+        linkToFile = getFileProps(compressedFileData)
       }
 
       await sendEmailToCaseWorker({
