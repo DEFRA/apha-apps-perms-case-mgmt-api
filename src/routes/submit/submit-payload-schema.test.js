@@ -58,6 +58,15 @@ const textQuestion = {
     displayText: 'some text'
   }
 }
+const dateQuestion = {
+  question: 'Date Question',
+  questionKey: 'dateQuestionKey',
+  answer: {
+    type: 'date',
+    value: { day: '01', month: '01', year: '2020' },
+    displayText: '01/01/2020'
+  }
+}
 const section = {
   sectionKey: 'sectionKey',
   title: 'Section Title',
@@ -67,7 +76,8 @@ const section = {
     addressQuestion,
     radioQuestion,
     checkboxQuestion,
-    textQuestion
+    textQuestion,
+    dateQuestion
   ]
 }
 const validPayload = {
@@ -749,6 +759,123 @@ describe('ApplicationSchema - answer types', () => {
     })
   })
 
+  describe('date answer', () => {
+    it('validates a correct date answer', () => {
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [dateQuestion]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeUndefined()
+    })
+    it('fails if date value is not an object', () => {
+      const dateValueNotObject = {
+        question: 'Date Question',
+        questionKey: 'dateQuestionKey',
+        answer: {
+          type: 'date',
+          value: 'not-an-object', // should be an object
+          displayText: '01/01/2020'
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [dateValueNotObject]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value" must be of type object'
+      )
+    })
+
+    it('fails if date value is missing day, month, or year', () => {
+      const incompleteDateQuestion = {
+        question: 'Incomplete Date Question',
+        questionKey: 'incompleteDateKey',
+        answer: {
+          type: 'date',
+          value: { day: '01', month: '01' }, // year missing
+          displayText: '01/01'
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [incompleteDateQuestion]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.year" is required'
+      )
+    })
+    it('fails if date value day, month, or year is not a string', () => {
+      const invalidDateQuestion = {
+        question: 'Invalid Date Question',
+        questionKey: 'invalidDateKey',
+        answer: {
+          type: 'date',
+          value: { day: 1, month: 1, year: 2020 }, // should be strings
+          displayText: '01/01/2020'
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [invalidDateQuestion]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value.day" must be a string'
+      )
+    })
+    it('fails if displayText is missing', () => {
+      const dateMissingDisplayText = {
+        question: 'Date Question',
+        questionKey: 'dateQuestionKey',
+        answer: {
+          type: 'date',
+          value: { day: '01', month: '01', year: '2020' }
+          // displayText missing
+        }
+      }
+      const payload = {
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [dateMissingDisplayText]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.displayText" is required'
+      )
+    })
+  })
+
   describe('invalid answer types', () => {
     it('fails if answer type is invalid', () => {
       const invalidAnswerTypeQuestion = {
@@ -772,7 +899,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer.type" must be one of [file, text, radio, address, checkbox, name]'
+        '"sections[0].questionAnswers[0].answer.type" must be one of [file, text, radio, address, checkbox, name, date]'
       )
     })
   })

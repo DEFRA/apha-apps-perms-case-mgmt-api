@@ -22,6 +22,11 @@ const AnswerValueSchemas = {
   name: Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string().required()
+  }),
+  date: Joi.object({
+    day: Joi.string().required(),
+    month: Joi.string().required(),
+    year: Joi.string().required()
   })
 }
 
