@@ -68,7 +68,10 @@ const fileQuestion = {
   }
 }
 
+const mockLogger = { info: jest.fn() }
+
 const mockRequest = {
+  logger: mockLogger,
   payload: {
     sections: [
       {
@@ -81,6 +84,7 @@ const mockRequest = {
 }
 
 const mockRequestWithFile = {
+  logger: mockLogger,
   payload: {
     sections: [
       {
