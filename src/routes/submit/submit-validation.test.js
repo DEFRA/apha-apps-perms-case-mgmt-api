@@ -3,7 +3,7 @@ import { ApplicationSchema } from './submit-payload-schema.js'
 import { jest } from '@jest/globals'
 
 /** @type {object} */
-let mockRequest = { logger: { warn: jest.fn() } }
+let mockRequest = { logger: { warn: jest.fn(), info: jest.fn() } }
 
 const testEmailAddress = 'test@example.com'
 const testFullName = 'Full Name'

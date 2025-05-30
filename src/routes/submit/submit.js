@@ -91,6 +91,11 @@ export const submit = [
         fullName: applicantFullName ?? '',
         reference: reference ?? ''
       })
+
+      request.logger.info(
+        `Application submitted successfully with reference: ${reference}`
+      )
+
       return h.response({ message: reference }).code(statusCodes.ok)
     }
   }
