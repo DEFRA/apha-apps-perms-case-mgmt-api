@@ -106,6 +106,7 @@ services:
     volumes:
       - ./src:/home/node/src
       - ./package.json:/home/node/package.json
+      - ./tests/postman/assets:/home/node/tests/postman/assets
 
 ################################################################################
 
