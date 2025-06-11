@@ -11,6 +11,13 @@ ARG PORT_DEBUG
 ENV PORT=${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
+# Add Ghostscript for development use (e.g. local PDF compression)
+USER root
+RUN apt-get update \
+    && apt-get install -y ghostscript \
+    && rm -rf /var/lib/apt/lists/*
+USER node
+
 COPY --chown=node:node package*.json ./
 RUN npm install
 COPY --chown=node:node ./src ./src
