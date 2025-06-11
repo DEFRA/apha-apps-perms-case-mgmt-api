@@ -144,6 +144,23 @@ describe('File Utils', () => {
       )
       expect(result.file).toEqual(compressedImageBuffer)
     })
+
+    it('should skip compression for unsupported content types', async () => {
+      const fileData = {
+        file: Buffer.from('some-file'),
+        contentType: 'application/zip',
+        fileSizeInMB: mockFileSize
+      }
+
+      const result = await compressFile(fileData, mockReq)
+
+      expect(compressPdf).not.toHaveBeenCalled()
+      expect(compressImage).toHaveBeenCalled() // <- updated
+      expect(mockReq.logger.info).toHaveBeenCalledWith(
+        'File compression took 100ms at a reduction of 50% to 1.5 MB'
+      )
+      expect(result.file).toEqual(compressedImageBuffer)
+    })
   })
 
   describe('getFileExtension', () => {
