@@ -251,7 +251,7 @@ const config = convict({
     },
     folderPath: /** @type {SchemaObj<string | null>} */ {
       format: String,
-      default: 'Digital Applications',
+      default: 'Digital Applications/TB25',
       nullable: true,
       env: 'SHAREPOINT_TB25_FOLDER_PATH'
     }
