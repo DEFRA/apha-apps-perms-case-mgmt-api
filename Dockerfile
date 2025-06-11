@@ -13,9 +13,9 @@ EXPOSE ${PORT} ${PORT_DEBUG}
 
 # Add Ghostscript for development use (e.g. local PDF compression)
 USER root
-RUN apt-get update \
-    && apt-get install -y ghostscript \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update \
+    && apk add ghostscript \
+    && apk cache clean
 USER node
 
 COPY --chown=node:node package*.json ./
