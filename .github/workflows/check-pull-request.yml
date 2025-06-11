@@ -23,6 +23,10 @@ jobs:
       SHAREPOINT_TB25_LIST_ID: ${{ secrets.SHAREPOINT_TB25_LIST_ID }}
       SHAREPOINT_TB25_DRIVE_ID: ${{ secrets.SHAREPOINT_TB25_DRIVE_ID }}
       SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'
+      NOTIFY_API_KEY: ${{ secrets.NOTIFY_API_KEY }}
+      NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS: ${{ secrets.NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS }}
+      NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID: ${{ secrets.NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID }}
+      NOTIFY_CASE_DELIVERY_TEMPLATE_ID: ${{ secrets.NOTIFY_CASE_DELIVERY_TEMPLATE_ID }}
 
     steps:
       - name: Checkout code
@@ -48,12 +52,28 @@ jobs:
           npm test
 
       - name: Start backend and dependencies
+        env:         
+          SHAREPOINT_TB25_TENANT_ID: ${{ secrets.SHAREPOINT_TB25_TENANT_ID }}
+          SHAREPOINT_TB25_CLIENT_ID: ${{ secrets.SHAREPOINT_TB25_CLIENT_ID }}
+          SHAREPOINT_TB25_CLIENT_SECRET: ${{ secrets.SHAREPOINT_TB25_CLIENT_SECRET }}
+          SHAREPOINT_TB25_SITE_ID: ${{ secrets.SHAREPOINT_TB25_SITE_ID }}
+          SHAREPOINT_TB25_LIST_ID: ${{ secrets.SHAREPOINT_TB25_LIST_ID }}
+          SHAREPOINT_TB25_DRIVE_ID: ${{ secrets.SHAREPOINT_TB25_DRIVE_ID }}
+          SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'  
+          NOTIFY_API_KEY: ${{ secrets.NOTIFY_API_KEY }}
+          NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS: ${{ secrets.NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS }}
+          NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID: ${{ secrets.NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID }}
+          NOTIFY_CASE_DELIVERY_TEMPLATE_ID: ${{ secrets.NOTIFY_CASE_DELIVERY_TEMPLATE_ID }}
         run: |
           docker compose -f compose.yml up -d
           sleep 20  # give services time to fully start
 
       - name: Run Postman tests against container
         run: npm run test:local
+
+      - name: Print app container logs
+        if: failure()
+        run: docker compose -f compose.yml logs apha-apps-perms-case-mgmt-api
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
