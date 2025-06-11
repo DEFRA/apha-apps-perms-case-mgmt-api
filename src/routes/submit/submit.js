@@ -50,8 +50,8 @@ export const submit = [
             applicationHtml
           )
         } catch (error) {
-          request.logger.warn(
-            `Failed to upload file to SharePoint: ${error.message}`
+          request.logger.error(
+            `Failed to upload file to SharePoint: ${JSON.stringify(error)}`
           )
           return h
             .response({ error: 'FILE_UPLOAD_FAILED__APPLICATION' })
