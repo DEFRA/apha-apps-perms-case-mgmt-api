@@ -77,8 +77,10 @@ describe('File Utils', () => {
       }
     }
 
-    config.get = jest.fn().mockReturnValue({
-      bucket: 'test-bucket'
+    config.get = jest.fn().mockImplementation((key) => {
+      if (key === 'cdpEnvironment') return 'test' // or any non-'local' value
+      if (key === 'isDevelopment') return false
+      if (key === 'aws') return { bucket: 'test-bucket' }
     })
   })
 
