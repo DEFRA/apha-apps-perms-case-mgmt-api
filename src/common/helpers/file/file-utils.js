@@ -1,6 +1,5 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { compressPdf } from './pdf-compression.js'
 import { compressImage } from './image-compression.js'
 import { convertBytesToMB } from './size.js'
