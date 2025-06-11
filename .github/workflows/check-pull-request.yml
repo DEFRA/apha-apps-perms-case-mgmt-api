@@ -15,6 +15,14 @@ jobs:
   pr-validator:
     name: Run Pull Request Checks
     runs-on: ubuntu-latest
+    env:
+      SHAREPOINT_TB25_TENANT_ID: ${{ secrets.SHAREPOINT_TB25_TENANT_ID }}
+      SHAREPOINT_TB25_CLIENT_ID: ${{ secrets.SHAREPOINT_TB25_CLIENT_ID }}
+      SHAREPOINT_TB25_CLIENT_SECRET: ${{ secrets.SHAREPOINT_TB25_CLIENT_SECRET }}
+      SHAREPOINT_TB25_SITE_ID: ${{ secrets.SHAREPOINT_TB25_SITE_ID }}
+      SHAREPOINT_TB25_LIST_ID: ${{ secrets.SHAREPOINT_TB25_LIST_ID }}
+      SHAREPOINT_TB25_DRIVE_ID: ${{ secrets.SHAREPOINT_TB25_DRIVE_ID }}
+      SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
