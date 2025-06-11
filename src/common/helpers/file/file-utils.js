@@ -10,9 +10,13 @@ import { config } from '../../../config.js'
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
  */
-// Helpers for __dirname in ESM
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+let __dirname = process.cwd()
+try {
+  if (typeof import.meta.url === 'string') {
+    const url = new URL(import.meta.url)
+    __dirname = path.dirname(url.pathname)
+  }
+} catch {}
 
 /**
  * @typedef {{file: Buffer, contentType: string, fileSizeInMB: number}} FileData
