@@ -25,10 +25,6 @@ jobs:
       SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'
 
     services:
-      mongo:
-        image: mongo:6.0.13
-        ports:
-          - 27017:27017
       redis:
         image: redis:7.2.3-alpine3.18
         ports:
