@@ -14,6 +14,9 @@ import {
   compressFile,
   fetchFile
 } from '../../common/helpers/file/file-utils.js'
+import { generatePdfBufferFromHtml } from '../../common/helpers/export-pdf/html-to-pdf.js'
+import { uploadFile } from '../../common/connectors/sharepoint/sharepoint.js'
+import { config } from '../../config.js'
 
 /** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
 
@@ -34,6 +37,28 @@ export const submit = [
       }
 
       const reference = getApplicationReference()
+
+      if (config.get('featureFlags').sharepointIntegrationEnabled) {
+        const applicationPdf = await generatePdfBufferFromHtml(
+          request.payload,
+          reference
+        )
+        try {
+          await uploadFile(
+            reference,
+            `${reference}_Submitted_Application.pdf`,
+            applicationPdf
+          )
+        } catch (error) {
+          request.logger.warn(
+            `Failed to upload file to SharePoint: ${error.message}`
+          )
+          return h
+            .response({ error: 'FILE_UPLOAD_FAILED__APPLICATION' })
+            .code(statusCodes.serverError)
+        }
+      }
+
       const applicantEmail = getQuestionFromSections(
         'emailAddress',
         'licence',

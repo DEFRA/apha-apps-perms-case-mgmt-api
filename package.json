@@ -31,11 +31,13 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@aws-sdk/client-s3": "3.810.0",
+    "@azure/identity": "4.10.0",
     "@defra/hapi-tracing": "1.0.0",
     "@elastic/ecs-pino-format": "1.5.0",
     "@hapi/boom": "10.0.1",
     "@hapi/hapi": "21.3.12",
     "@hapi/jwt": "3.2.0",
+    "@microsoft/microsoft-graph-client": "3.0.7",
     "aws-embedded-metrics": "4.2.0",
     "aws4": "1.13.2",
     "compress-pdf": "0.5.3",
@@ -51,6 +53,7 @@
     "node-fetch": "3.3.2",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
+    "puppeteer": "24.10.0",
     "sharp": "0.34.2",
     "undici": "7.9.0"
   },

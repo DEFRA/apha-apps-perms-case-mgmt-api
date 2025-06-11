@@ -6,10 +6,13 @@ import {
 import { getFileProps } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
+import { generatePdfBufferFromHtml } from '../../common/helpers/export-pdf/html-to-pdf.js'
 import {
   fetchFile,
   compressFile
 } from '../../common/helpers/file/file-utils.js'
+import { spyOnConfig } from '../../common/test-helpers/config.js'
+import { uploadFile } from '../../common/connectors/sharepoint/sharepoint.js'
 
 jest.mock('../../common/connectors/notify/notify.js')
 jest.mock(
@@ -27,11 +30,21 @@ jest.mock('../../common/helpers/email-content/email-content.js', () => ({
   generateEmailContent: jest.fn().mockReturnValue('Case worker email content'),
   getFileProps: jest.fn().mockReturnValue('mocked-link-to-file')
 }))
+jest.mock('../../common/helpers/export-pdf/html-to-pdf.js', () => ({
+  generatePdfBufferFromHtml: jest.fn()
+}))
+jest.mock('../../common/connectors/sharepoint/sharepoint.js', () => ({
+  uploadFile: jest.fn()
+}))
 
 const mockIsValidRequest = /** @type {jest.Mock} */ (isValidRequest)
 const mockIsValidPayload = /** @type {jest.Mock} */ (isValidPayload)
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
 const mockCompressFile = /** @type {jest.Mock} */ (compressFile)
+const mockGeneratePdfBufferFromHtml = /** @type {jest.Mock} */ (
+  generatePdfBufferFromHtml
+)
+const mockUploadFile = /** @type {jest.Mock} */ (uploadFile)
 
 const testEmail = 'test@example.com'
 const testFullName = 'Name Surname'
@@ -68,7 +81,7 @@ const fileQuestion = {
   }
 }
 
-const mockLogger = { info: jest.fn() }
+const mockLogger = { info: jest.fn(), warn: jest.fn() }
 
 const mockRequest = {
   logger: mockLogger,
@@ -242,6 +255,54 @@ describe('submit route', () => {
         message: testReferenceNumber
       })
       expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+    })
+  })
+
+  describe('when sharePoint integration is enabled', () => {
+    let handler
+    const pdfBuffer = Buffer.from('pdf content')
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+      handler = submit[0].handler
+      spyOnConfig('featureFlags', {
+        sharepointIntegrationEnabled: true
+      })
+    })
+
+    it('should generate PDF and upload to SharePoint', async () => {
+      mockGeneratePdfBufferFromHtml.mockResolvedValue(pdfBuffer)
+      mockUploadFile.mockResolvedValue(undefined)
+
+      await handler(mockRequest, mockResponse)
+
+      expect(generatePdfBufferFromHtml).toHaveBeenCalledWith(
+        mockRequest.payload,
+        testReferenceNumber
+      )
+      expect(uploadFile).toHaveBeenCalledWith(
+        testReferenceNumber,
+        `${testReferenceNumber}_Submitted_Application.pdf`,
+        pdfBuffer
+      )
+      expect(mockResponse.response).toHaveBeenCalledWith({
+        message: expect.any(String)
+      })
+      expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+    })
+
+    it('should return FILE_UPLOAD_FAILED__APPLICATION if uploadFile fails', async () => {
+      mockGeneratePdfBufferFromHtml.mockResolvedValue(pdfBuffer)
+      mockUploadFile.mockRejectedValue(new Error('upload failed'))
+
+      await handler(mockRequest, mockResponse)
+
+      expect(generatePdfBufferFromHtml).toHaveBeenCalled()
+      expect(uploadFile).toHaveBeenCalled()
+      expect(mockResponse.response).toHaveBeenCalledWith({
+        error: 'FILE_UPLOAD_FAILED__APPLICATION'
+      })
+      expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.serverError)
     })
   })
 })
