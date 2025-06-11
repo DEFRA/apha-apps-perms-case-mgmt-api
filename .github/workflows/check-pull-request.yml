@@ -68,7 +68,7 @@ jobs:
         run: docker build --no-cache -t cdp-node-backend-template .
       - name: Start backend container
         run: |
-          docker compose -f docker-compose.yml up -d
+          docker compose -f compose.yml up -d
           sleep 10
 
       - name: Run Postman tests against container
