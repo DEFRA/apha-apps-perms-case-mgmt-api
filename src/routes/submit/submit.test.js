@@ -6,7 +6,7 @@ import {
 import { getFileProps } from '../../common/helpers/email-content/email-content.js'
 import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
-import { generatePdfBufferFromHtml } from '../../common/helpers/export-pdf/html-to-pdf.js'
+import { generateHtmlBuffer } from '../../common/helpers/export/export-html.js'
 import {
   fetchFile,
   compressFile
@@ -30,8 +30,8 @@ jest.mock('../../common/helpers/email-content/email-content.js', () => ({
   generateEmailContent: jest.fn().mockReturnValue('Case worker email content'),
   getFileProps: jest.fn().mockReturnValue('mocked-link-to-file')
 }))
-jest.mock('../../common/helpers/export-pdf/html-to-pdf.js', () => ({
-  generatePdfBufferFromHtml: jest.fn()
+jest.mock('../../common/helpers/export/export-html.js', () => ({
+  generateHtmlBuffer: jest.fn()
 }))
 jest.mock('../../common/connectors/sharepoint/sharepoint.js', () => ({
   uploadFile: jest.fn()
@@ -41,9 +41,7 @@ const mockIsValidRequest = /** @type {jest.Mock} */ (isValidRequest)
 const mockIsValidPayload = /** @type {jest.Mock} */ (isValidPayload)
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
 const mockCompressFile = /** @type {jest.Mock} */ (compressFile)
-const mockGeneratePdfBufferFromHtml = /** @type {jest.Mock} */ (
-  generatePdfBufferFromHtml
-)
+const mockGenerateHtmlBuffer = /** @type {jest.Mock} */ (generateHtmlBuffer)
 const mockUploadFile = /** @type {jest.Mock} */ (uploadFile)
 
 const testEmail = 'test@example.com'
@@ -260,7 +258,7 @@ describe('submit route', () => {
 
   describe('when sharePoint integration is enabled', () => {
     let handler
-    const pdfBuffer = Buffer.from('pdf content')
+    const htmlBuffer = Buffer.from('html content')
 
     beforeEach(() => {
       jest.clearAllMocks()
@@ -270,20 +268,20 @@ describe('submit route', () => {
       })
     })
 
-    it('should generate PDF and upload to SharePoint', async () => {
-      mockGeneratePdfBufferFromHtml.mockResolvedValue(pdfBuffer)
+    it('should generate HTML and upload to SharePoint', async () => {
+      mockGenerateHtmlBuffer.mockResolvedValue(htmlBuffer)
       mockUploadFile.mockResolvedValue(undefined)
 
       await handler(mockRequest, mockResponse)
 
-      expect(generatePdfBufferFromHtml).toHaveBeenCalledWith(
+      expect(mockGenerateHtmlBuffer).toHaveBeenCalledWith(
         mockRequest.payload,
         testReferenceNumber
       )
       expect(uploadFile).toHaveBeenCalledWith(
         testReferenceNumber,
-        `${testReferenceNumber}_Submitted_Application.pdf`,
-        pdfBuffer
+        `${testReferenceNumber}_Submitted_Application.html`,
+        htmlBuffer
       )
       expect(mockResponse.response).toHaveBeenCalledWith({
         message: expect.any(String)
@@ -292,12 +290,12 @@ describe('submit route', () => {
     })
 
     it('should return FILE_UPLOAD_FAILED__APPLICATION if uploadFile fails', async () => {
-      mockGeneratePdfBufferFromHtml.mockResolvedValue(pdfBuffer)
+      mockGenerateHtmlBuffer.mockResolvedValue(htmlBuffer)
       mockUploadFile.mockRejectedValue(new Error('upload failed'))
 
       await handler(mockRequest, mockResponse)
 
-      expect(generatePdfBufferFromHtml).toHaveBeenCalled()
+      expect(mockGenerateHtmlBuffer).toHaveBeenCalled()
       expect(uploadFile).toHaveBeenCalled()
       expect(mockResponse.response).toHaveBeenCalledWith({
         error: 'FILE_UPLOAD_FAILED__APPLICATION'

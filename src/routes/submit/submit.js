@@ -14,7 +14,7 @@ import {
   compressFile,
   fetchFile
 } from '../../common/helpers/file/file-utils.js'
-import { generatePdfBufferFromHtml } from '../../common/helpers/export-pdf/html-to-pdf.js'
+import { generateHtmlBuffer } from '../../common/helpers/export/export-html.js'
 import { uploadFile } from '../../common/connectors/sharepoint/sharepoint.js'
 import { config } from '../../config.js'
 
@@ -39,15 +39,15 @@ export const submit = [
       const reference = getApplicationReference()
 
       if (config.get('featureFlags').sharepointIntegrationEnabled) {
-        const applicationPdf = await generatePdfBufferFromHtml(
+        const applicationHtml = await generateHtmlBuffer(
           request.payload,
           reference
         )
         try {
           await uploadFile(
             reference,
-            `${reference}_Submitted_Application.pdf`,
-            applicationPdf
+            `${reference}_Submitted_Application.html`,
+            applicationHtml
           )
         } catch (error) {
           request.logger.warn(
