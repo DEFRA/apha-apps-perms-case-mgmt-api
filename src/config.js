@@ -203,6 +203,58 @@ const config = convict({
     format: String,
     default: '/usr/bin/gs',
     env: 'GS_BINARY'
+  },
+  featureFlags: {
+    sharepointIntegrationEnabled: {
+      doc: 'Feature flag to enable the SharePoint integration',
+      format: Boolean,
+      default: !isProduction,
+      env: 'SHAREPOINT_TB25_INTEGRATION_ENABLED'
+    }
+  },
+  sharepoint: {
+    tenantId: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_TENANT_ID'
+    },
+    clientId: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_CLIENT_ID'
+    },
+    clientSecret: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_CLIENT_SECRET'
+    },
+    siteId: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_SITE_ID'
+    },
+    listId: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_LIST_ID'
+    },
+    driveId: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_DRIVE_ID'
+    },
+    folderPath: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: 'Digital Applications/TB25',
+      nullable: true,
+      env: 'SHAREPOINT_TB25_FOLDER_PATH'
+    }
   }
 })
 

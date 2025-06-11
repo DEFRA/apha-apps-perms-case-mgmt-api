@@ -10,12 +10,20 @@ permissions:
 
 env:
   AWS_REGION: eu-west-2
-  AWS_ACCOUNT_ID: "094954420758"
+  AWS_ACCOUNT_ID: '094954420758'
 
 jobs:
   build:
     name: CDP-build-hotfix-workflow
     runs-on: ubuntu-latest
+    env:
+      SHAREPOINT_TB25_TENANT_ID: ${{ secrets.SHAREPOINT_TB25_TENANT_ID }}
+      SHAREPOINT_TB25_CLIENT_ID: ${{ secrets.SHAREPOINT_TB25_CLIENT_ID }}
+      SHAREPOINT_TB25_CLIENT_SECRET: ${{ secrets.SHAREPOINT_TB25_CLIENT_SECRET }}
+      SHAREPOINT_TB25_SITE_ID: ${{ secrets.SHAREPOINT_TB25_SITE_ID }}
+      SHAREPOINT_TB25_LIST_ID: ${{ secrets.SHAREPOINT_TB25_LIST_ID }}
+      SHAREPOINT_TB25_DRIVE_ID: ${{ secrets.SHAREPOINT_TB25_DRIVE_ID }}
+      SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -35,7 +43,6 @@ jobs:
         uses: DEFRA/cdp-build-action/build-hotfix@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
 #     - run: npm install && npm test
 #     - name: SonarCloud Scan
 #       uses: SonarSource/sonarcloud-github-action@master
