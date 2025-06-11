@@ -1,3 +1,6 @@
+import fs from 'fs/promises'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { compressPdf } from './pdf-compression.js'
 import { compressImage } from './image-compression.js'
 import { convertBytesToMB } from './size.js'
@@ -7,9 +10,12 @@ import { config } from '../../../config.js'
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
  */
+// Helpers for __dirname in ESM
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /**
- * @typedef {{file: Buffer<ArrayBufferLike>, contentType: string, fileSizeInMB: number}} FileData
+ * @typedef {{file: Buffer, contentType: string, fileSizeInMB: number}} FileData
  */
 
 /**
@@ -18,6 +24,25 @@ import { config } from '../../../config.js'
  * @returns {Promise<FileData>}
  */
 export const fetchFile = async (fileAnswer, request) => {
+  const isLocal =
+    config.get('cdpEnvironment') === 'local' || config.get('isDevelopment')
+
+  if (isLocal) {
+    const relativePath = fileAnswer?.value?.path
+    if (!relativePath) {
+      throw new Error('Missing file path in fileAnswer.value.path')
+    }
+    const absolutePath = path.resolve(__dirname, '../../../..', relativePath)
+    const buffer = await fs.readFile(absolutePath)
+    const contentType = inferContentTypeFromPath(relativePath)
+
+    return {
+      file: buffer,
+      contentType,
+      fileSizeInMB: convertBytesToMB(buffer.length)
+    }
+  }
+
   const obj = await request.s3.send(
     new GetObjectCommand({
       Bucket: config.get('aws').bucket ?? '',
@@ -36,6 +61,14 @@ export const fetchFile = async (fileAnswer, request) => {
     contentType: obj.ContentType,
     fileSizeInMB: convertBytesToMB(buffer.length)
   }
+}
+
+const inferContentTypeFromPath = (filePath) => {
+  const ext = path.extname(filePath).toLowerCase()
+  if (ext === '.pdf') return 'application/pdf'
+  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg'
+  if (ext === '.png') return 'image/png'
+  return 'application/octet-stream'
 }
 
 /**
