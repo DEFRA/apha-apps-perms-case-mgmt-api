@@ -36,13 +36,13 @@ export const fetchFile = async (fileAnswer, request) => {
       throw new Error('Missing file path in fileAnswer.value.path')
     }
     const absolutePath = path.resolve(__dirname, '../../../..', relativePath)
-    const buffer = await fs.readFile(absolutePath)
+    const localBuffer = await fs.readFile(absolutePath)
     const contentType = inferContentTypeFromPath(relativePath)
 
     return {
-      file: buffer,
+      file: localBuffer,
       contentType,
-      fileSizeInMB: convertBytesToMB(buffer.length)
+      fileSizeInMB: convertBytesToMB(localBuffer.length)
     }
   }
 
@@ -57,20 +57,30 @@ export const fetchFile = async (fileAnswer, request) => {
   for await (const chunk of obj.Body) {
     chunks.push(chunk)
   }
-  const buffer = Buffer.concat(chunks)
+  const remoteBuffer = Buffer.concat(chunks)
 
   return {
-    file: buffer,
+    file: remoteBuffer,
     contentType: obj.ContentType,
-    fileSizeInMB: convertBytesToMB(buffer.length)
+    fileSizeInMB: convertBytesToMB(remoteBuffer.length)
   }
 }
 
 const inferContentTypeFromPath = (filePath) => {
   const ext = path.extname(filePath).toLowerCase()
-  if (ext === '.pdf') return 'application/pdf'
-  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg'
-  if (ext === '.png') return 'image/png'
+
+  if (ext === '.pdf') {
+    return 'application/pdf'
+  }
+
+  if (ext === '.jpg' || ext === '.jpeg') {
+    return 'image/jpeg'
+  }
+
+  if (ext === '.png') {
+    return 'image/png'
+  }
+
   return 'application/octet-stream'
 }
 
