@@ -24,6 +24,23 @@ jobs:
       SHAREPOINT_TB25_DRIVE_ID: ${{ secrets.SHAREPOINT_TB25_DRIVE_ID }}
       SHAREPOINT_TB25_FOLDER_PATH: 'Digital Applications/TB25'
 
+    services:
+      mongo:
+        image: mongo:6.0.13
+        ports:
+          - 27017:27017
+      redis:
+        image: redis:7.2.3-alpine3.18
+        ports:
+          - 6379:6379
+      localstack:
+        image: localstack/localstack:3.0.2
+        ports:
+          - 4566:4566
+        env:
+          DEBUG: 1
+          SERVICES: s3,sqs,sns,firehose
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,9 +64,16 @@ jobs:
           npm run lint
           npm test
 
-      - name: Test Docker Image Build
+      - name: Build Docker image
+        run: docker build --no-cache -t cdp-node-backend-template .
+
+      - name: Start backend container
         run: |
-          docker build --no-cache --tag cdp-node-backend-template .
+          docker-compose -f docker-compose.yml up -d
+          sleep 10
+
+      - name: Run Postman tests against container
+        run: npm run test:local
 
       - name: SonarCloud Scan
         if: github.actor != 'dependabot[bot]'
@@ -57,7 +81,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Run Postman API tests (local script)
-        run: |
-          npm run test:local
