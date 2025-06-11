@@ -79,7 +79,7 @@ const fileQuestion = {
   }
 }
 
-const mockLogger = { info: jest.fn(), warn: jest.fn() }
+const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
 
 const mockRequest = {
   logger: mockLogger,
