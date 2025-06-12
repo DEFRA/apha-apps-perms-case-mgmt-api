@@ -25,19 +25,23 @@ export const submit = [
     method: 'POST',
     path: '/submit',
     handler: async (request, h) => {
-      if (!isValidRequest(request)) {
-        return h
-          .response({ error: 'INVALID_REQUEST' })
-          .code(statusCodes.badRequest)
-      }
-      if (!isValidPayload(request)) {
-        return h
-          .response({ error: 'INVALID_PAYLOAD' })
-          .code(statusCodes.badRequest)
+      const validationResponse = validateRequestAndPayload(request, h)
+      if (validationResponse) {
+        return validationResponse
       }
 
       const reference = getApplicationReference()
 
+      let linkToFile = null
+      const fileAnswer = /** @type {FileAnswer} */ (
+        getQuestionFromSections(
+          'upload-plan',
+          'biosecurity-map',
+          request.payload?.sections
+        )?.answer
+      )
+
+      // Sharepoint integration enabled
       if (config.get('featureFlags').sharepointIntegrationEnabled) {
         const applicationHtml = await generateHtmlBuffer(
           request.payload,
@@ -57,33 +61,26 @@ export const submit = [
             .response({ error: 'FILE_UPLOAD_FAILED__APPLICATION' })
             .code(statusCodes.serverError)
         }
+
+        // upload biosecurity map if file is present
+        if (fileAnswer && !fileAnswer.value?.skipped) {
+          const fileData = await fetchFile(fileAnswer, request)
+          linkToFile = getFileProps(fileData)
+
+          try {
+            await uploadFile(reference, linkToFile.filename, fileData.file)
+          } catch (error) {
+            request.logger.warn(
+              `Failed to upload file to SharePoint: ${error.message}`
+            )
+            return h
+              .response({ error: 'FILE_UPLOAD_FAILED__BIOSECURITY_MAP' })
+              .code(statusCodes.serverError)
+          }
+        }
       }
-
-      const applicantEmail = getQuestionFromSections(
-        'emailAddress',
-        'licence',
-        request.payload?.sections
-      )?.answer.displayText
-      const applicantFullName = getQuestionFromSections(
-        'fullName',
-        'licence',
-        request.payload?.sections
-      )?.answer.displayText
-      const caseWorkerEmailContent = generateEmailContent(
-        request.payload,
-        reference
-      )
-
-      let linkToFile = null
-      const fileAnswer = /** @type {FileAnswer} */ (
-        getQuestionFromSections(
-          'upload-plan',
-          'biosecurity-map',
-          request.payload?.sections
-        )?.answer
-      )
-
-      if (fileAnswer && !fileAnswer.value?.skipped) {
+      // Sharepoint integration disabled
+      else if (fileAnswer && !fileAnswer.value?.skipped) {
         const fileData = await fetchFile(fileAnswer, request)
 
         if (fileData.fileSizeInMB > 10) {
@@ -107,6 +104,22 @@ export const submit = [
         linkToFile = getFileProps(compressedFileData ?? fileData)
       }
 
+      // Send emails to case worker and applicant
+      const applicantEmail = getQuestionFromSections(
+        'emailAddress',
+        'licence',
+        request.payload?.sections
+      )?.answer.displayText
+      const applicantFullName = getQuestionFromSections(
+        'fullName',
+        'licence',
+        request.payload?.sections
+      )?.answer.displayText
+      const caseWorkerEmailContent = generateEmailContent(
+        request.payload,
+        reference
+      )
+
       await sendEmailToCaseWorker({
         content: caseWorkerEmailContent,
         ...(linkToFile ? { link_to_file: linkToFile } : {})
@@ -125,3 +138,18 @@ export const submit = [
     }
   }
 ]
+
+/**
+ * @param {object} request
+ * @param {object} h
+ * @returns {object|null} Returns a response object with an error and status code if validation fails, or null if validation passes.
+ */
+const validateRequestAndPayload = (request, h) => {
+  if (!isValidRequest(request)) {
+    return h.response({ error: 'INVALID_REQUEST' }).code(statusCodes.badRequest)
+  }
+  if (!isValidPayload(request)) {
+    return h.response({ error: 'INVALID_PAYLOAD' }).code(statusCodes.badRequest)
+  }
+  return null
+}

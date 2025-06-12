@@ -14,6 +14,10 @@ import {
 import { spyOnConfig } from '../../common/test-helpers/config.js'
 import { uploadFile } from '../../common/connectors/sharepoint/sharepoint.js'
 
+const mockedFileProps = {
+  filename: 'file-name.pdf'
+}
+
 jest.mock('../../common/connectors/notify/notify.js')
 jest.mock(
   '../../common/helpers/application-reference/application-reference.js',
@@ -28,7 +32,9 @@ jest.mock('./submit-validation.js', () => ({
 jest.mock('../../common/helpers/file/file-utils.js')
 jest.mock('../../common/helpers/email-content/email-content.js', () => ({
   generateEmailContent: jest.fn().mockReturnValue('Case worker email content'),
-  getFileProps: jest.fn().mockReturnValue('mocked-link-to-file')
+  getFileProps: jest.fn().mockReturnValue({
+    filename: 'file-name.pdf'
+  })
 }))
 jest.mock('../../common/helpers/export/export-html.js', () => ({
   generateHtmlBuffer: jest.fn()
@@ -177,69 +183,139 @@ describe('submit route', () => {
       contentType: 'application/pdf'
     }
 
-    it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
-      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
-
-      await handler(mockRequestWithFile, mockResponse)
-
-      expect(mockResponse.response).toHaveBeenCalledWith({
-        error: 'FILE_TOO_LARGE'
-      })
-      expect(mockResponse.code).toHaveBeenCalledWith(
-        statusCodes.contentTooLarge
-      )
-    })
-
-    it('should not call compressFile, call getFileProps and include link_to_file if file size is <= 2MB at the point of upload', async () => {
-      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
-
-      await handler(mockRequestWithFile, mockResponse)
-
-      expect(mockCompressFile).not.toHaveBeenCalled()
-      expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
-        expect.objectContaining({
-          content: 'Case worker email content',
-          link_to_file: 'mocked-link-to-file'
+    describe('when sharepoint integration is disabled', () => {
+      beforeEach(() => {
+        jest.clearAllMocks()
+        spyOnConfig('featureFlags', {
+          sharepointIntegrationEnabled: false
         })
-      )
-      expect(mockResponse.response).toHaveBeenCalledWith({
-        message: testReferenceNumber
       })
-      expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
-    })
 
-    it('should call compressFile, call getFileProps and include link_to_file if file size is <= 2MB after compression', async () => {
-      mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 5 })
-      mockCompressFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
+      it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
+        mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
 
-      await handler(mockRequestWithFile, mockResponse)
+        await handler(mockRequestWithFile, mockResponse)
 
-      expect(mockCompressFile).toHaveBeenCalled()
-      expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
-        expect.objectContaining({
-          content: 'Case worker email content',
-          link_to_file: 'mocked-link-to-file'
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          error: 'FILE_TOO_LARGE'
         })
-      )
-      expect(mockResponse.response).toHaveBeenCalledWith({
-        message: testReferenceNumber
+        expect(mockResponse.code).toHaveBeenCalledWith(
+          statusCodes.contentTooLarge
+        )
       })
-      expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+
+      it('should not call compressFile, call getFileProps and include link_to_file if file size is <= 2MB at the point of upload', async () => {
+        mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(mockCompressFile).not.toHaveBeenCalled()
+        expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            content: 'Case worker email content',
+            link_to_file: mockedFileProps
+          })
+        )
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          message: testReferenceNumber
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+      })
+
+      it('should call compressFile, call getFileProps and include link_to_file if file size is <= 2MB after compression', async () => {
+        mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 5 })
+        mockCompressFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(mockCompressFile).toHaveBeenCalled()
+        expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            content: 'Case worker email content',
+            link_to_file: mockedFileProps
+          })
+        )
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          message: testReferenceNumber
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+      })
+
+      it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
+        const mockFileData = { ...mockFile, fileSizeInMB: 5 }
+        mockFetchFile.mockResolvedValue(mockFileData)
+        mockCompressFile.mockResolvedValue(mockFileData)
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          error: 'FILE_CANNOT_BE_DELIVERED'
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(
+          statusCodes.contentTooLarge
+        )
+      })
     })
 
-    it('should return FILE_CANNOT_BE_DELIVERED if file size after compression is > 2MB and <= 10MB', async () => {
-      const mockFileData = { ...mockFile, fileSizeInMB: 5 }
-      mockFetchFile.mockResolvedValue(mockFileData)
-      mockCompressFile.mockResolvedValue(mockFileData)
-
-      await handler(mockRequestWithFile, mockResponse)
-
-      expect(mockResponse.response).toHaveBeenCalledWith({
-        error: 'FILE_CANNOT_BE_DELIVERED'
+    describe('when sharepoint integration is enabled', () => {
+      beforeEach(() => {
+        jest.clearAllMocks()
+        spyOnConfig('featureFlags', {
+          sharepointIntegrationEnabled: true
+        })
       })
-      expect(mockResponse.code).toHaveBeenCalledWith(
-        statusCodes.contentTooLarge
-      )
+
+      it('should upload file to SharePoint', async () => {
+        const mockFileData = { ...mockFile, fileSizeInMB: 5 }
+        mockFetchFile.mockResolvedValue(mockFileData)
+        mockUploadFile.mockResolvedValue(undefined)
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(uploadFile).toHaveBeenCalledWith(
+          testReferenceNumber,
+          mockedFileProps.filename,
+          mockFileData.file
+        )
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          message: expect.any(String)
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+      })
+
+      it('should return FILE_UPLOAD_FAILED__BIOSECURITY_MAP if uploadFile fails', async () => {
+        const mockFileData = { ...mockFile, fileSizeInMB: 5 }
+        mockFetchFile.mockResolvedValue(mockFileData)
+        mockUploadFile
+          .mockResolvedValueOnce(undefined)
+          .mockRejectedValueOnce(new Error('upload failed'))
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(uploadFile).toHaveBeenCalled()
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          error: 'FILE_UPLOAD_FAILED__BIOSECURITY_MAP'
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.serverError)
+      })
+
+      it('should not compress file (even if file size is > 10MB at the point of upload), call getFileProps and include link_to_file', async () => {
+        mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
+
+        await handler(mockRequestWithFile, mockResponse)
+
+        expect(mockCompressFile).not.toHaveBeenCalled()
+        expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+          expect.objectContaining({
+            content: 'Case worker email content',
+            link_to_file: mockedFileProps
+          })
+        )
+        expect(mockResponse.response).toHaveBeenCalledWith({
+          message: testReferenceNumber
+        })
+        expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+      })
     })
 
     it('should not include link_to_file if fileAnswer is not present', async () => {
@@ -257,12 +333,10 @@ describe('submit route', () => {
   })
 
   describe('when sharePoint integration is enabled', () => {
-    let handler
     const htmlBuffer = Buffer.from('html content')
 
     beforeEach(() => {
       jest.clearAllMocks()
-      handler = submit[0].handler
       spyOnConfig('featureFlags', {
         sharepointIntegrationEnabled: true
       })
