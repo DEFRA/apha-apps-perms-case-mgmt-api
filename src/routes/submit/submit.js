@@ -28,24 +28,14 @@ export const submit = [
 
       const reference = getApplicationReference()
 
-      // Sharepoint integration enabled
-      if (config.get('featureFlags').sharepointIntegrationEnabled) {
-        const result = await sharePointApplicationHandler(request, reference)
-        if (result?.error) {
-          return h
-            .response({ error: result.error.errorCode })
-            .code(result.error.statusCode)
-        }
-      }
+      const result = config.get('featureFlags').sharepointIntegrationEnabled
+        ? await sharePointApplicationHandler(request, reference)
+        : await emailApplicationHandler(request, reference)
 
-      // Sharepoint integration disabled
-      else {
-        const result = await emailApplicationHandler(request, reference)
-        if (result?.error) {
-          return h
-            .response({ error: result.error.errorCode })
-            .code(result.error.statusCode)
-        }
+      if (result?.error) {
+        return h
+          .response({ error: result.error.errorCode })
+          .code(result.error.statusCode)
       }
 
       request.logger.info(
