@@ -64,6 +64,7 @@ export const sharePointApplicationHandler = async (request, reference) => {
   }
 
   await sendEmails(request, reference)
+  return undefined
 }
 
 const sendEmails = async (request, reference) => {

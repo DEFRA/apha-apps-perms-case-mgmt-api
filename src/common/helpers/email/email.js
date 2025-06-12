@@ -65,6 +65,7 @@ export const emailApplicationHandler = async (request, reference) => {
   }
 
   await sendEmails(request, reference, linkToFile)
+  return undefined
 }
 
 const sendEmails = async (request, reference, linkToFile) => {
