@@ -25,9 +25,15 @@ export const submit = [
     method: 'POST',
     path: '/submit',
     handler: async (request, h) => {
-      const validationResponse = validateRequestAndPayload(request, h)
-      if (validationResponse) {
-        return validationResponse
+      if (!isValidRequest(request)) {
+        return h
+          .response({ error: 'INVALID_REQUEST' })
+          .code(statusCodes.badRequest)
+      }
+      if (!isValidPayload(request)) {
+        return h
+          .response({ error: 'INVALID_PAYLOAD' })
+          .code(statusCodes.badRequest)
       }
 
       const reference = getApplicationReference()
@@ -138,18 +144,3 @@ export const submit = [
     }
   }
 ]
-
-/**
- * @param {object} request
- * @param {object} h
- * @returns {object|null} Returns a response object with an error and status code if validation fails, or null if validation passes.
- */
-const validateRequestAndPayload = (request, h) => {
-  if (!isValidRequest(request)) {
-    return h.response({ error: 'INVALID_REQUEST' }).code(statusCodes.badRequest)
-  }
-  if (!isValidPayload(request)) {
-    return h.response({ error: 'INVALID_PAYLOAD' }).code(statusCodes.badRequest)
-  }
-  return null
-}
