@@ -43,6 +43,44 @@ export const generateEmailContent = (payload, reference) => {
 }
 
 /**
+ * @param {ApplicationData} payload
+ * @param {string} reference
+ * @returns {string}
+ */
+export const generateSharepointNotifiationContent = (
+  payload,
+  reference,
+  link
+) => {
+  const licenceType = 'TB16'
+  const cphOfRequestor = '12/3456/7890'
+  const nameOfRequestor = 'Jose Luis'
+  /**
+   * @type {string[]}
+   */
+  const lines = []
+
+  lines.push(
+    `A Bovine TB licence application has been received with the following details:`
+  )
+  lines.push(`## Licence type`)
+  lines.push(licenceType)
+  lines.push(`## CPH of the requester`)
+  lines.push(cphOfRequestor)
+  lines.push(`## Name`)
+  lines.push(nameOfRequestor)
+  lines.push(`## Reference`)
+  lines.push(reference)
+  lines.push('')
+  lines.push('---')
+  lines.push(
+    `Full details can be found on TB25 with the following link: ${link}`
+  )
+
+  return lines.join('\n')
+}
+
+/**
  * @param {FileData} fileData
  * @returns {FileProps}
  */

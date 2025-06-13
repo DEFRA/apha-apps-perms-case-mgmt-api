@@ -1,16 +1,24 @@
 import { getQuestionFromSections } from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
-import { uploadFile } from '../../../common/connectors/sharepoint/sharepoint.js'
+import {
+  getListItemUrl,
+  uploadFile
+} from '../../../common/connectors/sharepoint/sharepoint.js'
 import { statusCodes } from '../../constants/status-codes.js'
-import { getFileProps } from '../email-content/email-content.js'
+import {
+  generateSharepointNotifiationContent,
+  getFileProps
+} from '../email-content/email-content.js'
 import { fetchFile } from '../file/file-utils.js'
-import { sendEmailToApplicant } from '../../connectors/notify/notify.js'
-import { createSharepointItem } from './sharepoint-item.js'
+import {
+  sendEmailToApplicant,
+  sendEmailToCaseWorker
+} from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
 import { createSharepointItem } from './sharepoint-item.js'
 
 /**
- * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/data-extract.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  */
 
@@ -66,25 +74,50 @@ export const sharePointApplicationHandler = async (request, reference) => {
     }
   }
 
-  await sendApplicantConfirmationEmail(request, reference)
-  await createSharepointItem(request.payload, reference)
-  await sendCaseworkerNotificationEmail(request.payload, reference)
+  await sendApplicantConfirmationEmail(request.payload, reference)
+  const item = await createSharepointItem(request.payload, reference)
+  await sendCaseworkerNotificationEmail(request.payload, reference, item)
 
   return undefined
 }
 
-const sendCaseworkerNotificationEmail = async (application, reference) => {}
+/**
+ * @param {ApplicationData} application
+ * @param {string} reference
+ * @param {object} sharePointItem
+ * @returns {Promise<void>}
+ */
+const sendCaseworkerNotificationEmail = async (
+  application,
+  reference,
+  sharePointItem
+) => {
+  const emailContent = generateSharepointNotifiationContent(
+    application,
+    reference,
+    getListItemUrl(sharePointItem.webUrl, sharePointItem.id)
+  )
 
-const sendApplicantConfirmationEmail = async (request, reference) => {
+  await sendEmailToCaseWorker({
+    content: escapeMarkdown(emailContent)
+  })
+}
+
+/**
+ * @param {ApplicationData} application
+ * @param {string} reference
+ * @returns {Promise<void>}
+ */
+const sendApplicantConfirmationEmail = async (application, reference) => {
   const applicantEmail = getQuestionFromSections(
     'emailAddress',
     'licence',
-    request.payload?.sections
+    application?.sections
   )?.answer.displayText
   const applicantFullName = getQuestionFromSections(
     'fullName',
     'licence',
-    request.payload?.sections
+    application?.sections
   )?.answer.displayText
 
   await sendEmailToApplicant({

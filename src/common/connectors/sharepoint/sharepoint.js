@@ -55,3 +55,21 @@ export async function addItem(fields) {
     fields
   })
 }
+
+/**
+ * @param {string} webUrl
+ * @param {string} itemId
+ * @returns {string}
+ */
+export const getListItemUrl = (webUrl, itemId) => {
+  // build the URL to the SharePoint list item
+  // for that we need to remove the last part of the URL path
+  // and append the DispForm.aspx with the item ID
+  const url = new URL(webUrl)
+  const pathParts = url.pathname.split('/')
+  pathParts.pop()
+
+  const newPath = `${pathParts.join('/')}/DispForm.aspx?ID=${itemId}`
+
+  return `${url.origin}${newPath}`
+}
