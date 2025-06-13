@@ -1,5 +1,6 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
+import { getTbLicenceType } from '../data-extract/data-extract.js'
 
 /**
  * @import {ApplicationData} from '../data-extract/data-extract.js'
@@ -52,7 +53,7 @@ export const generateSharepointNotifiationContent = (
   reference,
   link
 ) => {
-  const licenceType = 'TB16'
+  const licenceType = getTbLicenceType(payload)
   const cphOfRequestor = '12/3456/7890'
   const nameOfRequestor = 'Jose Luis'
   /**
@@ -64,7 +65,7 @@ export const generateSharepointNotifiationContent = (
     `A Bovine TB licence application has been received with the following details:`
   )
   lines.push(`## Licence type`)
-  lines.push(licenceType)
+  lines.push(licenceType ?? '')
   lines.push(`## CPH of the requester`)
   lines.push(cphOfRequestor)
   lines.push(`## Name`)

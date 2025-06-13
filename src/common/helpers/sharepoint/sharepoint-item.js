@@ -9,7 +9,7 @@ import {
  * @param {string} reference
  */
 export const createSharepointItem = async (application, reference) => {
-  await addItem(fields(application, reference))
+  return addItem(fields(application, reference))
 }
 
 /**
