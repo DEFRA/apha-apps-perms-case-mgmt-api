@@ -30,3 +30,26 @@ export async function uploadFile(reference, fileName, file) {
     )
     .put(file)
 }
+
+export async function addItem(data, reference) {
+  const { tenantId, clientId, clientSecret, siteId, listId } =
+    config.get('sharepoint')
+
+  const credential = new ClientSecretCredential(
+    tenantId,
+    clientId,
+    clientSecret
+  )
+
+  const authProvider = new TokenCredentialAuthenticationProvider(credential, {
+    scopes: ['https://graph.microsoft.com/.default']
+  })
+
+  const graphClient = Client.initWithMiddleware({ authProvider })
+
+  return graphClient.api(`/sites/${siteId}/lists/${listId}/items`).post({
+    fields: {
+      Title: '12/3456/7890'
+    }
+  })
+}
