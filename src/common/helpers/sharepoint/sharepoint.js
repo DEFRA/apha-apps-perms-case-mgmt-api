@@ -95,7 +95,7 @@ const sendCaseworkerNotificationEmail = async (
   const emailContent = generateSharepointNotifiationContent(
     application,
     reference,
-    getListItemUrl(sharePointItem.webUrl, sharePointItem.id)
+    getListItemUrl(sharePointItem?.webUrl, sharePointItem?.id)
   )
 
   await sendEmailToCaseWorker({
