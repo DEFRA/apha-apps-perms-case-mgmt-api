@@ -7,6 +7,7 @@ import { fetchFile } from '../file/file-utils.js'
 import { sendEmailToApplicant } from '../../connectors/notify/notify.js'
 import { createSharepointItem } from './sharepoint-item.js'
 import { escapeMarkdown } from '../escape-text.js'
+import { createSharepointItem } from './sharepoint-item.js'
 
 /**
  * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
