@@ -1,17 +1,10 @@
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import {
-  getDestinationType,
-  getOriginType,
-  getQuestionFromSections,
-  getTbLicenceType
-} from '../data-extract/data-extract.js'
+import { Application, getTbLicenceType } from '../data-extract/data-extract.js'
 
 /** @import {
  *   ApplicationData,
  *   NameAnswer,
- *   AddressAnswer,
- *   TextAnswer,
- *   RadioAnswer
+ *   AddressAnswer
  * } from '../data-extract/data-extract.js'
  */
 
@@ -24,42 +17,35 @@ export const createSharepointItem = async (application, reference) => {
 }
 
 /**
- * @param {ApplicationData} application
+ * @param {ApplicationData} applicationData
  * @param {string} reference
  */
-export const fields = (application, reference) => {
-  const onOffFarm = /** @type {RadioAnswer} */ (
-    getQuestionFromSections('onOffFarm', 'origin', application.sections)?.answer
-  )
+export const fields = (applicationData, reference) => {
+  const application = new Application(applicationData)
+
+  const origin = application.get('origin')
+  const destination = application.get('destination')
+
+  const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
 
   const originAddress = /** @type {AddressAnswer} */ (
-    getQuestionFromSections('address', 'origin', application.sections)?.answer
+    origin?.get('address')?.answer
   )
   const destinationAddress = /** @type {AddressAnswer} */ (
-    getQuestionFromSections(
-      'destinationFarmAddress',
-      'destination',
-      application.sections
-    )?.answer
+    destination?.get('destinationFarmAddress')?.answer
   )
 
   const address = isOnFarm ? destinationAddress : originAddress
 
   const name = /** @type {NameAnswer} */ (
-    getQuestionFromSections('fullName', 'licence', application.sections)?.answer
+    application.get('licence')?.get('fullName')?.answer
   )
 
-  const reasonForMovement = /** @type {TextAnswer} */ (
-    getQuestionFromSections(
-      'reasonForMovement',
-      'destination',
-      application.sections
-    )?.answer
-  )
+  const reasonForMovement = destination?.get('reasonForMovement')?.answer
 
-  const originType = getOriginType(application)
-  const destinationType = getDestinationType(application)
+  const originType = origin?.get('originType')?.answer
+  const destinationType = destination?.get('destinationType')?.answer
 
   return {
     Application_x0020_Reference_x002: reference,
@@ -68,7 +54,7 @@ export const fields = (application, reference) => {
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: name?.displayText,
     FirstlineofAddress: address?.value.addressLine1,
-    Licence: getTbLicenceType(application),
+    Licence: getTbLicenceType(applicationData),
     UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No',
     AFUtoAFU:
       destinationType?.value === 'afu' && originType?.value === 'afu'

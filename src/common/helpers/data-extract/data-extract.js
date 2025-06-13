@@ -12,6 +12,42 @@
  * @typedef {{ sections: SectionData[]}} ApplicationData
  */
 
+export class Application {
+  /** @param {ApplicationData} data */
+  constructor(data) {
+    this._data = data
+  }
+
+  /**
+   * @param {string} sectionKey
+   * @returns {Section | undefined}
+   */
+  get(sectionKey) {
+    const sectionData = this._data.sections.find(
+      (section) => section.sectionKey === sectionKey
+    )
+
+    return sectionData ? new Section(sectionData) : undefined
+  }
+}
+
+export class Section {
+  /** @param {SectionData} data */
+  constructor(data) {
+    this._data = data
+  }
+
+  /**
+   * @param {string} questionKey
+   * @returns {QuestionAnswerData | undefined}
+   */
+  get(questionKey) {
+    return this._data?.questionAnswers.find(
+      (question) => question.questionKey === questionKey
+    )
+  }
+}
+
 /**
  * @param {string} questionKey
  * @param {string} sectionKey
