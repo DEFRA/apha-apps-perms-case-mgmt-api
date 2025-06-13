@@ -77,8 +77,10 @@ describe('File Utils', () => {
       }
     }
 
-    config.get = jest.fn().mockReturnValue({
-      bucket: 'test-bucket'
+    config.get = jest.fn().mockImplementation((key) => {
+      if (key === 'cdpEnvironment') return 'test' // or any non-'local' value
+      if (key === 'isDevelopment') return false
+      if (key === 'aws') return { bucket: 'test-bucket' }
     })
   })
 
@@ -137,6 +139,23 @@ describe('File Utils', () => {
       const result = await compressFile(fileData, mockReq)
 
       expect(compressImage).toHaveBeenCalled()
+      expect(mockReq.logger.info).toHaveBeenCalledWith(
+        'File compression took 100ms at a reduction of 50% to 1.5 MB'
+      )
+      expect(result.file).toEqual(compressedImageBuffer)
+    })
+
+    it('should skip compression for unsupported content types', async () => {
+      const fileData = {
+        file: Buffer.from('some-file'),
+        contentType: 'application/zip',
+        fileSizeInMB: mockFileSize
+      }
+
+      const result = await compressFile(fileData, mockReq)
+
+      expect(compressPdf).not.toHaveBeenCalled()
+      expect(compressImage).toHaveBeenCalled() // <- updated
       expect(mockReq.logger.info).toHaveBeenCalledWith(
         'File compression took 100ms at a reduction of 50% to 1.5 MB'
       )

@@ -86,6 +86,8 @@ services:
       NODE_ENV: development
       LOCALSTACK_ENDPOINT: http://localstack:4566
       MONGO_URI: mongodb://mongodb:27017/
+      
+      # SharePoint
       SHAREPOINT_TB25_TENANT_ID: ${SHAREPOINT_TB25_TENANT_ID}
       SHAREPOINT_TB25_CLIENT_ID: ${SHAREPOINT_TB25_CLIENT_ID}
       SHAREPOINT_TB25_CLIENT_SECRET: ${SHAREPOINT_TB25_CLIENT_SECRET}
@@ -93,11 +95,18 @@ services:
       SHAREPOINT_TB25_LIST_ID: ${SHAREPOINT_TB25_LIST_ID}
       SHAREPOINT_TB25_DRIVE_ID: ${SHAREPOINT_TB25_DRIVE_ID}
       SHAREPOINT_TB25_FOLDER_PATH: ${SHAREPOINT_TB25_FOLDER_PATH}
+
+      # GOV.UK Notify
+      NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+      NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS: ${NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS}
+      NOTIFY_CASE_DELIVERY_TEMPLATE_ID: ${NOTIFY_CASE_DELIVERY_TEMPLATE_ID}
+      NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID: ${NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID}
     networks:
       - cdp-tenant
     volumes:
       - ./src:/home/node/src
       - ./package.json:/home/node/package.json
+      - ./tests/postman/assets:/home/node/tests/postman/assets
 
 ################################################################################
 
