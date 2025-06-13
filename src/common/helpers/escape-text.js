@@ -27,6 +27,8 @@ export const escapeJsonValues = (data) => {
       data[key] = escapeHtml(data[key])
     } else if (typeof data[key] === 'object' && data[key] !== null) {
       data[key] = escapeJsonValues(data[key])
+    } else {
+      // No action needed for other types
     }
   })
   return data
