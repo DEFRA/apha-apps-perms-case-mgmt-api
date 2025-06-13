@@ -9,7 +9,8 @@ import {
   originAddress,
   originCph,
   originSection,
-  originType
+  originType,
+  reasonForMovement
 } from '../../test-helpers/application.js'
 
 const application = { sections: [] }
@@ -53,7 +54,10 @@ describe('fields', () => {
     originAddress({ addressLine1, addressTown, addressPostcode })
   ])
 
-  const destination = destinationSection([destinationType('slaughter')])
+  const destination = destinationSection([
+    destinationType('slaughter'),
+    reasonForMovement('routineRestocking')
+  ])
 
   const licence = licenceSection([keeperName({ firstName, lastName })])
 
@@ -69,7 +73,8 @@ describe('fields', () => {
       ApplicationSubmittedby: 'Owner/Keeper - Origin',
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: addressLine1,
-      Licence: 'TB24c'
+      Licence: 'TB24c',
+      UrgentWelfare: 'No'
     })
   })
 })

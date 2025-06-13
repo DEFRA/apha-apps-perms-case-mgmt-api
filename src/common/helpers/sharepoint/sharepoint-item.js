@@ -4,8 +4,10 @@ import {
   getTbLicenceType
 } from '../data-extract/data-extract.js'
 
+/** @import {ApplicationData, NameAnswer, AddressAnswer, TextAnswer} from '../data-extract/data-extract.js' */
+
 /**
- * @param {import('../data-extract/data-extract.js').ApplicationData} application
+ * @param {ApplicationData} application
  * @param {string} reference
  */
 export const createSharepointItem = async (application, reference) => {
@@ -13,20 +15,25 @@ export const createSharepointItem = async (application, reference) => {
 }
 
 /**
- * @param {import('../data-extract/data-extract.js').ApplicationData} application
+ * @param {ApplicationData} application
  * @param {string} reference
  */
 export const fields = (application, reference) => {
-  const address =
-    /** @type {import('../data-extract/data-extract.js').AddressAnswer} */ (
-      getQuestionFromSections('address', 'origin', application.sections)?.answer
-    )
+  const address = /** @type {AddressAnswer} */ (
+    getQuestionFromSections('address', 'origin', application.sections)?.answer
+  )
 
-  const name =
-    /** @type {import('../data-extract/data-extract.js').NameAnswer} */ (
-      getQuestionFromSections('fullName', 'licence', application.sections)
-        ?.answer
-    )
+  const name = /** @type {NameAnswer} */ (
+    getQuestionFromSections('fullName', 'licence', application.sections)?.answer
+  )
+
+  const reasonForMovement = /** @type {TextAnswer} */ (
+    getQuestionFromSections(
+      'reasonForMovement',
+      'destination',
+      application.sections
+    )?.answer
+  )
 
   return {
     ApplicationSubmittedby: 'Owner/Keeper - Origin',
@@ -35,6 +42,7 @@ export const fields = (application, reference) => {
     FirstlineofAddress: address?.value.addressLine1,
     Name: name?.displayText,
     Application_x0020_Reference_x002: reference,
-    Licence: getTbLicenceType(application)
+    Licence: getTbLicenceType(application),
+    UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No'
   }
 }

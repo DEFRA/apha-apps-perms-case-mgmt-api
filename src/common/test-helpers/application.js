@@ -118,3 +118,17 @@ export const originAddress = (addressData) => ({
     displayText: Object.values(addressData).join('\n')
   }
 })
+
+/**
+ * @param {string} reason
+ * @returns {QuestionAnswerData}
+ */
+export const reasonForMovement = (reason) => ({
+  question: 'What is the reason for the movement?',
+  questionKey: 'reasonForMovement',
+  answer: {
+    type: 'radio',
+    value: reason,
+    displayText: reason
+  }
+})
