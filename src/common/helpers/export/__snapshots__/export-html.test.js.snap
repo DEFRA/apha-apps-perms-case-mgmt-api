@@ -6,7 +6,7 @@ exports[`generateHtmlBuffer should include the reference in the generated HTML 1
     <html>
       <head>
         <meta charset="UTF-8" />
-        <title>PDF</title>
+        <title>Application submitted: TB-1234-5678</title>
         <style>
           
   body {
