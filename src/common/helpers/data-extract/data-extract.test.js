@@ -4,6 +4,13 @@ import {
   getTbLicenceType
 } from './data-extract.js'
 
+import {
+  originSection,
+  destinationSection,
+  destinationType,
+  originType
+} from '../../test-helpers/application.js'
+
 /**
  * @import {QuestionAnswerData} from './data-extract.js'
  * @import {SectionData} from './data-extract.js'
@@ -78,54 +85,6 @@ describe('getQuestionFromSections', () => {
 })
 
 describe('getTbLicenceType', () => {
-  /**
-   * @param {QuestionAnswerData[]} questionAnswers
-   * @returns {SectionData}
-   */
-  const originSection = (questionAnswers) => ({
-    sectionKey: 'origin',
-    title: 'Movement origin',
-    questionAnswers
-  })
-
-  /**
-   * @param {QuestionAnswerData[]} questionAnswers
-   * @returns {SectionData}
-   */
-  const destinationSection = (questionAnswers) => ({
-    sectionKey: 'destination',
-    title: 'Movement destination',
-    questionAnswers
-  })
-
-  /**
-   * @param {string} value
-   * @returns {QuestionAnswerData}
-   */
-  const originType = (value) => ({
-    questionKey: 'originType',
-    question: 'What type of premises are the animals moving from?',
-    answer: {
-      type: 'radio',
-      value,
-      displayText: value
-    }
-  })
-
-  /**
-   * @param {string} value
-   * @returns {QuestionAnswerData}
-   */
-  const destinationType = (value) => ({
-    questionKey: 'destinationType',
-    question: 'What type of premises are the animals moving to?',
-    answer: {
-      type: 'radio',
-      value,
-      displayText: value
-    }
-  })
-
   it('should return TB15 if origin type is unrestricted & destination type is restricted', () => {
     const application = {
       sections: [

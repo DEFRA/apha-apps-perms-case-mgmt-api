@@ -1,5 +1,10 @@
 import { createSharepointItem, fields } from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
+import {
+  destinationSection,
+  destinationType,
+  originType
+} from '../../test-helpers/application.js'
 
 const application = { sections: [] }
 const reference = 'TB-1234-ABCD'
@@ -49,6 +54,7 @@ describe('fields', () => {
           displayText: 'On to the farm or premises'
         }
       },
+      originType('tb-restricted-farm'),
       {
         question: 'What is the CPH number of the farm?',
         questionKey: 'cphNumber',
@@ -74,6 +80,8 @@ describe('fields', () => {
     ]
   }
 
+  const destination = destinationSection([destinationType('slaughter')])
+
   /** @type {import('../data-extract/data-extract.js').SectionData} */
   const licence = {
     sectionKey: 'licence',
@@ -95,7 +103,7 @@ describe('fields', () => {
   }
   /** @type {import('../data-extract/data-extract.js').ApplicationData} */
   const application = {
-    sections: [onFarmOrigin, licence]
+    sections: [onFarmOrigin, licence, destination]
   }
 
   it('should construct expected fields for off the farm', () => {
@@ -105,7 +113,8 @@ describe('fields', () => {
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Origin',
       Name: `${firstName} ${lastName}`,
-      FirstlineofAddress: addressLine1
+      FirstlineofAddress: addressLine1,
+      Licence: 'TB24c'
     })
   })
 })

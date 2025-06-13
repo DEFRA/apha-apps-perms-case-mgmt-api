@@ -1,5 +1,8 @@
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import { getQuestionFromSections } from '../data-extract/data-extract.js'
+import {
+  getQuestionFromSections,
+  getTbLicenceType
+} from '../data-extract/data-extract.js'
 
 /**
  * @param {import('../data-extract/data-extract.js').ApplicationData} application
@@ -31,6 +34,7 @@ export const fields = (application, reference) => {
     MethodofReceipt: 'Digital',
     FirstlineofAddress: address?.value.addressLine1,
     Name: name?.displayText,
-    Application_x0020_Reference_x002: reference
+    Application_x0020_Reference_x002: reference,
+    Licence: getTbLicenceType(application)
   }
 }
