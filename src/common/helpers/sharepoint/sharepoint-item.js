@@ -41,12 +41,12 @@ export const fields = (application, reference) => {
   const destinationType = getDestinationType(application)
 
   return {
-    ApplicationSubmittedby: 'Owner/Keeper - Origin',
+    Application_x0020_Reference_x002: reference,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital',
-    FirstlineofAddress: address?.value.addressLine1,
+    ApplicationSubmittedby: 'Owner/Keeper - Origin',
     Name: name?.displayText,
-    Application_x0020_Reference_x002: reference,
+    FirstlineofAddress: address?.value.addressLine1,
     Licence: getTbLicenceType(application),
     UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No',
     AFUtoAFU:
