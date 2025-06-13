@@ -74,7 +74,8 @@ describe('fields', () => {
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: addressLine1,
       Licence: 'TB24c',
-      UrgentWelfare: 'No'
+      UrgentWelfare: 'No',
+      AFUtoAFU: 'No'
     })
   })
 })

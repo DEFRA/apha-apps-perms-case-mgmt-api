@@ -1,5 +1,7 @@
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
 import {
+  getDestinationType,
+  getOriginType,
   getQuestionFromSections,
   getTbLicenceType
 } from '../data-extract/data-extract.js'
@@ -35,6 +37,9 @@ export const fields = (application, reference) => {
     )?.answer
   )
 
+  const originType = getOriginType(application)
+  const destinationType = getDestinationType(application)
+
   return {
     ApplicationSubmittedby: 'Owner/Keeper - Origin',
     Office: 'Polwhele',
@@ -43,6 +48,10 @@ export const fields = (application, reference) => {
     Name: name?.displayText,
     Application_x0020_Reference_x002: reference,
     Licence: getTbLicenceType(application),
-    UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No'
+    UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No',
+    AFUtoAFU:
+      destinationType?.value === 'afu' && originType?.value === 'afu'
+        ? 'Yes'
+        : 'No'
   }
 }

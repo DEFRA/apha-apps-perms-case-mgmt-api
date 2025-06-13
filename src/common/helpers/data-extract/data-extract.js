@@ -33,14 +33,14 @@ export const getSectionsFromPayload = (payload) => {
 }
 
 /** @param {ApplicationData} application */
-const getOriginType = (application) =>
+export const getOriginType = (application) =>
   /** @type {RadioAnswer} */ (
     getQuestionFromSections('originType', 'origin', application.sections)
       ?.answer
   )
 
 /** @param {ApplicationData} application */
-const getDestinationType = (application) =>
+export const getDestinationType = (application) =>
   /** @type {RadioAnswer} */ (
     getQuestionFromSections(
       'destinationType',
