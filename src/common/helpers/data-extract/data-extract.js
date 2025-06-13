@@ -31,3 +31,54 @@ export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
 export const getSectionsFromPayload = (payload) => {
   return payload.sections
 }
+
+/** @param {ApplicationData} application */
+const getOriginType = (application) =>
+  /** @type {RadioAnswer} */ (
+    getQuestionFromSections('originType', 'origin', application.sections)
+      ?.answer
+  )
+
+/** @param {ApplicationData} application */
+const getDestinationType = (application) =>
+  /** @type {RadioAnswer} */ (
+    getQuestionFromSections(
+      'destinationType',
+      'destination',
+      application.sections
+    )?.answer
+  )
+
+/** @param {RadioAnswer | undefined} premisesTypeAnswer */
+const isTbRestricted = (premisesTypeAnswer) =>
+  ['tb-restricted-farm', 'zoo', 'lab', 'other'].includes(
+    premisesTypeAnswer?.value ?? ''
+  )
+
+/**
+ * @param {ApplicationData} application
+ */
+export const getTbLicenceType = (application) => {
+  const originType = getOriginType(application)
+  const destinationType = getDestinationType(application)
+
+  if (!isTbRestricted(originType)) {
+    return 'TB15'
+  }
+
+  if (isTbRestricted(destinationType)) {
+    return 'TB16'
+  }
+
+  if (destinationType?.value === 'afu') {
+    return 'TB16e'
+  }
+
+  if (destinationType?.value === 'dedicated-sale') {
+    return 'TB16e'
+  }
+
+  if (destinationType?.value === 'slaughter') {
+    return 'TB24c'
+  }
+}
