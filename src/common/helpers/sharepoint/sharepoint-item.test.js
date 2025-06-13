@@ -3,6 +3,12 @@ import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
   destinationSection,
   destinationType,
+  keeperName,
+  licenceSection,
+  onOffFarm,
+  originAddress,
+  originCph,
+  originSection,
   originType
 } from '../../test-helpers/application.js'
 
@@ -40,68 +46,17 @@ describe('fields', () => {
   const addressTown = 'Townhamlet'
   const addressPostcode = 'AA10 1AA'
 
-  /** @type {import('../data-extract/data-extract.js').SectionData} */
-  const onFarmOrigin = {
-    sectionKey: 'origin',
-    title: 'Movement origin',
-    questionAnswers: [
-      {
-        question: 'Are the animals moving off of or on to the premises?',
-        questionKey: 'onOffFarm',
-        answer: {
-          type: 'radio',
-          value: 'off',
-          displayText: 'On to the farm or premises'
-        }
-      },
-      originType('tb-restricted-farm'),
-      {
-        question: 'What is the CPH number of the farm?',
-        questionKey: 'cphNumber',
-        answer: {
-          type: 'text',
-          value: cphNumber,
-          displayText: cphNumber
-        }
-      },
-      {
-        question: 'What is the address of the origin farm?',
-        questionKey: 'address',
-        answer: {
-          type: 'address',
-          value: {
-            addressLine1,
-            addressTown,
-            addressPostcode
-          },
-          displayText: [addressLine1, addressTown, addressPostcode].join('\n')
-        }
-      }
-    ]
-  }
+  const onFarmOrigin = originSection([
+    onOffFarm('off'),
+    originType('tb-restricted-farm'),
+    originCph(cphNumber),
+    originAddress({ addressLine1, addressTown, addressPostcode })
+  ])
 
   const destination = destinationSection([destinationType('slaughter')])
 
-  /** @type {import('../data-extract/data-extract.js').SectionData} */
-  const licence = {
-    sectionKey: 'licence',
-    title: 'Receiving the licence',
-    questionAnswers: [
-      {
-        question: 'What is the full name of the keeper of the animals?',
-        questionKey: 'fullName',
-        answer: {
-          type: 'name',
-          value: {
-            firstName,
-            lastName
-          },
-          displayText: `${firstName} ${lastName}`
-        }
-      }
-    ]
-  }
-  /** @type {import('../data-extract/data-extract.js').ApplicationData} */
+  const licence = licenceSection([keeperName({ firstName, lastName })])
+
   const application = {
     sections: [onFarmOrigin, licence, destination]
   }
