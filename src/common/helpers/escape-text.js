@@ -22,6 +22,11 @@ export const escapeMarkdown = (unsafe) => {
 }
 
 export const escapeJsonValues = (data) => {
+  if (Array.isArray(data)) {
+    return data.map((item) =>
+      typeof item === 'object' && item !== null ? escapeJsonValues(item) : item
+    )
+  }
   const escapedData = {}
   Object.keys(data).forEach((key) => {
     if (typeof data[key] === 'string') {
