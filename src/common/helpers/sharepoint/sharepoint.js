@@ -6,6 +6,7 @@ import { getFileProps } from '../email-content/email-content.js'
 import { fetchFile } from '../file/file-utils.js'
 import { sendEmailToApplicant } from '../../connectors/notify/notify.js'
 import { createSharepointItem } from './sharepoint-item.js'
+import { escapeMarkdown } from '../escape-text.js'
 
 /**
  * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
@@ -86,8 +87,8 @@ const sendApplicantConfirmationEmail = async (request, reference) => {
   )?.answer.displayText
 
   await sendEmailToApplicant({
-    email: applicantEmail ?? '',
-    fullName: applicantFullName ?? '',
+    email: escapeMarkdown(applicantEmail) ?? '',
+    fullName: escapeMarkdown(applicantFullName) ?? '',
     reference: reference ?? ''
   })
 }

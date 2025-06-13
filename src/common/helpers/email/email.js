@@ -12,6 +12,7 @@ import {
   sendEmailToCaseWorker
 } from '../../../common/connectors/notify/notify.js'
 import { statusCodes } from '../../constants/status-codes.js'
+import { escapeMarkdown } from '../escape-text.js'
 
 /**
  * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
@@ -87,12 +88,12 @@ const sendEmails = async (request, reference, linkToFile) => {
   )
 
   await sendEmailToCaseWorker({
-    content: caseWorkerEmailContent,
+    content: escapeMarkdown(caseWorkerEmailContent),
     ...(linkToFile ? { link_to_file: linkToFile } : {})
   })
   await sendEmailToApplicant({
-    email: applicantEmail ?? '',
-    fullName: applicantFullName ?? '',
+    email: escapeMarkdown(applicantEmail) ?? '',
+    fullName: escapeMarkdown(applicantFullName) ?? '',
     reference: reference ?? ''
   })
 }
