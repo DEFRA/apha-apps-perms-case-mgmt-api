@@ -6,6 +6,7 @@ import { getFileProps } from '../email-content/email-content.js'
 import { fetchFile } from '../file/file-utils.js'
 import { sendEmailToApplicant } from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
+import { createSharepointItem } from './sharepoint-item.js'
 
 /**
  * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
@@ -64,11 +65,16 @@ export const sharePointApplicationHandler = async (request, reference) => {
     }
   }
 
-  await sendEmails(request, reference)
+  await sendApplicantConfirmationEmail(request, reference)
+  await createSharepointItem(request.payload, reference)
+  await sendCaseworkerNotificationEmail(request.payload, reference)
+
   return undefined
 }
 
-const sendEmails = async (request, reference) => {
+const sendCaseworkerNotificationEmail = async (application, reference) => {}
+
+const sendApplicantConfirmationEmail = async (request, reference) => {
   const applicantEmail = getQuestionFromSections(
     'emailAddress',
     'licence',
