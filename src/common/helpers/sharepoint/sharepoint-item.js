@@ -6,7 +6,14 @@ import {
   getTbLicenceType
 } from '../data-extract/data-extract.js'
 
-/** @import {ApplicationData, NameAnswer, AddressAnswer, TextAnswer} from '../data-extract/data-extract.js' */
+/** @import {
+ *   ApplicationData,
+ *   NameAnswer,
+ *   AddressAnswer,
+ *   TextAnswer,
+ *   RadioAnswer
+ * } from '../data-extract/data-extract.js'
+ */
 
 /**
  * @param {ApplicationData} application
@@ -21,9 +28,23 @@ export const createSharepointItem = async (application, reference) => {
  * @param {string} reference
  */
 export const fields = (application, reference) => {
-  const address = /** @type {AddressAnswer} */ (
+  const onOffFarm = /** @type {RadioAnswer} */ (
+    getQuestionFromSections('onOffFarm', 'origin', application.sections)?.answer
+  )
+  const isOnFarm = onOffFarm?.value === 'on'
+
+  const originAddress = /** @type {AddressAnswer} */ (
     getQuestionFromSections('address', 'origin', application.sections)?.answer
   )
+  const destinationAddress = /** @type {AddressAnswer} */ (
+    getQuestionFromSections(
+      'destinationFarmAddress',
+      'destination',
+      application.sections
+    )?.answer
+  )
+
+  const address = isOnFarm ? destinationAddress : originAddress
 
   const name = /** @type {NameAnswer} */ (
     getQuestionFromSections('fullName', 'licence', application.sections)?.answer
@@ -44,7 +65,7 @@ export const fields = (application, reference) => {
     Application_x0020_Reference_x002: reference,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital',
-    ApplicationSubmittedby: 'Owner/Keeper - Origin',
+    ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: name?.displayText,
     FirstlineofAddress: address?.value.addressLine1,
     Licence: getTbLicenceType(application),

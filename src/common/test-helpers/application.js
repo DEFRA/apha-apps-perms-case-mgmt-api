@@ -120,6 +120,20 @@ export const originAddress = (addressData) => ({
 })
 
 /**
+ * @param {object} addressData
+ * @returns {QuestionAnswerData}
+ */
+export const destinationAddress = (addressData) => ({
+  question: 'What is the address the animals are moving to?',
+  questionKey: 'destinationFarmAddress',
+  answer: {
+    type: 'address',
+    value: addressData,
+    displayText: Object.values(addressData).join('\n')
+  }
+})
+
+/**
  * @param {string} reason
  * @returns {QuestionAnswerData}
  */

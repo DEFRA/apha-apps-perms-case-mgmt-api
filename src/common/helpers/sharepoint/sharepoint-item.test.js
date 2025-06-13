@@ -1,6 +1,7 @@
 import { createSharepointItem, fields } from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
+  destinationAddress,
   destinationSection,
   destinationType,
   keeperName,
@@ -43,36 +44,74 @@ describe('fields', () => {
   const cphNumber = '12/123/1234'
   const firstName = 'Bob'
   const lastName = 'Barry'
-  const addressLine1 = '1 the road'
-  const addressTown = 'Townhamlet'
-  const addressPostcode = 'AA10 1AA'
+  const originAddressLine1 = '1 the road'
+  const originAddressTown = 'Townhamlet'
+  const originAddressPostcode = 'AA10 1AA'
 
-  const onFarmOrigin = originSection([
+  const destinationAddressLine1 = '2 the street'
+  const destinationAddressTown = 'Cityville'
+  const destinationAddressPostcode = 'ZZ09 9ZZ'
+
+  const originAddressQuestion = originAddress({
+    addressLine1: originAddressLine1,
+    addressTown: originAddressTown,
+    addressPostcode: originAddressPostcode
+  })
+
+  const offFarmOrigin = originSection([
     onOffFarm('off'),
     originType('tb-restricted-farm'),
     originCph(cphNumber),
-    originAddress({ addressLine1, addressTown, addressPostcode })
+    originAddressQuestion
+  ])
+
+  const onFarmOrigin = originSection([
+    onOffFarm('on'),
+    originType('tb-restricted-farm'),
+    originCph(cphNumber),
+    originAddressQuestion
   ])
 
   const destination = destinationSection([
     destinationType('slaughter'),
+    destinationAddress({
+      addressLine1: destinationAddressLine1,
+      addressTown: destinationAddressTown,
+      addressPostcode: destinationAddressPostcode
+    }),
     reasonForMovement('routineRestocking')
   ])
 
   const licence = licenceSection([keeperName({ firstName, lastName })])
 
-  const application = {
-    sections: [onFarmOrigin, licence, destination]
-  }
-
   it('should construct expected fields for off the farm', () => {
+    const application = {
+      sections: [offFarmOrigin, licence, destination]
+    }
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
       Office: 'Polwhele',
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Origin',
       Name: `${firstName} ${lastName}`,
-      FirstlineofAddress: addressLine1,
+      FirstlineofAddress: originAddressLine1,
+      Licence: 'TB24c',
+      UrgentWelfare: 'No',
+      AFUtoAFU: 'No'
+    })
+  })
+
+  it('should construct expected fields for on the farm', () => {
+    const application = {
+      sections: [onFarmOrigin, licence, destination]
+    }
+    expect(fields(application, reference)).toEqual({
+      Application_x0020_Reference_x002: reference,
+      Office: 'Polwhele',
+      MethodofReceipt: 'Digital',
+      ApplicationSubmittedby: 'Owner/Keeper - Destination',
+      Name: `${firstName} ${lastName}`,
+      FirstlineofAddress: destinationAddressLine1,
       Licence: 'TB24c',
       UrgentWelfare: 'No',
       AFUtoAFU: 'No'
