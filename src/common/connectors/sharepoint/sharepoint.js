@@ -31,7 +31,11 @@ export async function uploadFile(reference, fileName, file) {
     .put(file)
 }
 
-export async function addItem(data, reference) {
+/**
+ * @param {object} fields
+ * @returns {Promise<object>}
+ */
+export async function addItem(fields) {
   const { tenantId, clientId, clientSecret, siteId, listId } =
     config.get('sharepoint')
 
@@ -48,8 +52,6 @@ export async function addItem(data, reference) {
   const graphClient = Client.initWithMiddleware({ authProvider })
 
   return graphClient.api(`/sites/${siteId}/lists/${listId}/items`).post({
-    fields: {
-      Title: '12/3456/7890'
-    }
+    fields
   })
 }

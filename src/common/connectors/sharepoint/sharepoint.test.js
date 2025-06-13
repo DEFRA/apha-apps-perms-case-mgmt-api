@@ -1,5 +1,5 @@
 import { spyOnConfig } from '../../test-helpers/config.js'
-import { uploadFile } from './sharepoint.js'
+import { addItem, uploadFile } from './sharepoint.js'
 
 const graphMocks = {}
 const tenantId = 'tenant'
@@ -7,16 +7,20 @@ const clientId = 'client'
 const clientSecret = 'secret'
 const driveId = 'driveId'
 const folderPath = 'folderPath'
+const listId = 'listId'
+const siteId = 'siteId'
 
 jest.mock('@microsoft/microsoft-graph-client', () => {
   const putMock = jest.fn().mockResolvedValue({ success: true })
-  const apiMock = jest.fn(() => ({ put: putMock }))
+  const postMock = jest.fn().mockResolvedValue({ success: true })
+  const apiMock = jest.fn(() => ({ put: putMock, post: postMock }))
   const initWithMiddlewareMock = jest.fn(() => ({
     api: apiMock
   }))
 
   // expose the mocks
   graphMocks.putMock = putMock
+  graphMocks.postMock = postMock
   graphMocks.apiMock = apiMock
   graphMocks.initWithMiddlewareMock = initWithMiddlewareMock
 
@@ -64,5 +68,47 @@ describe('uploadFile', () => {
     await expect(
       uploadFile('ref', 'file.txt', new Uint8Array())
     ).rejects.toThrow('Upload failed')
+  })
+})
+
+describe('addItem', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  beforeEach(() => {
+    spyOnConfig('sharepoint', {
+      tenantId,
+      clientId,
+      clientSecret,
+      driveId,
+      folderPath,
+      listId,
+      siteId
+    })
+  })
+
+  const fields = {
+    Title: 'Foo'
+  }
+
+  it('should call the items endpoint of the configured list with the provided fields', async () => {
+    const result = await addItem(fields)
+
+    expect(graphMocks.apiMock).toHaveBeenCalledWith(
+      `/sites/${siteId}/lists/${listId}/items`
+    )
+
+    expect(graphMocks.postMock).toHaveBeenCalledWith({
+      fields
+    })
+    expect(result).toEqual({ success: true })
+  })
+
+  it('should propagate errors from graphClient.post', async () => {
+    const error = new Error('Upload failed')
+    graphMocks.postMock.mockRejectedValue(error)
+
+    await expect(addItem(fields)).rejects.toThrow('Upload failed')
   })
 })
