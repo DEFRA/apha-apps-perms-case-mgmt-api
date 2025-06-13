@@ -83,6 +83,12 @@ describe('escapeMarkdown', () => {
 })
 
 describe('escapeJsonValues', () => {
+  it('should return a new object', () => {
+    const original = {}
+    const escaped = escapeJsonValues(original)
+    expect(escaped).not.toBe(original)
+  })
+
   it('should escape HTML in all string values of a flat object', () => {
     const input = {
       question: 'What is <b>your name</b>?',

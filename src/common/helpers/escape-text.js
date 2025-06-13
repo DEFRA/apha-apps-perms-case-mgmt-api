@@ -22,14 +22,15 @@ export const escapeMarkdown = (unsafe) => {
 }
 
 export const escapeJsonValues = (data) => {
+  const escapedData = {}
   Object.keys(data).forEach((key) => {
     if (typeof data[key] === 'string') {
-      data[key] = escapeHtml(data[key])
+      escapedData[key] = escapeHtml(data[key])
     } else if (typeof data[key] === 'object' && data[key] !== null) {
-      data[key] = escapeJsonValues(data[key])
+      escapedData[key] = escapeJsonValues(data[key])
     } else {
-      // No action needed for other types
+      escapedData[key] = data[key]
     }
   })
-  return data
+  return escapedData
 }
