@@ -25,6 +25,9 @@ jest.mock('../../../common/helpers/export/export-html.js', () => ({
 jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
   uploadFile: jest.fn()
 }))
+jest.mock('./sharepoint-item.js', () => ({
+  createSharepointItem: jest.fn()
+}))
 
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
 const mockGenerateHtmlBuffer = /** @type {jest.Mock} */ (generateHtmlBuffer)
