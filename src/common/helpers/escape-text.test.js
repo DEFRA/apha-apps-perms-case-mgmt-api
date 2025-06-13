@@ -131,6 +131,40 @@ describe('escapeJsonValues', () => {
     )
   })
 
+  it('should keep arrays intact and escape the values inside', () => {
+    const input = {
+      sections: [
+        {
+          question: 'Where are the animals moving to?',
+          answer: {
+            type: 'name',
+            value: {
+              firstName: '<name>',
+              lastName: '<surname>'
+            },
+            displayText: '<name> & <surname>'
+          }
+        }
+      ]
+    }
+    const expected = {
+      sections: [
+        {
+          question: 'Where are the animals moving to?',
+          answer: {
+            type: 'name',
+            value: {
+              firstName: '&lt;name&gt;',
+              lastName: '&lt;surname&gt;'
+            },
+            displayText: '&lt;name&gt; &amp; &lt;surname&gt;'
+          }
+        }
+      ]
+    }
+    expect(escapeJsonValues({ ...input })).toEqual(expected)
+  })
+
   it('should not modify non-string values', () => {
     const input = {
       count: 3,
