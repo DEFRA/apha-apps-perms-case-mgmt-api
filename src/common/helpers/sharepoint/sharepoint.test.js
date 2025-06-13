@@ -108,6 +108,8 @@ describe('sharePointApplicationHandler', () => {
     jest.clearAllMocks()
   })
 
+  afterAll(jest.restoreAllMocks)
+
   it('should upload application html to SharePoint and send email to applicant', async () => {
     mockUploadFile.mockResolvedValue(undefined)
 

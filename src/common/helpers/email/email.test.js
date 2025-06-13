@@ -106,6 +106,8 @@ describe('emailApplicationHandler', () => {
     jest.clearAllMocks()
   })
 
+  afterAll(jest.restoreAllMocks)
+
   it('should return FILE_TOO_LARGE if file size > 10MB at the point of upload', async () => {
     mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
 
@@ -146,12 +148,10 @@ describe('emailApplicationHandler', () => {
       testReferenceNumber
     )
     expect(mockCompressFile).not.toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
-      expect.objectContaining({
-        content: 'Case worker email content',
-        link_to_file: mockedFileProps
-      })
-    )
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
+      content: 'Case worker email content',
+      link_to_file: mockedFileProps
+    })
     expect(sendEmailToApplicant).toHaveBeenCalledWith({
       email: testEmail,
       fullName: testFullName,
@@ -169,12 +169,10 @@ describe('emailApplicationHandler', () => {
       testReferenceNumber
     )
     expect(mockCompressFile).toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
-      expect.objectContaining({
-        content: 'Case worker email content',
-        link_to_file: mockedFileProps
-      })
-    )
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
+      content: 'Case worker email content',
+      link_to_file: mockedFileProps
+    })
     expect(sendEmailToApplicant).toHaveBeenCalledWith({
       email: testEmail,
       fullName: testFullName,
@@ -191,11 +189,9 @@ describe('emailApplicationHandler', () => {
 
     expect(mockFetchFile).not.toHaveBeenCalled()
     expect(mockCompressFile).not.toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
-      expect.objectContaining({
-        content: 'Case worker email content'
-      })
-    )
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
+      content: 'Case worker email content'
+    })
     expect(sendEmailToApplicant).toHaveBeenCalledWith({
       email: testEmail,
       fullName: testFullName,
