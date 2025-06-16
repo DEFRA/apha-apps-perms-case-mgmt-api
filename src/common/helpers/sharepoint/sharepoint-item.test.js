@@ -5,6 +5,8 @@ import {
   destinationCph,
   destinationSection,
   destinationType,
+  howManyAnimals,
+  howManyAnimalsMaximum,
   keeperName,
   licenceSection,
   onOffFarm,
@@ -82,7 +84,8 @@ describe('fields', () => {
       addressPostcode: destinationAddressPostcode
     }),
     destinationCph(destinationCphNumber),
-    reasonForMovement('routineRestocking')
+    reasonForMovement('routineRestocking'),
+    howManyAnimals('62')
   ])
 
   const licence = licenceSection([keeperName({ firstName, lastName })])
@@ -103,6 +106,7 @@ describe('fields', () => {
       Licence: 'TB24c',
       DestinationCPH: destinationCphNumber,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
+      NumberofCattle: '62',
       UrgentWelfare: false,
       AFUtoAFU: false
     })
@@ -124,6 +128,7 @@ describe('fields', () => {
       DestinationCPH: destinationCphNumber,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       UrgentWelfare: false,
+      NumberofCattle: '62',
       AFUtoAFU: false
     })
   })
@@ -145,5 +150,23 @@ describe('fields', () => {
     }
 
     expect(fields(application, reference).AFUtoAFU).toBe(true)
+  })
+
+  it('should extract the maximum number of cattle if total number is not available', () => {
+    const application = {
+      sections: [destinationSection([howManyAnimalsMaximum('50')])]
+    }
+
+    expect(fields(application, reference).NumberofCattle).toBe('50')
+  })
+
+  it('should prefer the total number of cattle if both are present (not a case we should encounter)', () => {
+    const application = {
+      sections: [
+        destinationSection([howManyAnimals('20'), howManyAnimalsMaximum('50')])
+      ]
+    }
+
+    expect(fields(application, reference).NumberofCattle).toBe('20')
   })
 })

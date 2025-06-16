@@ -160,3 +160,31 @@ export const reasonForMovement = (reason) => ({
     displayText: reason
   }
 })
+
+/**
+ * @param {string} quantity
+ * @returns {QuestionAnswerData}
+ */
+export const howManyAnimals = (quantity) => ({
+  question: 'How any animals are you moving?',
+  questionKey: 'howManyAnimals',
+  answer: {
+    type: 'text',
+    value: quantity,
+    displayText: quantity
+  }
+})
+
+/**
+ * @param {string} quantity
+ * @returns {QuestionAnswerData}
+ */
+export const howManyAnimalsMaximum = (quantity) => ({
+  question: 'How any animals are you moving maximum?',
+  questionKey: 'howManyAnimalsMaximum',
+  answer: {
+    type: 'text',
+    value: quantity,
+    displayText: quantity
+  }
+})

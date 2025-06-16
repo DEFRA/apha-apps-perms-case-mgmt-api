@@ -49,6 +49,11 @@ export const fields = (applicationData, reference) => {
   const originType = origin?.get('originType')?.answer
   const destinationType = destination?.get('destinationType')?.answer
 
+  const numberOfCattle = destination?.get('howManyAnimals')?.answer
+  const numberOfCattleMaximum = destination?.get(
+    'howManyAnimalsMaximum'
+  )?.answer
+
   return {
     Application_x0020_Reference_x002: reference,
     Title: cphNumber?.value,
@@ -61,6 +66,7 @@ export const fields = (applicationData, reference) => {
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
     UrgentWelfare: reasonForMovement?.value === 'welfare',
+    NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
     AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu'
   }
 }
