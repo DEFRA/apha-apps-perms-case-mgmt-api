@@ -117,6 +117,7 @@ export const getTbLicenceType = (application) => {
   if (destinationType?.value === 'slaughter') {
     return 'TB24c'
   }
+  return ''
 }
 
 /**

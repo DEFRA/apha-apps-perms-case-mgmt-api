@@ -61,9 +61,9 @@ export const generateSharepointNotificationContent = (
   const application = new Application(applicationData)
   const licenceType = getTbLicenceType(applicationData)
   const cphOfRequester = getRequesterCphNumber(application)
-  const nameOfRequester = /** @type {NameAnswer} */ (
+  const nameOfRequester = /** @type {NameAnswer|undefined} */ (
     application.get('licence')?.get('fullName')?.answer
-  ).displayText
+  )?.displayText
 
   /**
    * @type {string[]}

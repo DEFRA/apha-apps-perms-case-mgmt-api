@@ -78,16 +78,16 @@ export const keeperName = ({ firstName, lastName }) => ({
 })
 
 /**
- * @param {'on'|'off'} onOffFarm
+ * @param {'on'|'off'} onOffFarmValue
  * @returns {QuestionAnswerData}
  */
-export const onOffFarm = (onOffFarm) => ({
+export const onOffFarm = (onOffFarmValue) => ({
   question: 'Are the animals moving off of or on to the premises?',
   questionKey: 'onOffFarm',
   answer: {
     type: 'radio',
-    value: onOffFarm,
-    displayText: onOffFarm
+    value: onOffFarmValue,
+    displayText: onOffFarmValue
   }
 })
 
