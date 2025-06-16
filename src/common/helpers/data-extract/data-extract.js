@@ -133,5 +133,6 @@ export const getRequesterCphNumber = (application) => {
   const destinationCph = destination?.get('destinationFarmCph')?.answer
 
   const isOnFarm = onOffFarm?.value === 'on'
-  return (isOnFarm ? destinationCph : originCph)?.value
+  return /** @type {TextAnswer} */ (isOnFarm ? destinationCph : originCph)
+    ?.value
 }
