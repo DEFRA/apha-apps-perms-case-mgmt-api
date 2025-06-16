@@ -92,7 +92,6 @@ describe('fields', () => {
       sections: [offFarmOrigin, licence, destination]
     }
 
-    console.log(JSON.stringify(application, null, 2))
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
       Title: originCphNumber,
@@ -109,7 +108,7 @@ describe('fields', () => {
     })
   })
 
-  it('should construct expected fields for on the farm', () => {
+  it('should construct expected fields for on the farm & a welfare case', () => {
     const application = {
       sections: [onFarmOrigin, licence, destination]
     }
@@ -127,5 +126,24 @@ describe('fields', () => {
       UrgentWelfare: false,
       AFUtoAFU: false
     })
+  })
+
+  it('should return the desired value for a welfare', () => {
+    const application = {
+      sections: [destinationSection([reasonForMovement('welfare')])]
+    }
+
+    expect(fields(application, reference).UrgentWelfare).toBe(true)
+  })
+
+  it('should return the desired value for AFU -> AFU', () => {
+    const application = {
+      sections: [
+        originSection([originType('afu')]),
+        destinationSection([destinationType('afu')])
+      ]
+    }
+
+    expect(fields(application, reference).AFUtoAFU).toBe(true)
   })
 })
