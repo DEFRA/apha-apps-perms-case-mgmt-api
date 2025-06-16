@@ -1,5 +1,5 @@
 import { spyOnConfig } from '../../test-helpers/config.js'
-import { addItem, uploadFile } from './sharepoint.js'
+import { addItem, uploadFile, getListItemUrl } from './sharepoint.js'
 
 const graphMocks = {}
 const tenantId = 'tenant'
@@ -110,5 +110,34 @@ describe('addItem', () => {
     graphMocks.postMock.mockRejectedValue(error)
 
     await expect(addItem(fields)).rejects.toThrow('Upload failed')
+  })
+})
+
+describe('getListItemUrl', () => {
+  it('should build the correct SharePoint list item URL', () => {
+    const webUrl =
+      'https://example.sharepoint.com/sites/site/Lists/MyList/AllItems.aspx'
+    const itemId = '123'
+    const expected =
+      'https://example.sharepoint.com/sites/site/Lists/MyList/DispForm.aspx?ID=123'
+    expect(getListItemUrl(webUrl, itemId)).toBe(expected)
+  })
+
+  it('should handle URLs with query parameters', () => {
+    const webUrl =
+      'https://example.sharepoint.com/sites/site/Lists/MyList/AllItems.aspx?viewid=789'
+    const itemId = '789'
+    const expected =
+      'https://example.sharepoint.com/sites/site/Lists/MyList/DispForm.aspx?ID=789'
+    expect(getListItemUrl(webUrl, itemId)).toBe(expected)
+  })
+
+  it('should handle URLs with multiple path segments', () => {
+    const webUrl =
+      'https://example.sharepoint.com/sites/site/subsite/Lists/MyList/AllItems.aspx'
+    const itemId = '999'
+    const expected =
+      'https://example.sharepoint.com/sites/site/subsite/Lists/MyList/DispForm.aspx?ID=999'
+    expect(getListItemUrl(webUrl, itemId)).toBe(expected)
   })
 })

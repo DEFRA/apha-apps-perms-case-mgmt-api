@@ -6,7 +6,7 @@ import {
 } from '../../../common/connectors/sharepoint/sharepoint.js'
 import { statusCodes } from '../../constants/status-codes.js'
 import {
-  generateSharepointNotifiationContent,
+  generateSharepointNotificationContent,
   getFileProps
 } from '../email-content/email-content.js'
 import { fetchFile } from '../file/file-utils.js'
@@ -92,7 +92,7 @@ const sendCaseworkerNotificationEmail = async (
   reference,
   sharePointItem
 ) => {
-  const emailContent = generateSharepointNotifiationContent(
+  const emailContent = generateSharepointNotificationContent(
     application,
     reference,
     getListItemUrl(sharePointItem?.webUrl, sharePointItem?.id)

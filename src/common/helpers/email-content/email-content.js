@@ -48,14 +48,14 @@ export const generateEmailContent = (payload, reference) => {
  * @param {string} reference
  * @returns {string}
  */
-export const generateSharepointNotifiationContent = (
+export const generateSharepointNotificationContent = (
   payload,
   reference,
   link
 ) => {
   const licenceType = getTbLicenceType(payload)
-  const cphOfRequestor = '12/3456/7890'
-  const nameOfRequestor = 'Jose Luis'
+  const cphOfRequestor = '12/3456/7890' //getCph(payload)
+  const nameOfRequestor = 'Jose Luis' //getName(payload)
   /**
    * @type {string[]}
    */

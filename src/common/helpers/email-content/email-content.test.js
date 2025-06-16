@@ -1,5 +1,9 @@
 import { spyOnConfig } from '../../test-helpers/config.js'
-import { generateEmailContent, getFileProps } from './email-content.js'
+import {
+  generateEmailContent,
+  generateSharepointNotificationContent,
+  getFileProps
+} from './email-content.js'
 
 /**
  * @import {ApplicationData} from '../data-extract/data-extract.js'
@@ -7,6 +11,12 @@ import { generateEmailContent, getFileProps } from './email-content.js'
 
 const testReference = 'TB12345678'
 const testRetention = '7 days'
+
+jest.mock('../data-extract/data-extract.js', () => ({
+  getTbLicenceType: jest.fn().mockReturnValue('TB Test Licence')
+  // getCph: jest.fn(() => '12/3456/7890'),
+  // getName: jest.fn(() => 'Name Surname')
+}))
 
 describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
@@ -239,5 +249,40 @@ describe('getFileProps', () => {
       confirm_email_before_download: true,
       retention_period: testRetention
     })
+  })
+})
+
+describe('generateSharepointNotificationContent', () => {
+  afterAll(jest.restoreAllMocks)
+
+  it('should generate content with licence type, CPH, name, reference and link', () => {
+    const payload = {
+      sections: []
+    }
+    const reference = 'TB-XXXX-XXXX'
+    const link = 'https://example.com/tb25'
+
+    const result = generateSharepointNotificationContent(
+      payload,
+      reference,
+      link
+    )
+
+    const expectedContent = [
+      'A Bovine TB licence application has been received with the following details:',
+      '## Licence type',
+      'TB Test Licence',
+      '## CPH of the requester',
+      '12/3456/7890',
+      '## Name',
+      'Jose Luis',
+      '## Reference',
+      reference,
+      '',
+      '---',
+      `Full details can be found on TB25 with the following link: ${link}`
+    ].join('\n')
+
+    expect(result).toBe(expectedContent)
   })
 })
