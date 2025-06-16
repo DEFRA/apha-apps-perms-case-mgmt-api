@@ -102,6 +102,8 @@ describe('fields', () => {
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      DestinationCPH: destinationCphNumber,
+      DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       UrgentWelfare: false,
       AFUtoAFU: false
     })
@@ -118,8 +120,10 @@ describe('fields', () => {
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Destination',
       Name: `${firstName} ${lastName}`,
-      FirstlineofAddress: destinationAddressLine1,
+      FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      DestinationCPH: destinationCphNumber,
+      DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       UrgentWelfare: false,
       AFUtoAFU: false
     })

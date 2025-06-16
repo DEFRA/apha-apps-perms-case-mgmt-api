@@ -40,8 +40,6 @@ export const fields = (applicationData, reference) => {
     destination?.get('destinationFarmAddress')?.answer
   )
 
-  const address = isOnFarm ? destinationAddress : originAddress
-
   const name = /** @type {NameAnswer} */ (
     application.get('licence')?.get('fullName')?.answer
   )
@@ -58,8 +56,10 @@ export const fields = (applicationData, reference) => {
     MethodofReceipt: 'Digital',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: name?.displayText,
-    FirstlineofAddress: address?.value.addressLine1,
+    FirstlineofAddress: originAddress?.value.addressLine1,
     Licence: getTbLicenceType(applicationData),
+    DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
+    DestinationCPH: destinationCph?.value,
     UrgentWelfare: reasonForMovement?.value === 'welfare',
     AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu'
   }
