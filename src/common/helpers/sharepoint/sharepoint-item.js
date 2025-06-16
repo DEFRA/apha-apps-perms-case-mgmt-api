@@ -29,6 +29,10 @@ export const fields = (applicationData, reference) => {
   const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
 
+  const originCph = origin?.get('cphNumber')?.answer
+  const destinationCph = destination?.get('destinationFarmCph')?.answer
+  const cphNumber = isOnFarm ? destinationCph : originCph
+
   const originAddress = /** @type {AddressAnswer} */ (
     origin?.get('address')?.answer
   )
@@ -49,16 +53,14 @@ export const fields = (applicationData, reference) => {
 
   return {
     Application_x0020_Reference_x002: reference,
+    Title: cphNumber?.value,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: name?.displayText,
     FirstlineofAddress: address?.value.addressLine1,
     Licence: getTbLicenceType(applicationData),
-    UrgentWelfare: reasonForMovement?.value === 'welfare' ? 'Yes' : 'No',
-    AFUtoAFU:
-      destinationType?.value === 'afu' && originType?.value === 'afu'
-        ? 'Yes'
-        : 'No'
+    UrgentWelfare: reasonForMovement?.value === 'welfare',
+    AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu'
   }
 }

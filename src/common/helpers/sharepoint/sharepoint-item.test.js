@@ -2,6 +2,7 @@ import { createSharepointItem, fields } from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
   destinationAddress,
+  destinationCph,
   destinationSection,
   destinationType,
   keeperName,
@@ -41,13 +42,14 @@ describe('createSharepointItem', () => {
 })
 
 describe('fields', () => {
-  const cphNumber = '12/123/1234'
+  const originCphNumber = '12/123/1234'
   const firstName = 'Bob'
   const lastName = 'Barry'
   const originAddressLine1 = '1 the road'
   const originAddressTown = 'Townhamlet'
   const originAddressPostcode = 'AA10 1AA'
 
+  const destinationCphNumber = '98/987/9876'
   const destinationAddressLine1 = '2 the street'
   const destinationAddressTown = 'Cityville'
   const destinationAddressPostcode = 'ZZ09 9ZZ'
@@ -61,14 +63,14 @@ describe('fields', () => {
   const offFarmOrigin = originSection([
     onOffFarm('off'),
     originType('tb-restricted-farm'),
-    originCph(cphNumber),
+    originCph(originCphNumber),
     originAddressQuestion
   ])
 
   const onFarmOrigin = originSection([
     onOffFarm('on'),
     originType('tb-restricted-farm'),
-    originCph(cphNumber),
+    originCph(originCphNumber),
     originAddressQuestion
   ])
 
@@ -79,6 +81,7 @@ describe('fields', () => {
       addressTown: destinationAddressTown,
       addressPostcode: destinationAddressPostcode
     }),
+    destinationCph(destinationCphNumber),
     reasonForMovement('routineRestocking')
   ])
 
@@ -88,16 +91,19 @@ describe('fields', () => {
     const application = {
       sections: [offFarmOrigin, licence, destination]
     }
+
+    console.log(JSON.stringify(application, null, 2))
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
+      Title: originCphNumber,
       Office: 'Polwhele',
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Origin',
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
-      UrgentWelfare: 'No',
-      AFUtoAFU: 'No'
+      UrgentWelfare: false,
+      AFUtoAFU: false
     })
   })
 
@@ -107,14 +113,15 @@ describe('fields', () => {
     }
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
+      Title: destinationCphNumber,
       Office: 'Polwhele',
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Destination',
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: destinationAddressLine1,
       Licence: 'TB24c',
-      UrgentWelfare: 'No',
-      AFUtoAFU: 'No'
+      UrgentWelfare: false,
+      AFUtoAFU: false
     })
   })
 })

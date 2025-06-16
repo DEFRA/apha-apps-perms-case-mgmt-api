@@ -96,7 +96,7 @@ export const onOffFarm = (onOffFarm) => ({
  * @returns {QuestionAnswerData}
  */
 export const originCph = (cphNumber) => ({
-  question: 'What is the CPH number of the farm?',
+  question: 'What is the CPH number of the origin farm?',
   questionKey: 'cphNumber',
   answer: {
     type: 'text',
@@ -116,6 +116,20 @@ export const originAddress = (addressData) => ({
     type: 'address',
     value: addressData,
     displayText: Object.values(addressData).join('\n')
+  }
+})
+
+/**
+ * @param {string} cphNumber
+ * @returns {QuestionAnswerData}
+ */
+export const destinationCph = (cphNumber) => ({
+  question: 'What is the CPH number of the destination farm?',
+  questionKey: 'destinationFarmCph',
+  answer: {
+    type: 'text',
+    value: cphNumber,
+    displayText: cphNumber
   }
 })
 
