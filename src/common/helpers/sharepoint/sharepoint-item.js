@@ -1,5 +1,10 @@
+import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import { Application, getTbLicenceType } from '../data-extract/data-extract.js'
+import {
+  Application,
+  getRequesterCphNumber,
+  getTbLicenceType
+} from '../data-extract/data-extract.js'
 
 /** @import {
  *   ApplicationData,
@@ -29,9 +34,8 @@ export const fields = (applicationData, reference) => {
   const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
 
-  const originCph = origin?.get('cphNumber')?.answer
   const destinationCph = destination?.get('destinationFarmCph')?.answer
-  const cphNumber = isOnFarm ? destinationCph : originCph
+  const cphNumber = getRequesterCphNumber(application)
 
   const originAddress = /** @type {AddressAnswer} */ (
     origin?.get('address')?.answer
@@ -54,9 +58,14 @@ export const fields = (applicationData, reference) => {
     'howManyAnimalsMaximum'
   )?.answer
 
+  const { folderPath, siteName, siteBaseUrl } = config.get('sharepoint')
+  const supportingMaterialPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
+  const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
+  const SupportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
+
   return {
     Application_x0020_Reference_x002: reference,
-    Title: cphNumber?.value,
+    Title: cphNumber,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
@@ -67,6 +76,7 @@ export const fields = (applicationData, reference) => {
     DestinationCPH: destinationCph?.value,
     UrgentWelfare: reasonForMovement?.value === 'welfare',
     NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
-    AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu'
+    AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu',
+    SupportingMaterial
   }
 }

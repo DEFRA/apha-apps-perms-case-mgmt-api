@@ -16,6 +16,7 @@ import {
   originType,
   reasonForMovement
 } from '../../test-helpers/application.js'
+import { spyOnConfig } from '../../test-helpers/config.js'
 
 const application = { sections: [] }
 const reference = 'TB-1234-ABCD'
@@ -44,6 +45,11 @@ describe('createSharepointItem', () => {
 })
 
 describe('fields', () => {
+  const siteName = 'DemoSite'
+  const folderPath = 'Digital Applications/Test/TB25'
+  const siteBaseUrl = 'https://sometenant.sharepoint.com'
+  afterAll(jest.restoreAllMocks)
+
   const originCphNumber = '12/123/1234'
   const firstName = 'Bob'
   const lastName = 'Barry'
@@ -89,11 +95,16 @@ describe('fields', () => {
   ])
 
   const licence = licenceSection([keeperName({ firstName, lastName })])
+  const sharepointPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
+  const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(sharepointPath)}`
+
+  const supportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
 
   it('should construct expected fields for off the farm', () => {
     const application = {
       sections: [offFarmOrigin, licence, destination]
     }
+    spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
 
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
@@ -108,7 +119,8 @@ describe('fields', () => {
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
       UrgentWelfare: false,
-      AFUtoAFU: false
+      AFUtoAFU: false,
+      SupportingMaterial: supportingMaterial
     })
   })
 
@@ -116,6 +128,8 @@ describe('fields', () => {
     const application = {
       sections: [onFarmOrigin, licence, destination]
     }
+    spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+
     expect(fields(application, reference)).toEqual({
       Application_x0020_Reference_x002: reference,
       Title: destinationCphNumber,
@@ -129,7 +143,8 @@ describe('fields', () => {
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       UrgentWelfare: false,
       NumberofCattle: '62',
-      AFUtoAFU: false
+      AFUtoAFU: false,
+      SupportingMaterial: supportingMaterial
     })
   })
 
