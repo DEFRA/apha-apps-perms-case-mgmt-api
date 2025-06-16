@@ -64,7 +64,7 @@ export const fields = (applicationData, reference) => {
   const { folderPath, siteName, siteBaseUrl } = config.get('sharepoint')
   const supportingMaterialPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
-  const SupportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
+  const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   return {
     Application_x0020_Reference_x002: reference,

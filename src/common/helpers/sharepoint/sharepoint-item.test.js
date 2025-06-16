@@ -98,7 +98,7 @@ describe('fields', () => {
   const sharepointPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(sharepointPath)}`
 
-  const supportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
+  const supportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   it('should construct expected fields for off the farm', () => {
     const application = {
