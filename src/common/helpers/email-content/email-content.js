@@ -1,9 +1,9 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
-import { getTbLicenceType } from '../data-extract/data-extract.js'
+import { Application, getTbLicenceType } from '../data-extract/data-extract.js'
 
 /**
- * @import {ApplicationData} from '../data-extract/data-extract.js'
+ * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 
@@ -44,18 +44,22 @@ export const generateEmailContent = (payload, reference) => {
 }
 
 /**
- * @param {ApplicationData} payload
+ * @param {ApplicationData} applicationData
  * @param {string} reference
  * @returns {string}
  */
 export const generateSharepointNotificationContent = (
-  payload,
+  applicationData,
   reference,
   link
 ) => {
-  const licenceType = getTbLicenceType(payload)
-  const cphOfRequestor = '12/3456/7890' //getCph(payload)
-  const nameOfRequestor = 'Jose Luis' //getName(payload)
+  const application = new Application(applicationData)
+  const licenceType = getTbLicenceType(applicationData)
+  const cphOfRequester = '12/3456/7890' //getCph(payload)
+  const nameOfRequester = /** @type {NameAnswer} */ (
+    application.get('licence')?.get('fullName')?.answer
+  ).displayText
+
   /**
    * @type {string[]}
    */
@@ -67,9 +71,9 @@ export const generateSharepointNotificationContent = (
   lines.push('## Licence type:')
   lines.push(licenceType ?? '')
   lines.push('## CPH of requester:')
-  lines.push(cphOfRequestor)
+  lines.push(cphOfRequester ?? '')
   lines.push('## Name of requester:')
-  lines.push(nameOfRequestor)
+  lines.push(nameOfRequester ?? '')
   lines.push(`## Application reference number:`)
   lines.push(reference)
   lines.push('')
