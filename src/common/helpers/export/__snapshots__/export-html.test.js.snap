@@ -73,12 +73,12 @@ exports[`generateHtmlBuffer should include the reference in the generated HTML 1
               <div><strong>Q1</strong></div>
               <div>A1</div>
             </div>
-          
+            
             <div class="question">
               <div><strong>Q2</strong></div>
               <div>A2</div>
             </div>
-          
+            
       </div>
     
       <div class="section">
@@ -88,7 +88,7 @@ exports[`generateHtmlBuffer should include the reference in the generated HTML 1
               <div><strong>Q3</strong></div>
               <div>A3</div>
             </div>
-          
+            
       </div>
     
       </body>
