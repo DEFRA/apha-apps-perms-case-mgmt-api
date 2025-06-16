@@ -270,13 +270,13 @@ describe('generateSharepointNotificationContent', () => {
 
     const expectedContent = [
       'A Bovine TB licence application has been received with the following details:',
-      '## Licence type',
+      '## Licence type:',
       'TB Test Licence',
-      '## CPH of the requester',
+      '## CPH of the requester:',
       '12/3456/7890',
-      '## Name',
+      '## Name or requester:',
       'Jose Luis',
-      '## Reference',
+      '## Application reference number:',
       reference,
       '',
       '---',

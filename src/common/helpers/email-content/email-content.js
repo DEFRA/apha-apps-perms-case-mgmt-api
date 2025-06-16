@@ -64,13 +64,13 @@ export const generateSharepointNotificationContent = (
   lines.push(
     `A Bovine TB licence application has been received with the following details:`
   )
-  lines.push(`## Licence type`)
+  lines.push('## Licence type:')
   lines.push(licenceType ?? '')
-  lines.push(`## CPH of the requester`)
+  lines.push('## CPH of requester:')
   lines.push(cphOfRequestor)
-  lines.push(`## Name`)
+  lines.push('## Name of requester:')
   lines.push(nameOfRequestor)
-  lines.push(`## Reference`)
+  lines.push(`## Application reference number:`)
   lines.push(reference)
   lines.push('')
   lines.push('---')
