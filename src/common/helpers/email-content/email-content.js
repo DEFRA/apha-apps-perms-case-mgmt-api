@@ -1,6 +1,10 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
-import { Application, getTbLicenceType } from '../data-extract/data-extract.js'
+import {
+  Application,
+  getRequesterCphNumber,
+  getTbLicenceType
+} from '../data-extract/data-extract.js'
 
 /**
  * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
@@ -46,6 +50,7 @@ export const generateEmailContent = (payload, reference) => {
 /**
  * @param {ApplicationData} applicationData
  * @param {string} reference
+ * @param {string} link
  * @returns {string}
  */
 export const generateSharepointNotificationContent = (
@@ -55,7 +60,7 @@ export const generateSharepointNotificationContent = (
 ) => {
   const application = new Application(applicationData)
   const licenceType = getTbLicenceType(applicationData)
-  const cphOfRequester = '12/3456/7890' //getCph(payload)
+  const cphOfRequester = getRequesterCphNumber(application)
   const nameOfRequester = /** @type {NameAnswer} */ (
     application.get('licence')?.get('fullName')?.answer
   ).displayText
