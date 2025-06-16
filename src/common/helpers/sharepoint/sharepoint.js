@@ -99,7 +99,7 @@ const sendCaseworkerNotificationEmail = async (
   )
 
   await sendEmailToCaseWorker({
-    content: escapeMarkdown(emailContent)
+    content: emailContent // escape markdown is done when generating the content as some parts should not be escaped (urls)
   })
 }
 

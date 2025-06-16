@@ -5,6 +5,7 @@ import {
   getRequesterCphNumber,
   getTbLicenceType
 } from '../data-extract/data-extract.js'
+import { escapeMarkdown } from '../escape-text.js'
 
 /**
  * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
@@ -60,10 +61,12 @@ export const generateSharepointNotificationContent = (
 ) => {
   const application = new Application(applicationData)
   const licenceType = getTbLicenceType(applicationData)
-  const cphOfRequester = getRequesterCphNumber(application)
-  const nameOfRequester = /** @type {NameAnswer|undefined} */ (
-    application.get('licence')?.get('fullName')?.answer
-  )?.displayText
+  const cphOfRequester = escapeMarkdown(getRequesterCphNumber(application))
+  const nameOfRequester = escapeMarkdown(
+    /** @type {NameAnswer|undefined} */ (
+      application.get('licence')?.get('fullName')?.answer
+    )?.displayText
+  )
 
   /**
    * @type {string[]}
