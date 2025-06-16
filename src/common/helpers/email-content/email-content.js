@@ -1,8 +1,13 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
+import {
+  Application,
+  getRequesterCphNumber,
+  getTbLicenceType
+} from '../data-extract/data-extract.js'
 
 /**
- * @import {ApplicationData} from '../data-extract/data-extract.js'
+ * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 
@@ -38,6 +43,49 @@ export const generateEmailContent = (payload, reference) => {
       }
     })
   })
+
+  return lines.join('\n')
+}
+
+/**
+ * @param {ApplicationData} applicationData
+ * @param {string} reference
+ * @param {string} link
+ * @returns {string}
+ */
+export const generateSharepointNotificationContent = (
+  applicationData,
+  reference,
+  link
+) => {
+  const application = new Application(applicationData)
+  const licenceType = getTbLicenceType(applicationData)
+  const cphOfRequester = getRequesterCphNumber(application)
+  const nameOfRequester = /** @type {NameAnswer|undefined} */ (
+    application.get('licence')?.get('fullName')?.answer
+  )?.displayText
+
+  /**
+   * @type {string[]}
+   */
+  const lines = []
+
+  lines.push(
+    `A Bovine TB licence application has been received with the following details:`
+  )
+  lines.push('## Licence type:')
+  lines.push(licenceType ?? '')
+  lines.push('## CPH of requester:')
+  lines.push(cphOfRequester ?? '')
+  lines.push('## Name of requester:')
+  lines.push(nameOfRequester ?? '')
+  lines.push(`## Application reference number:`)
+  lines.push(reference)
+  lines.push('')
+  lines.push('---')
+  lines.push(
+    `Full details can be found on TB25 with the following link: ${link}`
+  )
 
   return lines.join('\n')
 }

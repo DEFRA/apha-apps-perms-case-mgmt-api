@@ -1,4 +1,7 @@
-import { sendEmailToApplicant } from '../../../common/connectors/notify/notify.js'
+import {
+  sendEmailToApplicant,
+  sendEmailToCaseWorker
+} from '../../../common/connectors/notify/notify.js'
 import { statusCodes } from '../../../common/constants/status-codes.js'
 import { generateHtmlBuffer } from '../../../common/helpers/export/export-html.js'
 import { fetchFile } from '../../../common/helpers/file/file-utils.js'
@@ -13,6 +16,9 @@ jest.mock('../../../common/connectors/notify/notify.js')
 jest.mock('../../../common/helpers/file/file-utils.js')
 jest.mock('../../../common/helpers/email-content/email-content.js', () => ({
   generateEmailContent: jest.fn().mockReturnValue('Case worker email content'),
+  generateSharepointNotificationContent: jest
+    .fn()
+    .mockReturnValue('Sharepoint notification email content'),
   getFileProps: jest.fn().mockReturnValue({
     filename: 'file-name.pdf'
   })
@@ -23,7 +29,13 @@ jest.mock('../../../common/helpers/export/export-html.js', () => ({
     .mockReturnValue(Buffer.from('<html>Mock HTML</html>'))
 }))
 jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
-  uploadFile: jest.fn()
+  uploadFile: jest.fn(),
+  getListItemUrl: jest
+    .fn()
+    .mockReturnValue('https://sharepoint.example.com/item')
+}))
+jest.mock('./sharepoint-item.js', () => ({
+  createSharepointItem: jest.fn()
 }))
 
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
@@ -110,7 +122,7 @@ describe('sharePointApplicationHandler', () => {
 
   afterAll(jest.restoreAllMocks)
 
-  it('should upload application html to SharePoint and send email to applicant', async () => {
+  it('should upload application html to SharePoint and send emails to applicant and case worker', async () => {
     mockUploadFile.mockResolvedValue(undefined)
 
     const response = await sharePointApplicationHandler(
@@ -133,10 +145,13 @@ describe('sharePointApplicationHandler', () => {
       fullName: testFullName,
       reference: testReferenceNumber
     })
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
+      content: 'Sharepoint notification email content'
+    })
     expect(response).toBeUndefined()
   })
 
-  it('should upload application html and biosecurity map to SharePoint and send email to applicant', async () => {
+  it('should upload application html and biosecurity map to SharePoint and send emails to applicant and case worker', async () => {
     const mockFileData = { ...mockFile, fileSizeInMB: 5 }
     mockFetchFile.mockResolvedValue(mockFileData)
     mockUploadFile.mockResolvedValue(undefined)
@@ -170,6 +185,9 @@ describe('sharePointApplicationHandler', () => {
       reference: testReferenceNumber
     })
     expect(sendEmailToApplicant).toHaveBeenCalledTimes(1)
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
+      content: 'Sharepoint notification email content'
+    })
 
     expect(response).toBeUndefined()
   })

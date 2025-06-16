@@ -1,11 +1,15 @@
 import { spyOnConfig } from '../../test-helpers/config.js'
-import { generateEmailContent, getFileProps } from './email-content.js'
+import {
+  generateEmailContent,
+  generateSharepointNotificationContent,
+  getFileProps
+} from './email-content.js'
 
 /**
  * @import {ApplicationData} from '../data-extract/data-extract.js'
  */
 
-const testReference = 'TB12345678'
+const testReference = 'TB-1234-5678'
 const testRetention = '7 days'
 
 describe('generateEmailContent', () => {
@@ -239,5 +243,69 @@ describe('getFileProps', () => {
       confirm_email_before_download: true,
       retention_period: testRetention
     })
+  })
+})
+
+jest.mock('../data-extract/data-extract.js', () => ({
+  Application: jest.fn().mockImplementation(() => ({
+    get: jest.fn().mockReturnValue({
+      get: jest.fn().mockReturnValue({
+        answer: {
+          displayText: 'Name Surname'
+        }
+      })
+    })
+  })),
+  getTbLicenceType: jest.fn().mockReturnValue('TB Test Licence'),
+  getRequesterCphNumber: jest.fn(() => '12/3456/7890')
+}))
+
+describe('generateSharepointNotificationContent', () => {
+  afterAll(jest.restoreAllMocks)
+
+  it('should generate content with licence type, CPH, name, reference and link', () => {
+    const applicationData = /** @type {ApplicationData} */ ({
+      sections: [
+        {
+          title: 'Receiving the licence',
+          sectionKey: 'licence',
+          questionAnswers: [
+            {
+              question: 'fullName',
+              questionKey: 'fullName',
+              answer: {
+                type: 'name',
+                value: { firstName: 'Name', lastName: 'Surname' },
+                displayText: 'Name Surname'
+              }
+            }
+          ]
+        }
+      ]
+    })
+    const link = 'https://example.com/tb25'
+
+    const result = generateSharepointNotificationContent(
+      applicationData,
+      testReference,
+      link
+    )
+
+    const expectedContent = [
+      'A Bovine TB licence application has been received with the following details:',
+      '## Licence type:',
+      'TB Test Licence',
+      '## CPH of requester:',
+      '12/3456/7890',
+      '## Name of requester:',
+      'Name Surname',
+      '## Application reference number:',
+      testReference,
+      '',
+      '---',
+      `Full details can be found on TB25 with the following link: ${link}`
+    ].join('\n')
+
+    expect(result).toBe(expectedContent)
   })
 })

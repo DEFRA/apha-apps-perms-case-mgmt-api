@@ -237,6 +237,18 @@ const config = convict({
       nullable: true,
       env: 'SHAREPOINT_TB25_SITE_ID'
     },
+    siteName: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_SITE_NAME'
+    },
+    siteBaseUrl: /** @type {SchemaObj<string | null>} */ {
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'SHAREPOINT_TB25_SITE_BASE_URL'
+    },
     listId: /** @type {SchemaObj<string | null>} */ {
       format: String,
       default: null,
