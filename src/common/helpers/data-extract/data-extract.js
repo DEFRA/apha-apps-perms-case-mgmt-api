@@ -12,6 +12,42 @@
  * @typedef {{ sections: SectionData[]}} ApplicationData
  */
 
+export class Application {
+  /** @param {ApplicationData} data */
+  constructor(data) {
+    this._data = data
+  }
+
+  /**
+   * @param {string} sectionKey
+   * @returns {Section | undefined}
+   */
+  get(sectionKey) {
+    const sectionData = this._data.sections.find(
+      (section) => section.sectionKey === sectionKey
+    )
+
+    return sectionData ? new Section(sectionData) : undefined
+  }
+}
+
+export class Section {
+  /** @param {SectionData} data */
+  constructor(data) {
+    this._data = data
+  }
+
+  /**
+   * @param {string} questionKey
+   * @returns {QuestionAnswerData | undefined}
+   */
+  get(questionKey) {
+    return this._data?.questionAnswers.find(
+      (question) => question.questionKey === questionKey
+    )
+  }
+}
+
 /**
  * @param {string} questionKey
  * @param {string} sectionKey
@@ -30,4 +66,73 @@ export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
  */
 export const getSectionsFromPayload = (payload) => {
   return payload.sections
+}
+
+/** @param {ApplicationData} application */
+export const getOriginType = (application) =>
+  /** @type {RadioAnswer} */ (
+    getQuestionFromSections('originType', 'origin', application.sections)
+      ?.answer
+  )
+
+/** @param {ApplicationData} application */
+export const getDestinationType = (application) =>
+  /** @type {RadioAnswer} */ (
+    getQuestionFromSections(
+      'destinationType',
+      'destination',
+      application.sections
+    )?.answer
+  )
+
+/** @param {RadioAnswer | undefined} premisesTypeAnswer */
+const isTbRestricted = (premisesTypeAnswer) =>
+  ['tb-restricted-farm', 'zoo', 'lab', 'other'].includes(
+    premisesTypeAnswer?.value ?? ''
+  )
+
+/**
+ * @param {ApplicationData} application
+ */
+export const getTbLicenceType = (application) => {
+  const originType = getOriginType(application)
+  const destinationType = getDestinationType(application)
+
+  if (!isTbRestricted(originType)) {
+    return 'TB15'
+  }
+
+  if (isTbRestricted(destinationType)) {
+    return 'TB16'
+  }
+
+  if (destinationType?.value === 'afu') {
+    return 'TB16e'
+  }
+
+  if (destinationType?.value === 'dedicated-sale') {
+    return 'TB16e'
+  }
+
+  if (destinationType?.value === 'slaughter') {
+    return 'TB24c'
+  }
+}
+
+/**
+ * @param {Application} application
+ * @returns {string | undefined}
+ */
+export const getRequesterCphNumber = (application) => {
+  const origin = application.get('origin')
+  const destination = application.get('destination')
+
+  const onOffFarm = origin?.get('onOffFarm')?.answer
+
+  const originCph = origin?.get('cphNumber')?.answer
+  const destinationCph = destination?.get('destinationFarmCph')?.answer
+
+  const isOnFarm = onOffFarm?.value === 'on'
+  return /** @type {TextAnswer} */ (isOnFarm ? destinationCph : originCph)
+    ?.value
 }
