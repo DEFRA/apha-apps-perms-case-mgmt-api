@@ -98,7 +98,11 @@ export const getTbLicenceType = (application) => {
   const originType = getOriginType(application)
   const destinationType = getDestinationType(application)
 
-  if (!isTbRestricted(originType) && isTbRestricted(destinationType)) {
+  if (
+    originType?.value !== 'afu' &&
+    !isTbRestricted(originType) &&
+    isTbRestricted(destinationType)
+  ) {
     return 'TB15'
   }
 
@@ -113,6 +117,13 @@ export const getTbLicenceType = (application) => {
   if (
     isTbRestricted(originType) &&
     destinationType?.value === 'dedicated-sale'
+  ) {
+    return 'TB16e'
+  }
+
+  if (
+    originType?.value === 'afu' &&
+    ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value)
   ) {
     return 'TB16e'
   }
