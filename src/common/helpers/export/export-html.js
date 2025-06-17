@@ -2,6 +2,8 @@
  * @import { ApplicationData } from '../data-extract/data-extract.js'
  */
 
+import { escapeJsonValues } from '../escape-text.js'
+
 const styles = `
   body {
     font-family:
@@ -65,16 +67,17 @@ export const generateHtmlBuffer = async (data, reference) => {
  * @returns {string}
  */
 const buildHtml = (data, reference) => {
-  const sectionsHtml = data.sections
+  const escapedData = escapeJsonValues(data)
+  const sectionsHtml = escapedData.sections
     .map((section) => {
       const questionsHtml = section.questionAnswers
         .map(({ question, answer }) => {
           return `
             <div class="question">
               <div><strong>${question}</strong></div>
-              <div>${answer.displayText}</div>
+              <div>${answer.displayText.replace(/\n/g, '<br />')}</div>
             </div>
-          `
+            `
         })
         .join('')
 
@@ -92,7 +95,7 @@ const buildHtml = (data, reference) => {
     <html>
       <head>
         <meta charset="UTF-8" />
-        <title>PDF</title>
+        <title>Application submitted: ${reference}</title>
         <style>
           ${styles}
         </style>

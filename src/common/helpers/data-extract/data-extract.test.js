@@ -1,7 +1,15 @@
 import {
   getQuestionFromSections,
-  getSectionsFromPayload
+  getSectionsFromPayload,
+  getTbLicenceType
 } from './data-extract.js'
+
+import {
+  originSection,
+  destinationSection,
+  destinationType,
+  originType
+} from '../../test-helpers/application.js'
 
 /**
  * @import {QuestionAnswerData} from './data-extract.js'
@@ -73,5 +81,62 @@ describe('getQuestionFromSections', () => {
       const result = getSectionsFromPayload(payload)
       expect(result).toEqual([])
     })
+  })
+})
+
+describe('getTbLicenceType', () => {
+  it('should return TB15 if origin type is unrestricted & destination type is restricted', () => {
+    const application = {
+      sections: [
+        originSection([originType('unrestricted-farm')]),
+        destinationSection([destinationType('tb-restricted-farm')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('TB15')
+  })
+
+  it('should return TB16 if origin type is restricted & destination type is restricted', () => {
+    const application = {
+      sections: [
+        originSection([originType('tb-restricted-farm')]),
+        destinationSection([destinationType('tb-restricted-farm')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('TB16')
+  })
+
+  it('should return TB16e if the origin is restricted but the destination is afu', () => {
+    const application = {
+      sections: [
+        originSection([originType('tb-restricted-farm')]),
+        destinationSection([destinationType('afu')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('TB16e')
+  })
+
+  it('should return TB16e if the origin is restricted but the destination is dedicated-sale', () => {
+    const application = {
+      sections: [
+        originSection([originType('tb-restricted-farm')]),
+        destinationSection([destinationType('dedicated-sale')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('TB16e')
+  })
+
+  it('should return TB24c if the origin is restricted & the destination is slaughter', () => {
+    const application = {
+      sections: [
+        originSection([originType('tb-restricted-farm')]),
+        destinationSection([destinationType('slaughter')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('TB24c')
   })
 })
