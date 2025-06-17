@@ -139,4 +139,15 @@ describe('getTbLicenceType', () => {
 
     expect(getTbLicenceType(application)).toBe('TB24c')
   })
+
+  it('should return an empty string if no conditions are met', () => {
+    const application = {
+      sections: [
+        originSection([originType('unrestricted-farm')]),
+        destinationSection([destinationType('unrestricted-farm')])
+      ]
+    }
+
+    expect(getTbLicenceType(application)).toBe('')
+  })
 })

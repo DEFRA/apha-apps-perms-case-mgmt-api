@@ -98,23 +98,26 @@ export const getTbLicenceType = (application) => {
   const originType = getOriginType(application)
   const destinationType = getDestinationType(application)
 
-  if (!isTbRestricted(originType)) {
+  if (!isTbRestricted(originType) && isTbRestricted(destinationType)) {
     return 'TB15'
   }
 
-  if (isTbRestricted(destinationType)) {
+  if (isTbRestricted(originType) && isTbRestricted(destinationType)) {
     return 'TB16'
   }
 
-  if (destinationType?.value === 'afu') {
+  if (isTbRestricted(originType) && destinationType?.value === 'afu') {
     return 'TB16e'
   }
 
-  if (destinationType?.value === 'dedicated-sale') {
+  if (
+    isTbRestricted(originType) &&
+    destinationType?.value === 'dedicated-sale'
+  ) {
     return 'TB16e'
   }
 
-  if (destinationType?.value === 'slaughter') {
+  if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
     return 'TB24c'
   }
   return ''
