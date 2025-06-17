@@ -85,32 +85,164 @@ describe('getQuestionFromSections', () => {
 })
 
 describe('getTbLicenceType', () => {
-  it('should return TB15 if origin type is unrestricted & destination type is restricted', () => {
+  const restrictedTypes = ['tb-restricted-farm', 'zoo', 'other', 'lab'].map(
+    (destination) => [destination]
+  )
+  it.each(restrictedTypes)(
+    'should return TB15 if origin type is market & destination type is restricted',
+    (destinationTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType('market')]),
+          destinationSection([destinationType(destinationTypeSelected)])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB15')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB15 if origin type is unrestricted farm & destination type is tb restricted farm',
+    (destinationTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType('unrestricted-farm')]),
+          destinationSection([destinationType(destinationTypeSelected)])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB15')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return empty string if origin type is afu & destination type is restricted (as it is not a supported journey)',
+    (destinationTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType('afu')]),
+          destinationSection([destinationType(destinationTypeSelected)])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB15 if origin type is after import location & destination type is restricted',
+    (destinationTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType('after-import-location')]),
+          destinationSection([destinationType(destinationTypeSelected)])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB15')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16 if origin type is restricted & destination type is tb restricted farm',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('tb-restricted-farm')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16 if origin type is restricted & destination type is zoo',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('zoo')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16 if origin type is restricted & destination type is lab',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('lab')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16 if origin type is restricted & destination type is other',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('other')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16e if origin type is restricted & destination type is dedicated sale',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('dedicated-sale')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16e')
+    }
+  )
+
+  it.each(restrictedTypes)(
+    'should return TB16e if origin type is restricted & destination type is afu',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('afu')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB16e')
+    }
+  )
+
+  it('should return TB16e if the origin is afu and the destination is slaughter', () => {
     const application = {
       sections: [
-        originSection([originType('unrestricted-farm')]),
-        destinationSection([destinationType('tb-restricted-farm')])
+        originSection([originType('afu')]),
+        destinationSection([destinationType('slaughter')])
       ]
     }
 
-    expect(getTbLicenceType(application)).toBe('TB15')
+    expect(getTbLicenceType(application)).toBe('TB16e')
   })
 
-  it('should return TB16 if origin type is restricted & destination type is restricted', () => {
+  it('should return TB16e if the origin is afu and the destination is afu', () => {
     const application = {
       sections: [
-        originSection([originType('tb-restricted-farm')]),
-        destinationSection([destinationType('tb-restricted-farm')])
-      ]
-    }
-
-    expect(getTbLicenceType(application)).toBe('TB16')
-  })
-
-  it('should return TB16e if the origin is restricted but the destination is afu', () => {
-    const application = {
-      sections: [
-        originSection([originType('tb-restricted-farm')]),
+        originSection([originType('afu')]),
         destinationSection([destinationType('afu')])
       ]
     }
@@ -118,10 +250,10 @@ describe('getTbLicenceType', () => {
     expect(getTbLicenceType(application)).toBe('TB16e')
   })
 
-  it('should return TB16e if the origin is restricted but the destination is dedicated-sale', () => {
+  it('should return TB16e if the origin is afu and the destination is dedicated-sale', () => {
     const application = {
       sections: [
-        originSection([originType('tb-restricted-farm')]),
+        originSection([originType('afu')]),
         destinationSection([destinationType('dedicated-sale')])
       ]
     }
@@ -129,14 +261,28 @@ describe('getTbLicenceType', () => {
     expect(getTbLicenceType(application)).toBe('TB16e')
   })
 
-  it('should return TB24c if the origin is restricted & the destination is slaughter', () => {
+  it.each(restrictedTypes)(
+    'should return TB24c if the origin is restricted & the destination is slaughter',
+    (originTypeSelected) => {
+      const application = {
+        sections: [
+          originSection([originType(originTypeSelected)]),
+          destinationSection([destinationType('slaughter')])
+        ]
+      }
+
+      expect(getTbLicenceType(application)).toBe('TB24c')
+    }
+  )
+
+  it('should return an empty string if no conditions are met', () => {
     const application = {
       sections: [
-        originSection([originType('tb-restricted-farm')]),
-        destinationSection([destinationType('slaughter')])
+        originSection([originType('unrestricted-farm')]),
+        destinationSection([destinationType('unrestricted-farm')])
       ]
     }
 
-    expect(getTbLicenceType(application)).toBe('TB24c')
+    expect(getTbLicenceType(application)).toBe('')
   })
 })
