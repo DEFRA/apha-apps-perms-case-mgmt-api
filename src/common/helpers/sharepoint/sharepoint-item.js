@@ -33,6 +33,9 @@ export const fields = (applicationData, reference) => {
 
   const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
+  const isOffFarm = onOffFarm?.value === 'off'
+
+  const originCph = origin?.get('cphNumber')?.answer
 
   const destinationCph = destination?.get('destinationFarmCph')?.answer
   const cphNumber = getRequesterCphNumber(application)
@@ -61,7 +64,7 @@ export const fields = (applicationData, reference) => {
   const { folderPath, siteName, siteBaseUrl } = config.get('sharepoint')
   const supportingMaterialPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
-  const SupportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
+  const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   return {
     Application_x0020_Reference_x002: reference,
@@ -69,11 +72,13 @@ export const fields = (applicationData, reference) => {
     Office: 'Polwhele',
     MethodofReceipt: 'Digital',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
-    Name: name?.displayText,
+    Name: isOffFarm ? name?.displayText : null,
     FirstlineofAddress: originAddress?.value.addressLine1,
     Licence: getTbLicenceType(applicationData),
+    OriginCPH: originCph?.value,
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
+    Destination_x0020_Name: isOnFarm ? name?.displayText : null,
     UrgentWelfare: reasonForMovement?.value === 'welfare',
     NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
     AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu',

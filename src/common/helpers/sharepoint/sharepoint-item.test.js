@@ -98,7 +98,7 @@ describe('fields', () => {
   const sharepointPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(sharepointPath)}`
 
-  const supportingMaterial = `<a href=${supportingMaterialLink}>Supporting Material</a>`
+  const supportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   it('should construct expected fields for off the farm', () => {
     const application = {
@@ -115,7 +115,9 @@ describe('fields', () => {
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      OriginCPH: '12/123/1234',
       DestinationCPH: destinationCphNumber,
+      Destination_x0020_Name: null,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
       UrgentWelfare: false,
@@ -136,10 +138,12 @@ describe('fields', () => {
       Office: 'Polwhele',
       MethodofReceipt: 'Digital',
       ApplicationSubmittedby: 'Owner/Keeper - Destination',
-      Name: `${firstName} ${lastName}`,
+      Name: null,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      OriginCPH: '12/123/1234',
       DestinationCPH: destinationCphNumber,
+      Destination_x0020_Name: `${firstName} ${lastName}`,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       UrgentWelfare: false,
       NumberofCattle: '62',

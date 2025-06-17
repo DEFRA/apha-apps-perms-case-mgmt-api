@@ -75,9 +75,9 @@ const buildHtml = (data, reference) => {
           return `
             <div class="question">
               <div><strong>${question}</strong></div>
-              <div>${answer.displayText}</div>
+              <div>${answer.displayText.replace(/\n/g, '<br />')}</div>
             </div>
-          `
+            `
         })
         .join('')
 
