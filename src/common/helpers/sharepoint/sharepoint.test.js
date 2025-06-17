@@ -8,20 +8,16 @@ import { fetchFile } from '../../../common/helpers/file/file-utils.js'
 import { uploadFile } from '../../../common/connectors/sharepoint/sharepoint.js'
 import { sharePointApplicationHandler } from './sharepoint.js'
 
-const mockedFileProps = {
-  filename: 'file-name.pdf'
-}
-
 jest.mock('../../../common/connectors/notify/notify.js')
-jest.mock('../../../common/helpers/file/file-utils.js')
+jest.mock('../../../common/helpers/file/file-utils.js', () => ({
+  fetchFile: jest.fn(),
+  getFileExtension: jest.fn().mockReturnValue('pdf')
+}))
 jest.mock('../../../common/helpers/email-content/email-content.js', () => ({
   generateEmailContent: jest.fn().mockReturnValue('Case worker email content'),
   generateSharepointNotificationContent: jest
     .fn()
-    .mockReturnValue('Sharepoint notification email content'),
-  getFileProps: jest.fn().mockReturnValue({
-    filename: 'file-name.pdf'
-  })
+    .mockReturnValue('Sharepoint notification email content')
 }))
 jest.mock('../../../common/helpers/export/export-html.js', () => ({
   generateHtmlBuffer: jest
@@ -175,7 +171,7 @@ describe('sharePointApplicationHandler', () => {
     expect(uploadFile).toHaveBeenNthCalledWith(
       2,
       testReferenceNumber,
-      mockedFileProps.filename,
+      `${testReferenceNumber}_Biosecurity_Map.pdf`,
       mockFileData.file
     )
 
