@@ -97,39 +97,38 @@ const isTbRestricted = (premisesTypeAnswer) =>
 export const getTbLicenceType = (application) => {
   const originType = getOriginType(application)
   const destinationType = getDestinationType(application)
-  const isOriginTbRestricted = isTbRestricted(originType)
-  const isDestinationTbRestricted = isTbRestricted(destinationType)
-  const originTypeValue = originType?.value
-  const destinationTypeValue = destinationType?.value
 
   if (
-    originTypeValue !== 'afu' &&
-    !isOriginTbRestricted &&
-    isDestinationTbRestricted
+    originType?.value !== 'afu' &&
+    !isTbRestricted(originType) &&
+    isTbRestricted(destinationType)
   ) {
     return 'TB15'
   }
 
-  if (isOriginTbRestricted && isDestinationTbRestricted) {
+  if (isTbRestricted(originType) && isTbRestricted(destinationType)) {
     return 'TB16'
   }
 
-  if (isOriginTbRestricted && destinationTypeValue === 'afu') {
-    return 'TB16e'
-  }
-
-  if (isOriginTbRestricted && destinationTypeValue === 'dedicated-sale') {
+  if (isTbRestricted(originType) && destinationType?.value === 'afu') {
     return 'TB16e'
   }
 
   if (
-    originTypeValue === 'afu' &&
-    ['slaughter', 'afu', 'dedicated-sale'].includes(destinationTypeValue)
+    isTbRestricted(originType) &&
+    destinationType?.value === 'dedicated-sale'
   ) {
     return 'TB16e'
   }
 
-  if (isOriginTbRestricted && destinationTypeValue === 'slaughter') {
+  if (
+    originType?.value === 'afu' &&
+    ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value)
+  ) {
+    return 'TB16e'
+  }
+
+  if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
     return 'TB24c'
   }
   return ''
