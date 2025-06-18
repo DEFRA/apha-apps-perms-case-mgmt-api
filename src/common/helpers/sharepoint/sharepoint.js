@@ -5,11 +5,8 @@ import {
   uploadFile
 } from '../../../common/connectors/sharepoint/sharepoint.js'
 import { statusCodes } from '../../constants/status-codes.js'
-import {
-  generateSharepointNotificationContent,
-  getFileProps
-} from '../email-content/email-content.js'
-import { fetchFile } from '../file/file-utils.js'
+import { generateSharepointNotificationContent } from '../email-content/email-content.js'
+import { fetchFile, getFileExtension } from '../file/file-utils.js'
 import {
   sendEmailToApplicant,
   sendEmailToCaseWorker
@@ -57,7 +54,7 @@ export const sharePointApplicationHandler = async (request, reference) => {
 
   if (fileAnswer && !fileAnswer.value?.skipped) {
     const fileData = await fetchFile(fileAnswer, request)
-    const { filename } = getFileProps(fileData)
+    const filename = `${reference}_Biosecurity_Map.${getFileExtension(fileData.contentType)}`
 
     try {
       await uploadFile(reference, filename, fileData.file)
