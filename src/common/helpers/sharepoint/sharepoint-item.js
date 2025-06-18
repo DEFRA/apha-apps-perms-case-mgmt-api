@@ -51,8 +51,6 @@ export const fields = (applicationData, reference) => {
     application.get('licence')?.get('fullName')?.answer
   )
 
-  const reasonForMovement = destination?.get('reasonForMovement')?.answer
-
   const originType = origin?.get('originType')?.answer
   const destinationType = destination?.get('destinationType')?.answer
 
@@ -79,7 +77,6 @@ export const fields = (applicationData, reference) => {
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
     Destination_x0020_Name: isOnFarm ? name?.displayText : null,
-    UrgentWelfare: reasonForMovement?.value === 'welfare',
     NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
     AFUtoAFU: destinationType?.value === 'afu' && originType?.value === 'afu',
     SupportingMaterial

@@ -13,8 +13,7 @@ import {
   originAddress,
   originCph,
   originSection,
-  originType,
-  reasonForMovement
+  originType
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
 
@@ -90,7 +89,6 @@ describe('fields', () => {
       addressPostcode: destinationAddressPostcode
     }),
     destinationCph(destinationCphNumber),
-    reasonForMovement('routineRestocking'),
     howManyAnimals('62')
   ])
 
@@ -120,13 +118,12 @@ describe('fields', () => {
       Destination_x0020_Name: null,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
-      UrgentWelfare: false,
       AFUtoAFU: false,
       SupportingMaterial: supportingMaterial
     })
   })
 
-  it('should construct expected fields for on the farm & a welfare case', () => {
+  it('should construct expected fields for on the farm', () => {
     const application = {
       sections: [onFarmOrigin, licence, destination]
     }
@@ -145,19 +142,10 @@ describe('fields', () => {
       DestinationCPH: destinationCphNumber,
       Destination_x0020_Name: `${firstName} ${lastName}`,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
-      UrgentWelfare: false,
       NumberofCattle: '62',
       AFUtoAFU: false,
       SupportingMaterial: supportingMaterial
     })
-  })
-
-  it('should return the desired value for a welfare', () => {
-    const application = {
-      sections: [destinationSection([reasonForMovement('welfare')])]
-    }
-
-    expect(fields(application, reference).UrgentWelfare).toBe(true)
   })
 
   it('should return the desired value for AFU -> AFU', () => {
