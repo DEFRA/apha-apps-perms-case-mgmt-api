@@ -68,7 +68,7 @@ export const fields = (applicationData, reference) => {
     Application_x0020_Reference_x002: reference,
     Title: cphNumber,
     Office: 'Polwhele',
-    MethodofReceipt: 'Digital',
+    MethodofReceipt: 'Digital (Automatically Receipted)',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: isOffFarm ? name?.displayText : null,
     FirstlineofAddress: originAddress?.value.addressLine1,
