@@ -21,6 +21,9 @@ jest.mock('./logging/logger.js', () => ({
     error: (...args) => mockLoggerError(...args)
   })
 }))
+jest.mock('./path-utils.js', () => ({
+  srcFolder: '/mock/src'
+}))
 
 describe('#startServer', () => {
   const PROCESS_ENV = process.env
