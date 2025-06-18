@@ -13,7 +13,6 @@ import {
 } from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
 import { createSharepointItem } from './sharepoint-item.js'
-import { createLogger } from '../logging/logger.js'
 
 /**
  * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/data-extract.js'
@@ -74,9 +73,6 @@ export const sharePointApplicationHandler = async (request, reference) => {
 
   await sendApplicantConfirmationEmail(request.payload, reference)
   const item = await createSharepointItem(request.payload, reference)
-  const logger = createLogger()
-  logger.info(`Sharepoint item created: ${JSON.stringify(item)}`)
-
   await sendCaseworkerNotificationEmail(request.payload, reference, item)
 
   return undefined
