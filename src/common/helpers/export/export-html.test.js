@@ -2,13 +2,6 @@ import { generateHtmlBuffer } from './export-html.js'
 
 /** @import {TextAnswer} from '../data-extract/data-extract.js' */
 
-jest.mock('fs', () => ({
-  readFileSync: jest.fn().mockReturnValue('/* Mocked CSS content */')
-}))
-jest.mock('../path-utils.js', () => ({
-  srcFolder: '/mock/src'
-}))
-
 describe('generateHtmlBuffer', () => {
   /** @type {TextAnswer} */
   const answer1 = {
