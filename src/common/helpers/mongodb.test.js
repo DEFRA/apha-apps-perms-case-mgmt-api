@@ -3,10 +3,6 @@ import { LockManager } from 'mongo-locks'
 
 import { createServer } from '../../server.js'
 
-jest.mock('./path-utils.js', () => ({
-  srcFolder: '/mock/src'
-}))
-
 describe('#mongoDb', () => {
   let server
 

@@ -7,6 +7,12 @@ import { srcFolder } from '../path-utils.js'
  * @import { ApplicationData } from '../data-extract/data-extract.js'
  */
 
+const cssPath = path.join(
+  srcFolder,
+  '/common/helpers/export/styles/govuk-frontend-5.10.2.min.css'
+)
+const cssContent = fs.readFileSync(cssPath, 'utf-8')
+
 const govUkLogo = `
   <svg focusable="false" role="img" class="govuk-header__logotype" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 30" height="30" width="148" aria-label="GOV.UK">
     <title>GOV.UK</title>
@@ -56,12 +62,6 @@ const buildHtml = (data, reference) => {
       `
     })
     .join('')
-
-  const cssPath = path.join(
-    srcFolder,
-    '/common/helpers/export/styles/govuk-frontend-5.10.2.min.css'
-  )
-  const cssContent = fs.readFileSync(cssPath, 'utf-8')
 
   return `
     <!doctype html>
