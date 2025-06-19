@@ -54,6 +54,8 @@ describe('generateHtmlBuffer', () => {
     ]
   }
 
+  afterAll(jest.restoreAllMocks)
+
   it('should include the reference in the generated HTML', async () => {
     const reference = 'TB-1234-5678'
     const bufferFromSpy = jest.spyOn(Buffer, 'from')
