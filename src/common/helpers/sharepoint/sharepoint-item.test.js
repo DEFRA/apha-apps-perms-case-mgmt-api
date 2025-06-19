@@ -118,7 +118,6 @@ describe('fields', () => {
       Destination_x0020_Name: null,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
-      AFUtoAFU: false,
       SupportingMaterial: supportingMaterial
     })
   })
@@ -143,20 +142,8 @@ describe('fields', () => {
       Destination_x0020_Name: `${firstName} ${lastName}`,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
-      AFUtoAFU: false,
       SupportingMaterial: supportingMaterial
     })
-  })
-
-  it('should return the desired value for AFU -> AFU', () => {
-    const application = {
-      sections: [
-        originSection([originType('afu')]),
-        destinationSection([destinationType('afu')])
-      ]
-    }
-
-    expect(fields(application, reference).AFUtoAFU).toBe(true)
   })
 
   it('should extract the maximum number of cattle if total number is not available', () => {
