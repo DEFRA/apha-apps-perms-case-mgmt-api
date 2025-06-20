@@ -2,8 +2,8 @@ services:
   localstack:
     image: localstack/localstack:3.0.2
     ports:
-      - '4566:4566' # LocalStack Gateway
-      - '4510-4559:4510-4559' # external services port range
+      - '4567:4566' # Remap LocalStack Gateway to different host port
+      - '4610-4659:4510-4559' # Remap service port range
     env_file:
       - 'compose/aws.env'
     environment:
@@ -25,7 +25,7 @@ services:
   redis:
     image: redis:7.2.3-alpine3.18
     ports:
-      - '6379:6379'
+      - '6380:6379' # Remap Redis to a non-default host port
     restart: always
     networks:
       - cdp-tenant
