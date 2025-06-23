@@ -1,3 +1,5 @@
+import fs from 'fs/promises'
+import path from 'path'
 import { compressPdf } from './pdf-compression.js'
 import { compressImage } from './image-compression.js'
 import { convertBytesToMB } from './size.js'
@@ -7,9 +9,16 @@ import { config } from '../../../config.js'
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
  */
+let __dirname = process.cwd()
+try {
+  if (typeof import.meta.url === 'string') {
+    const url = new URL(import.meta.url)
+    __dirname = path.dirname(url.pathname)
+  }
+} catch {}
 
 /**
- * @typedef {{file: Buffer<ArrayBufferLike>, contentType: string, fileSizeInMB: number}} FileData
+ * @typedef {{file: Buffer, contentType: string, fileSizeInMB: number}} FileData
  */
 
 /**
@@ -18,6 +27,25 @@ import { config } from '../../../config.js'
  * @returns {Promise<FileData>}
  */
 export const fetchFile = async (fileAnswer, request) => {
+  const isLocal =
+    config.get('cdpEnvironment') === 'local' || config.get('isDevelopment')
+
+  if (isLocal) {
+    const relativePath = fileAnswer?.value?.path
+    if (!relativePath) {
+      throw new Error('Missing file path in fileAnswer.value.path')
+    }
+    const absolutePath = path.resolve(__dirname, '../../../..', relativePath)
+    const localBuffer = await fs.readFile(absolutePath)
+    const contentType = inferContentTypeFromPath(relativePath)
+
+    return {
+      file: localBuffer,
+      contentType,
+      fileSizeInMB: convertBytesToMB(localBuffer.length)
+    }
+  }
+
   const obj = await request.s3.send(
     new GetObjectCommand({
       Bucket: config.get('aws').bucket ?? '',
@@ -29,13 +57,31 @@ export const fetchFile = async (fileAnswer, request) => {
   for await (const chunk of obj.Body) {
     chunks.push(chunk)
   }
-  const buffer = Buffer.concat(chunks)
+  const remoteBuffer = Buffer.concat(chunks)
 
   return {
-    file: buffer,
+    file: remoteBuffer,
     contentType: obj.ContentType,
-    fileSizeInMB: convertBytesToMB(buffer.length)
+    fileSizeInMB: convertBytesToMB(remoteBuffer.length)
   }
+}
+
+const inferContentTypeFromPath = (filePath) => {
+  const ext = path.extname(filePath).toLowerCase()
+
+  if (ext === '.pdf') {
+    return 'application/pdf'
+  }
+
+  if (ext === '.jpg' || ext === '.jpeg') {
+    return 'image/jpeg'
+  }
+
+  if (ext === '.png') {
+    return 'image/png'
+  }
+
+  return 'application/octet-stream'
 }
 
 /**

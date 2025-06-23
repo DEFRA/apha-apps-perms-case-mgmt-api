@@ -1,0 +1,270 @@
+{
+  "info": {
+    "_postman_id": "c3799400-fc33-4a0a-a875-5e2136bb1c09",
+    "name": "apha-apps",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31519663"
+  },
+  "item": [
+    {
+      "name": "submit_minimum",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test for status code 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test that response is JSON and has a 'message' field",
+              "pm.test(\"Response has a 'message' field\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "});",
+              "",
+              "// Test the format of the 'message' value (e.g. TB-27FJ-5KK7)",
+              "pm.test(\"Message format is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var message = jsonData.message;",
+              "    pm.expect(message).to.match(/^TB-\\w{4}-\\w{4}$/);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sections\": [\n        {\n            \"title\": \"Movement origin\",\n            \"sectionKey\": \"origin\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Are you moving the animals on or off your farm or premises?\",\n                    \"questionKey\": \"onOffFarm\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"off\",\n                        \"displayText\": \"Off the farm or premises\"\n                    }\n                },\n                {\n                    \"question\": \"What type of premises are the animals moving off?\",\n                    \"questionKey\": \"originType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"tb-restricted-farm\",\n                        \"displayText\": \"TB restricted farm\"\n                    }\n                },\n                {\n                    \"question\": \"What is the County Parish Holding (CPH) number of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"cphNumber\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"12/345/6789\",\n                        \"displayText\": \"12/345/6789\"\n                    }\n                },\n                {\n                    \"question\": \"What is the address of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"address\",\n                    \"answer\": {\n                        \"type\": \"address\",\n                        \"value\": {\n                            \"addressLine1\": \"Starfleet Headquarters\",\n                            \"addressTown\": \"San Francisco\",\n                            \"addressPostcode\": \"N11 1NN\"\n                        },\n                        \"displayText\": \"Starfleet Headquarters\\nSan Franciso\\nN11 1NN\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Movement destination\",\n            \"sectionKey\": \"destination\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Where are the animals going to?\",\n                    \"questionKey\": \"destinationType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"slaughter\",\n                        \"displayText\": \"Slaughter\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Receiving the licence\",\n            \"sectionKey\": \"licence\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"What is the name of the registered owner of the cattle?\",\n                    \"questionKey\": \"fullName\",\n                    \"answer\": {\n                        \"type\": \"name\",\n                        \"value\": {\n                            \"firstName\": \"John\",\n                            \"lastName\": \"Doe\"\n                        },\n                        \"displayText\": \"John Doe\"\n                    }\n                },\n                {\n                    \"question\": \"How would you like this licence sent to you?\",\n                    \"questionKey\": \"receiveMethod\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"email\",\n                        \"displayText\": \"Email\"\n                    }\n                },\n                {\n                    \"question\": \"What email address would you like the licence sent to?\",\n                    \"questionKey\": \"emailAddress\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"name@example.com\",\n                        \"displayText\": \"eoin.corr@esynergy.co.uk\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{case_mgmt_url}}/submit",
+          "host": ["{{case_mgmt_url}}"],
+          "path": ["submit"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "submit_pdf_large",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test for status code 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test that response is JSON and has a 'message' field",
+              "pm.test(\"Response has a 'message' field\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "});",
+              "",
+              "// Test the format of the 'message' value (e.g. TB-27FJ-5KK7)",
+              "pm.test(\"Message format is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var message = jsonData.message;",
+              "    pm.expect(message).to.match(/^TB-\\w{4}-\\w{4}$/);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sections\": [\n        {\n            \"title\": \"Movement origin\",\n            \"sectionKey\": \"origin\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Are you moving the animals on or off your farm or premises?\",\n                    \"questionKey\": \"onOffFarm\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"off\",\n                        \"displayText\": \"Off the farm or premises\"\n                    }\n                },\n                {\n                    \"question\": \"What type of premises are the animals moving off?\",\n                    \"questionKey\": \"originType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"tb-restricted-farm\",\n                        \"displayText\": \"TB restricted farm\"\n                    }\n                },\n                {\n                    \"question\": \"What is the County Parish Holding (CPH) number of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"cphNumber\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"12/345/6789\",\n                        \"displayText\": \"12/345/6789\"\n                    }\n                },\n                {\n                    \"question\": \"What is the address of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"address\",\n                    \"answer\": {\n                        \"type\": \"address\",\n                        \"value\": {\n                            \"addressLine1\": \"Starfleet Headquarters\",\n                            \"addressTown\": \"San Francisco\",\n                            \"addressPostcode\": \"N11 1NN\"\n                        },\n                        \"displayText\": \"Starfleet Headquarters\\nSan Franciso\\nN11 1NN\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Movement destination\",\n            \"sectionKey\": \"destination\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Where are the animals going to?\",\n                    \"questionKey\": \"destinationType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"slaughter\",\n                        \"displayText\": \"Slaughter\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Receiving the licence\",\n            \"sectionKey\": \"licence\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"What is the name of the registered owner of the cattle?\",\n                    \"questionKey\": \"fullName\",\n                    \"answer\": {\n                        \"type\": \"name\",\n                        \"value\": {\n                            \"firstName\": \"John\",\n                            \"lastName\": \"Doe\"\n                        },\n                        \"displayText\": \"John Doe\"\n                    }\n                },\n                {\n                    \"question\": \"How would you like this licence sent to you?\",\n                    \"questionKey\": \"receiveMethod\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"email\",\n                        \"displayText\": \"Email\"\n                    }\n                },\n                {\n                    \"question\": \"What email address would you like the licence sent to?\",\n                    \"questionKey\": \"emailAddress\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"eoin.corr@esynergy.co.uk\",\n                        \"displayText\": \"eoin.corr@esynergy.co.uk\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Biosecurity Map\",\n            \"sectionKey\": \"biosecurity-map\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"upload a map\",\n                    \"questionKey\": \"upload-plan\",\n                    \"answer\": {\n                        \"type\": \"file\",\n                        \"value\": {\n                            \"skipped\": false,\n                            \"path\": \"tests/postman/assets/large_pdf_can_be_compressed.pdf\"\n                        },\n                        \"displayText\": \"Large_pdf\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{case_mgmt_url}}/submit",
+          "host": ["{{case_mgmt_url}}"],
+          "path": ["submit"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "submit_pdf__small",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test for status code 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test that response is JSON and has a 'message' field",
+              "pm.test(\"Response has a 'message' field\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "});",
+              "",
+              "// Test the format of the 'message' value (e.g. TB-27FJ-5KK7)",
+              "pm.test(\"Message format is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var message = jsonData.message;",
+              "    pm.expect(message).to.match(/^TB-\\w{4}-\\w{4}$/);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sections\": [\n        {\n            \"title\": \"Movement origin\",\n            \"sectionKey\": \"origin\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Are you moving the animals on or off your farm or premises?\",\n                    \"questionKey\": \"onOffFarm\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"off\",\n                        \"displayText\": \"Off the farm or premises\"\n                    }\n                },\n                {\n                    \"question\": \"What type of premises are the animals moving off?\",\n                    \"questionKey\": \"originType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"tb-restricted-farm\",\n                        \"displayText\": \"TB restricted farm\"\n                    }\n                },\n                {\n                    \"question\": \"What is the County Parish Holding (CPH) number of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"cphNumber\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"12/345/6789\",\n                        \"displayText\": \"12/345/6789\"\n                    }\n                },\n                {\n                    \"question\": \"What is the address of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"address\",\n                    \"answer\": {\n                        \"type\": \"address\",\n                        \"value\": {\n                            \"addressLine1\": \"Starfleet Headquarters\",\n                            \"addressTown\": \"San Francisco\",\n                            \"addressPostcode\": \"N11 1NN\"\n                        },\n                        \"displayText\": \"Starfleet Headquarters\\nSan Franciso\\nN11 1NN\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Movement destination\",\n            \"sectionKey\": \"destination\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Where are the animals going to?\",\n                    \"questionKey\": \"destinationType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"slaughter\",\n                        \"displayText\": \"Slaughter\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Receiving the licence\",\n            \"sectionKey\": \"licence\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"What is the name of the registered owner of the cattle?\",\n                    \"questionKey\": \"fullName\",\n                    \"answer\": {\n                        \"type\": \"name\",\n                        \"value\": {\n                            \"firstName\": \"John\",\n                            \"lastName\": \"Doe\"\n                        },\n                        \"displayText\": \"John Doe\"\n                    }\n                },\n                {\n                    \"question\": \"How would you like this licence sent to you?\",\n                    \"questionKey\": \"receiveMethod\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"email\",\n                        \"displayText\": \"Email\"\n                    }\n                },\n                {\n                    \"question\": \"What email address would you like the licence sent to?\",\n                    \"questionKey\": \"emailAddress\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"name@example.com\",\n                        \"displayText\": \"eoin.corr@esynergy.co.uk\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Biosecurity Map\",\n            \"sectionKey\": \"biosecurity-map\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"upload a map\",\n                    \"questionKey\": \"upload-plan\",\n                    \"answer\": {\n                        \"type\": \"file\",\n                        \"value\": {\n                            \"skipped\": false,\n                            \"path\": \"tests/postman/assets/test-pdf-document.pdf\"\n                        },\n                        \"displayText\": \"Small_pdf\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{case_mgmt_url}}/submit",
+          "host": ["{{case_mgmt_url}}"],
+          "path": ["submit"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "submit_skipped_file",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test for status code 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test that response is JSON and has a 'message' field",
+              "pm.test(\"Response has a 'message' field\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "});",
+              "",
+              "// Test the format of the 'message' value (e.g. TB-27FJ-5KK7)",
+              "pm.test(\"Message format is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var message = jsonData.message;",
+              "    pm.expect(message).to.match(/^TB-\\w{4}-\\w{4}$/);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sections\": [\n        {\n            \"title\": \"Movement origin\",\n            \"sectionKey\": \"origin\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Are you moving the animals on or off your farm or premises?\",\n                    \"questionKey\": \"onOffFarm\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"off\",\n                        \"displayText\": \"Off the farm or premises\"\n                    }\n                },\n                {\n                    \"question\": \"What type of premises are the animals moving off?\",\n                    \"questionKey\": \"originType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"tb-restricted-farm\",\n                        \"displayText\": \"TB restricted farm\"\n                    }\n                },\n                {\n                    \"question\": \"What is the County Parish Holding (CPH) number of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"cphNumber\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"12/345/6789\",\n                        \"displayText\": \"12/345/6789\"\n                    }\n                },\n                {\n                    \"question\": \"What is the address of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"address\",\n                    \"answer\": {\n                        \"type\": \"address\",\n                        \"value\": {\n                            \"addressLine1\": \"Starfleet Headquarters\",\n                            \"addressTown\": \"San Francisco\",\n                            \"addressPostcode\": \"N11 1NN\"\n                        },\n                        \"displayText\": \"Starfleet Headquarters\\nSan Franciso\\nN11 1NN\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Movement destination\",\n            \"sectionKey\": \"destination\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Where are the animals going to?\",\n                    \"questionKey\": \"destinationType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"slaughter\",\n                        \"displayText\": \"Slaughter\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Receiving the licence\",\n            \"sectionKey\": \"licence\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"What is the name of the registered owner of the cattle?\",\n                    \"questionKey\": \"fullName\",\n                    \"answer\": {\n                        \"type\": \"name\",\n                        \"value\": {\n                            \"firstName\": \"John\",\n                            \"lastName\": \"Doe\"\n                        },\n                        \"displayText\": \"John Doe\"\n                    }\n                },\n                {\n                    \"question\": \"How would you like this licence sent to you?\",\n                    \"questionKey\": \"receiveMethod\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"email\",\n                        \"displayText\": \"Email\"\n                    }\n                },\n                {\n                    \"question\": \"What email address would you like the licence sent to?\",\n                    \"questionKey\": \"emailAddress\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"name@example.com\",\n                        \"displayText\": \"eoin.corr@esynergy.co.uk\"\n                    }\n                },\n                {\n                    \"question\": \"What is the planned start date?\",\n                    \"questionKey\": \"plannedStartDate\",\n                    \"answer\": {\n                        \"type\": \"date\",\n                        \"value\": {\n                            \"day\": \"01\",\n                            \"month\": \"03\",\n                            \"year\": \"2025\"\n                        },\n                        \"displayText\": \"2 June 2025\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Biosecurity Map\",\n            \"sectionKey\": \"biosecurity-map\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Upload a map\",\n                    \"questionKey\": \"upload-plan\",\n                    \"answer\": {\n                        \"type\": \"file\",\n                        \"value\": {\n                            \"skipped\": true\n                        },\n                        \"displayText\": \"Missing biosecurity map. Check the CSC TB licencing mailbox for an emailed version from the applicant.\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{case_mgmt_url}}/submit",
+          "host": ["{{case_mgmt_url}}"],
+          "path": ["submit"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "submit_date",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test for status code 200",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test that response is JSON and has a 'message' field",
+              "pm.test(\"Response has a 'message' field\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "});",
+              "",
+              "// Test the format of the 'message' value (e.g. TB-27FJ-5KK7)",
+              "pm.test(\"Message format is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var message = jsonData.message;",
+              "    pm.expect(message).to.match(/^TB-\\w{4}-\\w{4}$/);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sections\": [\n        {\n            \"title\": \"Movement origin\",\n            \"sectionKey\": \"origin\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Are you moving the animals on or off your farm or premises?\",\n                    \"questionKey\": \"onOffFarm\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"off\",\n                        \"displayText\": \"Off the farm or premises\"\n                    }\n                },\n                {\n                    \"question\": \"What type of premises are the animals moving off?\",\n                    \"questionKey\": \"originType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"tb-restricted-farm\",\n                        \"displayText\": \"TB restricted farm\"\n                    }\n                },\n                {\n                    \"question\": \"What is the County Parish Holding (CPH) number of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"cphNumber\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"12/345/6789\",\n                        \"displayText\": \"12/345/6789\"\n                    }\n                },\n                {\n                    \"question\": \"What is the address of your farm or premises where the animals are moving off?\",\n                    \"questionKey\": \"address\",\n                    \"answer\": {\n                        \"type\": \"address\",\n                        \"value\": {\n                            \"addressLine1\": \"Starfleet Headquarters\",\n                            \"addressTown\": \"San Francisco\",\n                            \"addressPostcode\": \"N11 1NN\"\n                        },\n                        \"displayText\": \"Starfleet Headquarters\\nSan Franciso\\nN11 1NN\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Movement destination\",\n            \"sectionKey\": \"destination\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Where are the animals going to?\",\n                    \"questionKey\": \"destinationType\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"slaughter\",\n                        \"displayText\": \"Slaughter\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Receiving the licence\",\n            \"sectionKey\": \"licence\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"What is the name of the registered owner of the cattle?\",\n                    \"questionKey\": \"fullName\",\n                    \"answer\": {\n                        \"type\": \"name\",\n                        \"value\": {\n                            \"firstName\": \"John\",\n                            \"lastName\": \"Doe\"\n                        },\n                        \"displayText\": \"John Doe\"\n                    }\n                },\n                {\n                    \"question\": \"How would you like this licence sent to you?\",\n                    \"questionKey\": \"receiveMethod\",\n                    \"answer\": {\n                        \"type\": \"radio\",\n                        \"value\": \"email\",\n                        \"displayText\": \"Email\"\n                    }\n                },\n                {\n                    \"question\": \"What email address would you like the licence sent to?\",\n                    \"questionKey\": \"emailAddress\",\n                    \"answer\": {\n                        \"type\": \"text\",\n                        \"value\": \"name@example.com\",\n                        \"displayText\": \"eoin.corr@esynergy.co.uk\"\n                    }\n                },\n                {\n                    \"question\": \"What is the planned start date?\",\n                    \"questionKey\": \"plannedStartDate\",\n                    \"answer\": {\n                        \"type\": \"date\",\n                        \"value\": {\n                            \"day\": \"01\",\n                            \"month\": \"03\",\n                            \"year\": \"2025\"\n                        },\n                        \"displayText\": \"2 June 2025\"\n                    }\n                }\n            ]\n        },\n        {\n            \"title\": \"Biosecurity Map\",\n            \"sectionKey\": \"biosecurity-map\",\n            \"questionAnswers\": [\n                {\n                    \"question\": \"Upload a map\",\n                    \"questionKey\": \"upload-plan\",\n                    \"answer\": {\n                        \"type\": \"file\",\n                        \"value\": {\n                            \"skipped\": true\n                        },\n                        \"displayText\": \"Missing biosecurity map. Check the CSC TB licencing mailbox for an emailed version from the applicant.\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{case_mgmt_url}}/submit",
+          "host": ["{{case_mgmt_url}}"],
+          "path": ["submit"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

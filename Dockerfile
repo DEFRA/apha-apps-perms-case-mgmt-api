@@ -11,6 +11,13 @@ ARG PORT_DEBUG
 ENV PORT=${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
+# Add Ghostscript for development use (e.g. local PDF compression)
+USER root
+RUN apk update \
+    && apk add ghostscript \
+    && apk cache clean
+USER node
+
 COPY --chown=node:node package*.json ./
 RUN npm install
 COPY --chown=node:node ./src ./src
