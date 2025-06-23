@@ -2,8 +2,6 @@ import { fetchFile, compressFile, getFileExtension } from './file-utils.js'
 import { compressPdf } from './pdf-compression.js'
 import { compressImage } from './image-compression.js'
 import { config } from '../../../config.js'
-import path from 'node:path'
-import { createReadStream } from 'node:fs'
 
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
@@ -19,15 +17,18 @@ jest.mock('./image-compression.js')
 jest.mock('./size.js')
 jest.mock('@aws-sdk/client-s3')
 jest.mock('../../../config.js')
-
-const pdfStream = createReadStream(
-  path.resolve('./src/common/helpers/file/example.pdf')
-)
-
-const mockS3ObjectPdf = {
-  Body: pdfStream,
-  ContentType: pdfContentType
-}
+jest.mock('../../connectors/storage/s3.js', () => {
+  const { createReadStream } = require('node:fs')
+  const path = require('node:path')
+  return {
+    retrieveFile: jest.fn().mockReturnValue({
+      Body: createReadStream(
+        path.resolve('./src/common/helpers/file/example.pdf')
+      ),
+      ContentType: 'application/pdf'
+    })
+  }
+})
 
 const compressedPdfBuffer = Buffer.from('compressed-pdf')
 const compressedImageBuffer = Buffer.from('compressed-image')
@@ -69,9 +70,6 @@ describe('File Utils', () => {
 
   beforeEach(() => {
     mockReq = {
-      s3: {
-        send: jest.fn()
-      },
       logger: {
         info: jest.fn()
       }
@@ -84,11 +82,8 @@ describe('File Utils', () => {
 
   describe('fetchFile', () => {
     it('should fetch the files and return content type and size in MB', async () => {
-      mockReq.s3.send.mockResolvedValue(mockS3ObjectPdf)
+      const result = await fetchFile(mockUploadedFile)
 
-      const result = await fetchFile(mockUploadedFile, mockReq)
-
-      expect(mockReq.s3.send).toHaveBeenCalled()
       expect(result.contentType).toEqual(pdfContentType)
       expect(result.fileSizeInMB).toEqual(mockFileSize)
     })
