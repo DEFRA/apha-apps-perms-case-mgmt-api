@@ -22,6 +22,11 @@ jest.mock('./logging/logger.js', () => ({
   })
 }))
 
+jest.mock('../connectors/queue/sqs.js', () => ({
+  startSQSQueuePolling: jest.fn().mockResolvedValue(null),
+  closeSQSClient: jest.fn().mockResolvedValue(null)
+}))
+
 describe('#startServer', () => {
   const PROCESS_ENV = process.env
   let createServerSpy
@@ -51,7 +56,7 @@ describe('#startServer', () => {
       await server.stop({ timeout: 0 })
     })
 
-    test('Should start up server as expected', async () => {
+    it('Should start up server as expected', async () => {
       server = await startServerImport.startServer()
 
       expect(createServerSpy).toHaveBeenCalled()
@@ -84,7 +89,7 @@ describe('#startServer', () => {
       createServerSpy.mockRejectedValue(new Error('Server failed to start'))
     })
 
-    test('Should log failed startup message', async () => {
+    it('Should log failed startup message', async () => {
       await startServerImport.startServer()
 
       expect(mockLoggerInfo).toHaveBeenCalledWith('Server failed to start :(')

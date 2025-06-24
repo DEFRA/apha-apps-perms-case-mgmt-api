@@ -6,7 +6,7 @@ import { config } from '../../../config.js'
  */
 
 const { region, s3Endpoint } = config.get('aws')
-const client = new S3Client({
+export const client = new S3Client({
   region,
   endpoint: s3Endpoint,
   forcePathStyle: config.get('isDevelopment')

@@ -17,7 +17,7 @@ const logger = createLogger()
 
 const { region, sqsEndpoint, sqsQueueUrl, accessKeyId, secretAccessKey } =
   config.get('aws')
-const producerClient = new SQSClient({
+export const producerClient = new SQSClient({
   region,
   endpoint: sqsEndpoint,
   credentials: {
@@ -25,7 +25,7 @@ const producerClient = new SQSClient({
     secretAccessKey
   }
 })
-const consumerClient = new SQSClient({
+export const consumerClient = new SQSClient({
   region,
   endpoint: sqsEndpoint,
   credentials: {
