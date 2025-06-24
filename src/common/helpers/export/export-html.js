@@ -23,9 +23,9 @@ const govUkLogo = `
 /**
  * @param {ApplicationData} data
  * @param {string} reference
- * @returns {Promise<Uint8Array<ArrayBufferLike>>}
+ * @returns {Uint8Array<ArrayBufferLike>}
  */
-export const generateHtmlBuffer = async (data, reference) => {
+export const generateHtmlBuffer = (data, reference) => {
   const html = buildHtml(data, reference)
   return Buffer.from(html, 'utf-8')
 }

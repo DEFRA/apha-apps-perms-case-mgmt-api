@@ -17,7 +17,15 @@ const logger = createLogger()
 
 const { region, sqsEndpoint, sqsQueueUrl, accessKeyId, secretAccessKey } =
   config.get('aws')
-const client = new SQSClient({
+const producerClient = new SQSClient({
+  region,
+  endpoint: sqsEndpoint,
+  credentials: {
+    accessKeyId,
+    secretAccessKey
+  }
+})
+const consumerClient = new SQSClient({
   region,
   endpoint: sqsEndpoint,
   credentials: {
@@ -36,7 +44,38 @@ export const sendMessageToSQS = async (application, reference) => {
     QueueUrl: sqsQueueUrl,
     MessageBody: JSON.stringify({ application, reference })
   })
-  await client.send(command)
+  await producerClient.send(command)
+}
+
+export const pollOnce = async () => {
+  const command = new ReceiveMessageCommand({
+    QueueUrl: sqsQueueUrl,
+    MaxNumberOfMessages: 1,
+    WaitTimeSeconds: 10, // Long poll
+    VisibilityTimeout: 30
+  })
+
+  const response = await consumerClient.send(command)
+  const message = response.Messages?.[0]
+  if (message?.Body) {
+    try {
+      const queuedApplicationData = JSON.parse(message.Body)
+      await processApplication(queuedApplicationData)
+      logger.info(
+        `Application processed successfully: ${queuedApplicationData.reference}`
+      )
+      try {
+        await deleteMessageFromSQS(message)
+        logger.info(
+          `Application deleted from the queue: ${queuedApplicationData.reference}`
+        )
+      } catch (error) {
+        logger.error('Error deleting message from SQS:', error)
+      }
+    } catch (error) {
+      logger.error('Error processing message from SQS:', error)
+    }
+  }
 }
 
 /**
@@ -45,33 +84,12 @@ export const sendMessageToSQS = async (application, reference) => {
  */
 export const startSQSQueuePolling = async () => {
   while (true) {
-    const command = new ReceiveMessageCommand({
-      QueueUrl: sqsQueueUrl,
-      MaxNumberOfMessages: 1,
-      WaitTimeSeconds: 10, // Long poll
-      VisibilityTimeout: 30
-    })
-
-    const response = await client.send(command)
-    const message = response.Messages?.[0]
-    if (message?.Body) {
-      try {
-        const queuedApplicationData = JSON.parse(message.Body)
-        await processApplication(queuedApplicationData)
-        logger.info(
-          `Application processed successfully: ${queuedApplicationData.reference}`
-        )
-        try {
-          await deleteMessageFromSQS(message)
-          logger.info(
-            `Application deleted from the queue: ${queuedApplicationData.reference}`
-          )
-        } catch (error) {
-          logger.error('Error deleting message from SQS:', error)
-        }
-      } catch (error) {
-        logger.error('Error processing message from SQS:', error)
-      }
+    try {
+      await pollOnce()
+    } catch (error) {
+      logger.error('Error in SQS polling loop:', error)
+      // add a delay to avoid tight loop in case of errors
+      await new Promise((resolve) => setTimeout(resolve, 5000))
     }
   }
 }
@@ -80,16 +98,19 @@ export const startSQSQueuePolling = async () => {
  * @param {Message} message
  * @returns {Promise<void>}
  */
-export const deleteMessageFromSQS = async (message) => {
+const deleteMessageFromSQS = async (message) => {
   const deleteCommand = new DeleteMessageCommand({
     QueueUrl: sqsQueueUrl,
     ReceiptHandle: message.ReceiptHandle
   })
-  await client.send(deleteCommand)
+  await consumerClient.send(deleteCommand)
 }
 
 export const closeSQSClient = () => {
-  if (client) {
-    client.destroy()
+  if (consumerClient) {
+    consumerClient.destroy()
+  }
+  if (producerClient) {
+    producerClient.destroy()
   }
 }

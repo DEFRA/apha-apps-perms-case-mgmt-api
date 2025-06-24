@@ -60,7 +60,7 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload submitted application to SharePoint: ${error.message}`
     )
-    throw new Error(error)
+    throw error
   }
 
   try {
@@ -69,7 +69,7 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload biosecurity map to SharePoint: ${error.message}`
     )
-    throw new Error(error)
+    throw error
   }
 
   let item
@@ -77,15 +77,14 @@ export const processApplication = async (queuedApplicationData) => {
     item = await createSharepointItem(application, reference)
   } catch (error) {
     logger.warn(`Failed to create SharePoint item: ${error.message}`)
-    throw new Error(error)
+    throw error
   }
   try {
     await sendCaseworkerNotificationEmail(application, reference, item)
   } catch (error) {
     logger.warn(`Failed to send email to case worker: ${error.message}`)
-    throw new Error(error)
+    throw error
   }
-  return undefined
 }
 
 /**
@@ -94,7 +93,7 @@ export const processApplication = async (queuedApplicationData) => {
  * @returns {Promise<void>}
  */
 const uploadSubmittedApplication = async (application, reference) => {
-  const applicationHtml = await generateHtmlBuffer(application, reference)
+  const applicationHtml = generateHtmlBuffer(application, reference)
   return uploadFile(
     reference,
     `${reference}_Submitted_Application.html`,
