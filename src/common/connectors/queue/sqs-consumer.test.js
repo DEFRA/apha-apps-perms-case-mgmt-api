@@ -1,11 +1,10 @@
 import {
   DeleteMessageCommand,
   ReceiveMessageCommand,
-  SQSClient,
-  SendMessageCommand
+  SQSClient
 } from '@aws-sdk/client-sqs'
 import { mockClient } from 'aws-sdk-client-mock'
-import * as sqs from './sqs.js'
+import * as sqs from './sqs-consumer.js'
 import * as sharepoint from '../../helpers/sharepoint/sharepoint.js'
 
 /**
@@ -41,36 +40,9 @@ const applicationData = {
   ]
 }
 
-describe('SQS Connector', () => {
+describe('SQS Consumer Connector', () => {
   beforeEach(() => {
     sqsMock.reset()
-  })
-
-  describe('sendMessageToSQS', () => {
-    it('should send a message with the correct body', async () => {
-      sqsMock.on(SendMessageCommand).resolves({ MessageId: 'abc' })
-      await sqs.sendMessageToSQS(applicationData, testReference)
-
-      expect(sqsMock.calls()).toHaveLength(1)
-
-      const command = sqsMock.call(0).args[0]
-      expect(command).toBeInstanceOf(SendMessageCommand)
-
-      // @ts-expect-error: input is SendMessageCommandInput in this context
-      const body = command.input.MessageBody
-      const parsedBody = JSON.parse(body)
-
-      expect(parsedBody.application).toEqual(applicationData)
-      expect(parsedBody.reference).toBe(testReference)
-    })
-
-    it('should handle errors when sending a message', () => {
-      sqsMock.on(SendMessageCommand).rejects(new Error('SQS send error'))
-
-      expect(
-        sqs.sendMessageToSQS(applicationData, testReference)
-      ).rejects.toThrow('SQS send error')
-    })
   })
 
   describe('pollOnce', () => {
@@ -148,19 +120,15 @@ describe('SQS Connector', () => {
     })
   })
 
-  describe('closeSQSClient', () => {
+  describe('closeSQSConsumerClient', () => {
     afterEach(jest.restoreAllMocks)
 
-    it('should close the clients', () => {
+    it('should close the client', () => {
       const consumerDestroySpy = jest
         .spyOn(sqs.consumerClient, 'destroy')
         .mockImplementation(() => {})
-      const producerDestroySpy = jest
-        .spyOn(sqs.producerClient, 'destroy')
-        .mockImplementation(() => {})
-      sqs.closeSQSClient()
+      sqs.closeSQSConsumerClient()
       expect(consumerDestroySpy).toHaveBeenCalled()
-      expect(producerDestroySpy).toHaveBeenCalled()
     })
   })
 })

@@ -2,9 +2,10 @@ import { config } from '../../config.js'
 
 import { createServer } from '../../server.js'
 import {
-  closeSQSClient,
+  closeSQSConsumerClient,
   startSQSQueuePolling
-} from '../connectors/queue/sqs.js'
+} from '../connectors/queue/sqs-consumer.js'
+import { closeSQSProducerClient } from '../connectors/queue/sqs-producer.js'
 import { closeS3Client } from '../connectors/storage/s3.js'
 import { createLogger } from './logging/logger.js'
 
@@ -25,8 +26,9 @@ async function startServer() {
       server.logger.info('SQS queue polling started')
 
       server.events.on('stop', () => {
-        server.logger.info(`Closing SQS client`)
-        closeSQSClient()
+        server.logger.info(`Closing SQS clients`)
+        closeSQSConsumerClient()
+        closeSQSProducerClient()
       })
     }
 

@@ -22,9 +22,12 @@ jest.mock('./logging/logger.js', () => ({
   })
 }))
 
-jest.mock('../connectors/queue/sqs.js', () => ({
+jest.mock('../connectors/queue/sqs-consumer.js', () => ({
   startSQSQueuePolling: jest.fn().mockResolvedValue(null),
-  closeSQSClient: jest.fn().mockResolvedValue(null)
+  closeSQSConsumerClient: jest.fn().mockResolvedValue(null)
+}))
+jest.mock('../connectors/queue/sqs-producer.js', () => ({
+  closeSQSProducerClient: jest.fn().mockResolvedValue(null)
 }))
 
 describe('#startServer', () => {

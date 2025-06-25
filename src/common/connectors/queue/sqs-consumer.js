@@ -1,6 +1,5 @@
 import {
   SQSClient,
-  SendMessageCommand,
   ReceiveMessageCommand,
   DeleteMessageCommand
 } from '@aws-sdk/client-sqs'
@@ -13,20 +12,11 @@ const retryTimeout = 5000 // 5 seconds
 const logger = createLogger()
 
 /**
- * @import {ApplicationData} from '../../helpers/data-extract/data-extract.js'
  * @import {Message} from '@aws-sdk/client-sqs'
  */
 
 const { region, sqsEndpoint, sqsQueueUrl, accessKeyId, secretAccessKey } =
   config.get('aws')
-export const producerClient = new SQSClient({
-  region,
-  endpoint: sqsEndpoint,
-  credentials: {
-    accessKeyId,
-    secretAccessKey
-  }
-})
 export const consumerClient = new SQSClient({
   region,
   endpoint: sqsEndpoint,
@@ -35,19 +25,6 @@ export const consumerClient = new SQSClient({
     secretAccessKey
   }
 })
-
-/**
- * @param {ApplicationData} application
- * @param {string} reference
- * @returns {Promise<void>} Resolves when the message has been sent or logs an error if sending fails.
- */
-export const sendMessageToSQS = async (application, reference) => {
-  const command = new SendMessageCommand({
-    QueueUrl: sqsQueueUrl,
-    MessageBody: JSON.stringify({ application, reference })
-  })
-  await producerClient.send(command)
-}
 
 export const pollOnce = async () => {
   const command = new ReceiveMessageCommand({
@@ -98,6 +75,12 @@ export const startSQSQueuePolling = async (limit = Infinity) => {
   }
 }
 
+export const closeSQSConsumerClient = () => {
+  if (consumerClient) {
+    consumerClient.destroy()
+  }
+}
+
 /**
  * @param {Message} message
  * @returns {Promise<void>}
@@ -108,13 +91,4 @@ const deleteMessageFromSQS = async (message) => {
     ReceiptHandle: message.ReceiptHandle
   })
   await consumerClient.send(deleteCommand)
-}
-
-export const closeSQSClient = () => {
-  if (consumerClient) {
-    consumerClient.destroy()
-  }
-  if (producerClient) {
-    producerClient.destroy()
-  }
 }

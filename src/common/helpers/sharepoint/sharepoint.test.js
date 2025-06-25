@@ -10,7 +10,7 @@ import {
   processApplication,
   sharePointApplicationHandler
 } from './sharepoint.js'
-import { sendMessageToSQS } from '../../connectors/queue/sqs.js'
+import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createSharepointItem } from './sharepoint-item.js'
 
 /**
@@ -42,7 +42,7 @@ jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
 jest.mock('./sharepoint-item.js', () => ({
   createSharepointItem: jest.fn()
 }))
-jest.mock('../../connectors/queue/sqs.js', () => ({
+jest.mock('../../connectors/queue/sqs-producer.js', () => ({
   sendMessageToSQS: jest.fn()
 }))
 

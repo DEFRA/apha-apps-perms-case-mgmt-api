@@ -13,7 +13,7 @@ import {
 } from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
 import { createSharepointItem } from './sharepoint-item.js'
-import { sendMessageToSQS } from '../../connectors/queue/sqs.js'
+import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 
 /**
