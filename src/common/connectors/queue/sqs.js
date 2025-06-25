@@ -84,8 +84,9 @@ export const pollOnce = async () => {
  * Starts polling an AWS SQS queue for messages in an infinite loop.
  * @returns {Promise<void>} Resolves when the polling loop is stopped (never in current implementation).
  */
-export const startSQSQueuePolling = async () => {
-  while (true) {
+export const startSQSQueuePolling = async (limit = Infinity) => {
+  let count = 0
+  while (count < limit) {
     try {
       await pollOnce()
     } catch (error) {
@@ -93,6 +94,7 @@ export const startSQSQueuePolling = async () => {
       // add a delay to avoid tight loop in case of errors
       await new Promise((resolve) => setTimeout(resolve, retryTimeout))
     }
+    count++
   }
 }
 
