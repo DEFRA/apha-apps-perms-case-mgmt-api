@@ -196,6 +196,31 @@ const config = convict({
       default: null,
       nullable: true,
       env: 'S3_BUCKET'
+    },
+    sqsEndpoint: {
+      doc: 'AWS SQS endpoint',
+      format: String,
+      default: 'http://localhost:4567',
+      env: 'SQS_ENDPOINT'
+    },
+    sqsQueueUrl: {
+      doc: 'AWS SQS queue URL',
+      format: String,
+      default:
+        'http://localhost:4567/000000000000/apha_apps_perms_submitted_applications',
+      env: 'SQS_QUEUE_URL'
+    },
+    accessKeyId: {
+      doc: 'AWS access key ID',
+      format: String,
+      default: 'test',
+      env: 'AWS_ACCESS_KEY_ID'
+    },
+    secretAccessKey: {
+      doc: 'AWS secret access key',
+      format: String,
+      default: 'test',
+      env: 'AWS_SECRET'
     }
   },
   gsPath: {

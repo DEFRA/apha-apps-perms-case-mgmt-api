@@ -36,7 +36,7 @@ export const emailApplicationHandler = async (request, reference) => {
   )
 
   if (fileAnswer && !fileAnswer.value?.skipped) {
-    const fileData = await fetchFile(fileAnswer, request)
+    const fileData = await fetchFile(fileAnswer)
 
     if (fileData.fileSizeInMB > 10) {
       return {

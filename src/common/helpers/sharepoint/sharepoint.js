@@ -13,11 +13,16 @@ import {
 } from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
 import { createSharepointItem } from './sharepoint-item.js'
+import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
+import { createLogger } from '../logging/logger.js'
 
 /**
  * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/data-extract.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
+ * @typedef {{ application: ApplicationData, reference: string }} QueuedApplication
  */
+
+const logger = createLogger()
 
 /**
  * @param {object} request
@@ -25,57 +30,98 @@ import { createSharepointItem } from './sharepoint-item.js'
  * @returns {Promise<void|HandlerError>}
  */
 export const sharePointApplicationHandler = async (request, reference) => {
-  // Upload the application to SharePoint
-  const applicationHtml = await generateHtmlBuffer(request.payload, reference)
   try {
-    await uploadFile(
-      reference,
-      `${reference}_Submitted_Application.html`,
-      applicationHtml
-    )
+    await sendMessageToSQS(request.payload, reference)
   } catch (error) {
-    request.logger.warn(`Failed to upload file to SharePoint: ${error.message}`)
     return {
       error: {
-        errorCode: 'FILE_UPLOAD_FAILED__APPLICATION',
+        errorCode: 'MESSAGE_ENQUEUEING_FAILED',
         statusCode: statusCodes.serverError
       }
     }
   }
+  try {
+    await sendApplicantConfirmationEmail(request.payload, reference)
+  } catch (error) {
+    logger.error(`Failed to send email to applicant: ${error.message}`)
+  }
+  return undefined // No error, return undefined
+}
 
-  // Upload the biosecurity map if it exists
+/**
+ * @param {QueuedApplication} queuedApplicationData
+ * @returns {Promise<void|HandlerError>}
+ */
+export const processApplication = async (queuedApplicationData) => {
+  const { reference, application } = queuedApplicationData
+
+  try {
+    await uploadSubmittedApplication(application, reference)
+  } catch (error) {
+    logger.warn(
+      `Failed to upload submitted application to SharePoint: ${error.message}`
+    )
+    throw error
+  }
+
+  try {
+    await uploadBiosecurityMap(application, reference)
+  } catch (error) {
+    logger.warn(
+      `Failed to upload biosecurity map to SharePoint: ${error.message}`
+    )
+    throw error
+  }
+
+  let item
+  try {
+    item = await createSharepointItem(application, reference)
+  } catch (error) {
+    logger.warn(`Failed to create SharePoint item: ${error.message}`)
+    throw error
+  }
+  try {
+    await sendCaseworkerNotificationEmail(application, reference, item)
+  } catch (error) {
+    logger.warn(`Failed to send email to case worker: ${error.message}`)
+    throw error
+  }
+}
+
+/**
+ * @param {ApplicationData} application
+ * @param {string} reference
+ * @returns {Promise<void>}
+ */
+const uploadSubmittedApplication = async (application, reference) => {
+  const applicationHtml = generateHtmlBuffer(application, reference)
+  return uploadFile(
+    reference,
+    `${reference}_Submitted_Application.html`,
+    applicationHtml
+  )
+}
+
+/**
+ * @param {ApplicationData} application
+ * @param {string} reference
+ * @returns {Promise<void>}
+ */
+const uploadBiosecurityMap = async (application, reference) => {
   const fileAnswer = /** @type {FileAnswer} */ (
     getQuestionFromSections(
       'upload-plan',
       'biosecurity-map',
-      request.payload?.sections
+      application?.sections
     )?.answer
   )
 
   if (fileAnswer && !fileAnswer.value?.skipped) {
-    const fileData = await fetchFile(fileAnswer, request)
+    const fileData = await fetchFile(fileAnswer)
     const filename = `${reference}_Biosecurity_Map.${getFileExtension(fileData.contentType)}`
-
-    try {
-      await uploadFile(reference, filename, fileData.file)
-    } catch (error) {
-      request.logger.warn(
-        `Failed to upload file to SharePoint: ${error.message}`
-      )
-      return {
-        error: {
-          errorCode: 'FILE_UPLOAD_FAILED__BIOSECURITY_MAP',
-          statusCode: statusCodes.serverError
-        }
-      }
-    }
+    return uploadFile(reference, filename, fileData.file)
   }
-
-  await sendApplicantConfirmationEmail(request.payload, reference)
-  const item = await createSharepointItem(request.payload, reference)
-  await sendCaseworkerNotificationEmail(request.payload, reference, item)
-
-  return undefined
+  return Promise.resolve() // No file to upload, resolve immediately
 }
 
 /**

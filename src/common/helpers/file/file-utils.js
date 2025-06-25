@@ -1,11 +1,11 @@
 import { compressPdf } from './pdf-compression.js'
 import { compressImage } from './image-compression.js'
 import { convertBytesToMB } from './size.js'
-import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { config } from '../../../config.js'
+import { retrieveFile } from '../../../common/connectors/storage/s3.js'
 
 /**
  * @import {FileAnswer} from '../data-extract/data-extract.js'
+ * @import {Readable} from 'stream'
  */
 
 /**
@@ -14,26 +14,20 @@ import { config } from '../../../config.js'
 
 /**
  * @param {FileAnswer} fileAnswer
- * @param {object} request
  * @returns {Promise<FileData>}
  */
-export const fetchFile = async (fileAnswer, request) => {
-  const obj = await request.s3.send(
-    new GetObjectCommand({
-      Bucket: config.get('aws').bucket ?? '',
-      Key: fileAnswer.value.path
-    })
-  )
+export const fetchFile = async (fileAnswer) => {
+  const obj = await retrieveFile(fileAnswer.value.path ?? '')
 
   const chunks = []
-  for await (const chunk of obj.Body) {
+  for await (const chunk of /** @type {Readable} */ (obj.Body)) {
     chunks.push(chunk)
   }
   const buffer = Buffer.concat(chunks)
 
   return {
     file: buffer,
-    contentType: obj.ContentType,
+    contentType: obj.ContentType ?? '',
     fileSizeInMB: convertBytesToMB(buffer.length)
   }
 }

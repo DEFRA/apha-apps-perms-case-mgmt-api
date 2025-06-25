@@ -31,6 +31,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@aws-sdk/client-s3": "3.810.0",
+    "@aws-sdk/client-sqs": "3.831.0",
     "@azure/identity": "4.10.0",
     "@defra/hapi-tracing": "1.0.0",
     "@elastic/ecs-pino-format": "1.5.0",
@@ -62,6 +63,7 @@
     "@shelf/jest-mongodb": "4.3.2",
     "@types/jest": "29.5.14",
     "autoprefixer": "10.4.20",
+    "aws-sdk-client-mock": "4.1.0",
     "babel-jest": "29.7.0",
     "babel-plugin-transform-import-meta": "2.3.2",
     "eslint": "9.22.0",
