@@ -75,11 +75,7 @@ export const startSQSQueuePolling = async (limit = Infinity) => {
   }
 }
 
-export const closeSQSConsumerClient = () => {
-  if (consumerClient) {
-    consumerClient.destroy()
-  }
-}
+export const closeSQSConsumerClient = () => consumerClient.destroy()
 
 /**
  * @param {Message} message

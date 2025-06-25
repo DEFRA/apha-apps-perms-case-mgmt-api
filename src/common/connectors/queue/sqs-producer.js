@@ -30,8 +30,4 @@ export const sendMessageToSQS = async (application, reference) => {
   await producerClient.send(command)
 }
 
-export const closeSQSProducerClient = () => {
-  if (producerClient) {
-    producerClient.destroy()
-  }
-}
+export const closeSQSProducerClient = () => producerClient.destroy()

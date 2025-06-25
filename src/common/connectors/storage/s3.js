@@ -24,8 +24,4 @@ export const retrieveFile = async (path) => {
   return client.send(command)
 }
 
-export const closeS3Client = () => {
-  if (client) {
-    client.destroy()
-  }
-}
+export const closeS3Client = () => client.destroy()
