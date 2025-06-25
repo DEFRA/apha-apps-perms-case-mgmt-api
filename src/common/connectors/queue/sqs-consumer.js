@@ -15,15 +15,10 @@ const logger = createLogger()
  * @import {Message} from '@aws-sdk/client-sqs'
  */
 
-const { region, sqsEndpoint, sqsQueueUrl, accessKeyId, secretAccessKey } =
-  config.get('aws')
+const { region, sqsEndpoint, sqsQueueUrl } = config.get('aws')
 export const consumerClient = new SQSClient({
   region,
-  endpoint: sqsEndpoint,
-  credentials: {
-    accessKeyId,
-    secretAccessKey
-  }
+  endpoint: sqsEndpoint
 })
 
 export const pollOnce = async () => {
