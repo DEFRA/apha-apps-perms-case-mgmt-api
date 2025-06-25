@@ -267,11 +267,14 @@ describe('SharePoint Handler', () => {
       it('should throw and log if uploadSubmittedApplication fails', async () => {
         mockUploadFile.mockRejectedValue(new Error('upload failed'))
         await expect(
-          processApplication(mockQueuedApplicationData)
+          processApplication(mockQueuedApplicationDataWithFile)
         ).rejects.toThrow('upload failed')
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to upload submitted application to SharePoint: upload failed'
         )
+        expect(mockUploadFile).toHaveBeenCalledTimes(1)
+        expect(mockCreateSharepointItem).not.toHaveBeenCalled()
+        expect(mockSendEmailToCaseWorker).not.toHaveBeenCalled()
       })
 
       it('should throw and log if uploadBiosecurityMap fails', async () => {
@@ -284,6 +287,9 @@ describe('SharePoint Handler', () => {
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to upload biosecurity map to SharePoint: biosecurity upload failed'
         )
+        expect(mockUploadFile).toHaveBeenCalledTimes(2)
+        expect(mockCreateSharepointItem).not.toHaveBeenCalled()
+        expect(mockSendEmailToCaseWorker).not.toHaveBeenCalled()
       })
 
       it('should throw and log if createSharepointItem fails', async () => {
@@ -295,6 +301,9 @@ describe('SharePoint Handler', () => {
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to create SharePoint item: item failed'
         )
+        expect(mockUploadFile).toHaveBeenCalled()
+        expect(mockCreateSharepointItem).toHaveBeenCalled()
+        expect(mockSendEmailToCaseWorker).not.toHaveBeenCalled()
       })
 
       it('should throw and log if sendCaseworkerNotificationEmail fails', async () => {
@@ -312,6 +321,9 @@ describe('SharePoint Handler', () => {
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to send email to case worker: caseworker email failed'
         )
+        expect(mockUploadFile).toHaveBeenCalled()
+        expect(mockCreateSharepointItem).toHaveBeenCalled()
+        expect(mockSendEmailToCaseWorker).toHaveBeenCalled()
       })
     })
   })

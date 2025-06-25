@@ -49,10 +49,10 @@ export const pollOnce = async () => {
           `Application deleted from the queue: ${queuedApplicationData.reference}`
         )
       } catch (error) {
-        logger.error('Error deleting message from SQS:', error)
+        logger.error(`Error deleting message from SQS: ${error}`)
       }
     } catch (error) {
-      logger.error('Error processing message from SQS:', error)
+      logger.error(`Error processing message from SQS: ${error}`)
     }
   }
 }
@@ -67,7 +67,7 @@ export const startSQSQueuePolling = async (limit = Infinity) => {
     try {
       await pollOnce()
     } catch (error) {
-      logger.error('Error in SQS polling loop:', error)
+      logger.error(`Error in SQS polling loop: ${error}`)
       // add a delay to avoid tight loop in case of errors
       await new Promise((resolve) => setTimeout(resolve, retryTimeout))
     }
