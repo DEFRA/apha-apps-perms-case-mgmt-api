@@ -45,6 +45,7 @@ export const sharePointApplicationHandler = async (request, reference) => {
   } catch (error) {
     logger.error(`Failed to send email to applicant: ${error.message}`)
   }
+  return undefined // No error, return undefined
 }
 
 /**
@@ -120,6 +121,7 @@ const uploadBiosecurityMap = async (application, reference) => {
     const filename = `${reference}_Biosecurity_Map.${getFileExtension(fileData.contentType)}`
     return uploadFile(reference, filename, fileData.file)
   }
+  return Promise.resolve() // No file to upload, resolve immediately
 }
 
 /**

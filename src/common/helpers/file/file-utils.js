@@ -20,7 +20,7 @@ export const fetchFile = async (fileAnswer) => {
   const obj = await retrieveFile(fileAnswer.value.path ?? '')
 
   const chunks = []
-  for await (const chunk of /** @type {Readable} */ (obj?.Body)) {
+  for await (const chunk of /** @type {Readable} */ (obj.Body)) {
     chunks.push(chunk)
   }
   const buffer = Buffer.concat(chunks)

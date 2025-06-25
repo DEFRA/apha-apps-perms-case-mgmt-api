@@ -8,6 +8,8 @@ import { config } from '../../../config.js'
 import { processApplication } from '../../helpers/sharepoint/sharepoint.js'
 import { createLogger } from '../../helpers/logging/logger.js'
 
+const retryTimeout = 5000 // 5 seconds
+
 const logger = createLogger()
 
 /**
@@ -89,7 +91,7 @@ export const startSQSQueuePolling = async () => {
     } catch (error) {
       logger.error('Error in SQS polling loop:', error)
       // add a delay to avoid tight loop in case of errors
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+      await new Promise((resolve) => setTimeout(resolve, retryTimeout))
     }
   }
 }
