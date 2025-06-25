@@ -6,15 +6,10 @@ import { config } from '../../../config.js'
  * @import {Message} from '@aws-sdk/client-sqs'
  */
 
-const { region, sqsEndpoint, sqsQueueUrl, accessKeyId, secretAccessKey } =
-  config.get('aws')
+const { region, sqsEndpoint, sqsQueueUrl } = config.get('aws')
 export const producerClient = new SQSClient({
   region,
-  endpoint: sqsEndpoint,
-  credentials: {
-    accessKeyId,
-    secretAccessKey
-  }
+  endpoint: sqsEndpoint
 })
 
 /**
