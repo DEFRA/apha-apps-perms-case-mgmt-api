@@ -19,8 +19,7 @@
     ".server",
     "coverage",
     "node_modules",
-    "user-journey-tests",
-    "./ecosytem.config.js"
+    "user-journey-tests"
   ],
   "include": ["**/*.cjs", "**/*.js", ".eslintrc.*", ".prettierrc.*"]
 }

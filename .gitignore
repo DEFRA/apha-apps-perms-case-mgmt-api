@@ -13,4 +13,3 @@ coverage
 globalConfig.json
 .envrc
 tsconfig.tsbuildinfo
-ecosystem.config.js
