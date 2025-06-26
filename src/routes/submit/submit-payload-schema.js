@@ -57,5 +57,10 @@ const SectionSchema = Joi.object({
 })
 
 export const ApplicationSchema = Joi.object({
+  journeyId: Joi.string().required(),
+  journeyVersion: Joi.object({
+    major: Joi.number().required(),
+    minor: Joi.number().required()
+  }).required(),
   sections: Joi.array().items(SectionSchema).required()
 }).options({ abortEarly: false })

@@ -81,15 +81,22 @@ const section = {
   ]
 }
 const validPayload = {
+  journeyId: 'journeyId',
+  journeyVersion: { major: 1, minor: 0 },
   sections: [section]
 }
 
-const missingSectionsPayload = {}
+const missingSectionsPayload = {
+  journeyId: 'journeyId',
+  journeyVersion: { major: 1, minor: 0 }
+}
 
 describe('ApplicationSchema - answer types', () => {
   describe('text answer', () => {
     it('validates a correct text answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -113,6 +120,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -136,6 +145,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -162,6 +173,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -181,6 +194,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('checkbox answer', () => {
     it('validates a correct checkbox answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -204,6 +219,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -227,6 +244,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -253,6 +272,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -272,6 +293,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('radio answer', () => {
     it('validates a correct radio answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -295,6 +318,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -321,6 +346,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -340,6 +367,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('file answer', () => {
     it('validates a correct file answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -363,6 +392,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payloadSkippedNoPath = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -386,6 +417,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payloadNotSkippedNoPath = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -412,6 +445,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payloadNotSkippedWithPath = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -437,6 +472,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -463,6 +500,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -489,6 +528,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -515,6 +556,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -534,6 +577,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('address answer', () => {
     it('validates a correct address answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -561,6 +606,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -596,6 +643,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -612,6 +661,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('name answer', () => {
     it('validates a correct name answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -635,6 +686,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -661,6 +714,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -687,6 +742,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -713,6 +770,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -743,6 +802,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -762,6 +823,8 @@ describe('ApplicationSchema - answer types', () => {
   describe('date answer', () => {
     it('validates a correct date answer', () => {
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -784,6 +847,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -810,6 +875,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -835,6 +902,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -860,6 +929,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -888,6 +959,8 @@ describe('ApplicationSchema - answer types', () => {
         }
       }
       const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
         sections: [
           {
             sectionKey: 'sectionKey',
@@ -919,6 +992,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if sectionKey is missing in a section', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           // sectionKey missing
@@ -936,6 +1011,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if title is missing in a section', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           sectionKey: 'sectionKey',
@@ -951,6 +1028,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if questionAnswers is missing in a section', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           sectionKey: 'sectionKey',
@@ -968,6 +1047,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if question is missing in a questionAnswer', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           sectionKey: 'sectionKey',
@@ -995,6 +1076,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if questionKey is missing in a questionAnswer', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           sectionKey: 'sectionKey',
@@ -1022,6 +1105,8 @@ describe('ApplicationSchema - section and question structure', () => {
 
   it('fails if answer is missing in a questionAnswer', () => {
     const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
       sections: [
         {
           sectionKey: 'sectionKey',
