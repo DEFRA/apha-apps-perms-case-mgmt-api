@@ -87,6 +87,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
+          journeyId: 'journeyId',
+          journeyVersion: { major: 1, minor: 0 },
           sections: [validLicenceSection]
         }
       }
@@ -99,6 +101,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
+          journeyId: 'journeyId',
+          journeyVersion: { major: 1, minor: 0 },
           sections: [licenceSectionWithMissingEmail]
         }
       }
@@ -113,6 +117,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
+          journeyId: 'journeyId',
+          journeyVersion: { major: 1, minor: 0 },
           sections: [licenceSectionWithMissingFullName]
         }
       }
@@ -127,6 +133,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
+          journeyId: 'journeyId',
+          journeyVersion: { major: 1, minor: 0 },
           sections: [licenceSectionWithMissingEmailAndFullName]
         }
       }
@@ -153,7 +161,7 @@ describe('submit-validation', () => {
       expect(validateMock).toHaveBeenCalled()
       expect(result).toBe(false)
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
-        'Schema validation failed: "sections" is required.'
+        'Schema validation failed: "journeyId" is required, "journeyVersion" is required, "sections" is required.'
       )
     })
   })
