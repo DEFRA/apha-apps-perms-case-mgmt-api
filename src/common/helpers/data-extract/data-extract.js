@@ -133,41 +133,6 @@ export const getTbLicenceType = (application) => {
     return 'TB24c'
   }
 
-  // // old stuff
-
-  // if (
-  //   originType?.value !== 'afu' &&
-  //   !isTbRestricted(originType) &&
-  //   isTbRestricted(destinationType)
-  // ) {
-  //   return 'TB15'
-  // }
-
-  // if (isTbRestricted(originType) && isTbRestricted(destinationType)) {
-  //   return 'TB16'
-  // }
-
-  // if (isTbRestricted(originType) && destinationType?.value === 'afu') {
-  //   return 'TB16e'
-  // }
-
-  // if (
-  //   isTbRestricted(originType) &&
-  //   destinationType?.value === 'dedicated-sale'
-  // ) {
-  //   return 'TB16e'
-  // }
-
-  // if (
-  //   originType?.value === 'afu' &&
-  //   ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value)
-  // ) {
-  //   return 'TB16e'
-  // }
-
-  // if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
-  //   return 'TB24c'
-  // }
   return ''
 }
 
