@@ -99,8 +99,9 @@ export const getTbLicenceType = (application) => {
   const destinationType = getDestinationType(application)
 
   if (
-    originType?.value !== 'afu' &&
-    !isTbRestricted(originType) &&
+    ['market', 'unrestricted-farm', 'after-import-location'].includes(
+      originType?.value
+    ) &&
     isTbRestricted(destinationType)
   ) {
     return 'TB15'
@@ -110,20 +111,12 @@ export const getTbLicenceType = (application) => {
     return 'TB16'
   }
 
-  if (isTbRestricted(originType) && destinationType?.value === 'afu') {
-    return 'TB16e'
-  }
-
   if (
-    isTbRestricted(originType) &&
-    destinationType?.value === 'dedicated-sale'
-  ) {
-    return 'TB16e'
-  }
-
-  if (
-    originType?.value === 'afu' &&
-    ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value)
+    (isTbRestricted(originType) &&
+      (destinationType?.value === 'dedicated-sale' ||
+        destinationType?.value === 'afu')) ||
+    (originType?.value === 'afu' &&
+      ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value))
   ) {
     return 'TB16e'
   }
@@ -131,6 +124,7 @@ export const getTbLicenceType = (application) => {
   if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
     return 'TB24c'
   }
+
   return ''
 }
 
