@@ -101,7 +101,8 @@ export const getTbLicenceType = (application) => {
   if (
     ['market', 'unrestricted-farm', 'after-import-location'].includes(
       originType?.value
-    )
+    ) &&
+    isTbRestricted(destinationType)
   ) {
     return 'TB15'
   }
