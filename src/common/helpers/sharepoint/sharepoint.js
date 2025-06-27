@@ -1,6 +1,7 @@
 import { getQuestionFromSections } from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
 import {
+  getListItemByFieldValue,
   getListItemUrl,
   uploadFile
 } from '../../../common/connectors/sharepoint/sharepoint.js'
@@ -50,10 +51,11 @@ export const sharePointApplicationHandler = async (request, reference) => {
 
 /**
  * @param {QueuedApplication} queuedApplicationData
- * @returns {Promise<void|HandlerError>}
+ * @returns {Promise<boolean|HandlerError>}
  */
 export const processApplication = async (queuedApplicationData) => {
   const { reference, application } = queuedApplicationData
+  let unexpectedError = false
 
   try {
     await uploadSubmittedApplication(application, reference)
@@ -61,7 +63,10 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload submitted application to SharePoint: ${error.message}`
     )
-    throw error
+    // mark the step as failed, but only if the error is not a conflict as that would mean the file was already uploaded
+    if (error.statusCode !== statusCodes.conflict) {
+      unexpectedError = true
+    }
   }
 
   try {
@@ -70,22 +75,37 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload biosecurity map to SharePoint: ${error.message}`
     )
-    throw error
+    // mark the step as failed, but only if the error is not a conflict as that would mean the file was already uploaded
+    if (error.statusCode !== statusCodes.conflict) {
+      unexpectedError = true
+    }
   }
 
   let item
   try {
-    item = await createSharepointItem(application, reference)
+    const listItemResult = await getListItemByFieldValue(
+      'Application_x0020_Reference_x002',
+      reference
+    )
+    if (!listItemResult?.value || listItemResult.value.length === 0) {
+      item = await createSharepointItem(application, reference)
+    } else {
+      item = listItemResult.value[0]
+      logger.warn(
+        `SharePoint item for reference ${reference} already exists, skipping creation.`
+      )
+    }
   } catch (error) {
     logger.warn(`Failed to create SharePoint item: ${error.message}`)
-    throw error
+    unexpectedError = true
   }
   try {
     await sendCaseworkerNotificationEmail(application, reference, item)
   } catch (error) {
     logger.warn(`Failed to send email to case worker: ${error.message}`)
-    throw error
+    unexpectedError = true
   }
+  return !unexpectedError // Return true if no unexpected errors occurred, false otherwise
 }
 
 /**

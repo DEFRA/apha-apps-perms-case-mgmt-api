@@ -26,7 +26,8 @@ export async function uploadFile(reference, fileName, file) {
   const graphClient = Client.initWithMiddleware({ authProvider })
   return graphClient
     .api(
-      `/drives/${driveId}/items/root:/${folderPath}/${reference}/${fileName}:/content`
+      `/drives/${driveId}/items/root:/${folderPath}/${reference}/${fileName}:/content?@microsoft.graph.conflictBehavior=fail`
+      // using @microsoft.graph.conflictBehavior=fail to not allow duplicates so uploading same file returns an error
     )
     .put(file)
 }
@@ -54,6 +55,34 @@ export async function addItem(fields) {
   return graphClient.api(`/sites/${siteId}/lists/${listId}/items`).post({
     fields
   })
+}
+
+/**
+ * @param {string} fieldName
+ * @param {string} fieldValue
+ * @returns {Promise<object>}
+ */
+export async function getListItemByFieldValue(fieldName, fieldValue) {
+  const { tenantId, clientId, clientSecret, siteId, listId } =
+    config.get('sharepoint')
+
+  const credential = new ClientSecretCredential(
+    tenantId,
+    clientId,
+    clientSecret
+  )
+
+  const authProvider = new TokenCredentialAuthenticationProvider(credential, {
+    scopes: ['https://graph.microsoft.com/.default']
+  })
+
+  const graphClient = Client.initWithMiddleware({ authProvider })
+
+  const filter = `fields/${fieldName} eq '${fieldValue}'`
+
+  return graphClient
+    .api(`/sites/${siteId}/lists/${listId}/items?$filter=${filter}`)
+    .get()
 }
 
 /**

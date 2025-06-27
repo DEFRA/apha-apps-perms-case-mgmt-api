@@ -8,6 +8,7 @@ export const statusCodes = {
   unauthorized: 401,
   forbidden: 403,
   notFound: 404,
+  conflict: 409,
   contentTooLarge: 413,
   imATeapot: 418,
   redirect: 302,

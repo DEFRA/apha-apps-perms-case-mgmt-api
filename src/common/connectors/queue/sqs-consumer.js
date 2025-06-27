@@ -34,17 +34,21 @@ export const pollOnce = async () => {
   if (message?.Body) {
     try {
       const queuedApplicationData = JSON.parse(message.Body)
-      await processApplication(queuedApplicationData)
+      const allStepsSuccessfull = await processApplication(
+        queuedApplicationData
+      )
       logger.info(
         `Application processed successfully: ${queuedApplicationData.reference}`
       )
-      try {
-        await deleteMessageFromSQS(message)
-        logger.info(
-          `Application deleted from the queue: ${queuedApplicationData.reference}`
-        )
-      } catch (error) {
-        logger.error(`Error deleting message from SQS: ${error}`)
+      if (allStepsSuccessfull) {
+        try {
+          await deleteMessageFromSQS(message)
+          logger.info(
+            `Application deleted from the queue: ${queuedApplicationData.reference}`
+          )
+        } catch (error) {
+          logger.error(`Error deleting message from SQS: ${error}`)
+        }
       }
     } catch (error) {
       logger.error(`Error processing message from SQS: ${error}`)

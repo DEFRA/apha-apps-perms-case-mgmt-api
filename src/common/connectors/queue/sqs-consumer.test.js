@@ -63,7 +63,7 @@ describe('SQS Consumer Connector', () => {
     it('should poll the SQS queue, process messages and delete them if no errors', async () => {
       const mockedProcessApplication = jest
         .spyOn(sharepoint, 'processApplication')
-        .mockResolvedValue()
+        .mockResolvedValue(true)
 
       await sqs.pollOnce()
 
@@ -88,7 +88,7 @@ describe('SQS Consumer Connector', () => {
     it('should log errors when processing fails and not delete the messages', () => {
       const mockedProcessApplication = jest
         .spyOn(sharepoint, 'processApplication')
-        .mockRejectedValue(new Error('Processing error'))
+        .mockRejectedValue(false)
 
       return sqs.pollOnce().catch(() => {
         expect(sqsMock.commandCalls(ReceiveMessageCommand)).toHaveLength(1)
