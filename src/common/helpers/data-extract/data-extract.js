@@ -99,20 +99,14 @@ export const getTbLicenceType = (application) => {
   const destinationType = getDestinationType(application)
 
   if (
-    (originType?.value === 'market' && isTbRestricted(destinationType)) ||
-    (originType?.value === 'unrestricted-farm' &&
-      isTbRestricted(destinationType)) ||
-    (originType?.value === 'after-import-location' &&
-      isTbRestricted(destinationType))
+    ['market', 'unrestricted-farm', 'after-import-location'].includes(
+      originType?.value
+    )
   ) {
     return 'TB15'
   }
 
-  if (
-    isTbRestricted(originType) &&
-    isTbRestricted(destinationType) &&
-    destinationType?.value !== 'iso-unit'
-  ) {
+  if (isTbRestricted(originType) && isTbRestricted(destinationType)) {
     return 'TB16'
   }
 
@@ -126,10 +120,7 @@ export const getTbLicenceType = (application) => {
     return 'TB16e'
   }
 
-  if (
-    isTbRestricted(originType) &&
-    ['slaughter', ''].includes(destinationType?.value)
-  ) {
+  if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
     return 'TB24c'
   }
 
