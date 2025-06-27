@@ -3,6 +3,8 @@ import { Client } from '@microsoft/microsoft-graph-client'
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js'
 import { config } from '../../../config.js'
 
+const scopes = ['https://graph.microsoft.com/.default']
+
 /**
  * @param {string} reference
  * @param {string} fileName
@@ -20,7 +22,7 @@ export async function uploadFile(reference, fileName, file) {
   )
 
   const authProvider = new TokenCredentialAuthenticationProvider(credential, {
-    scopes: ['https://graph.microsoft.com/.default']
+    scopes
   })
 
   const graphClient = Client.initWithMiddleware({ authProvider })
@@ -47,7 +49,7 @@ export async function addItem(fields) {
   )
 
   const authProvider = new TokenCredentialAuthenticationProvider(credential, {
-    scopes: ['https://graph.microsoft.com/.default']
+    scopes
   })
 
   const graphClient = Client.initWithMiddleware({ authProvider })
@@ -73,7 +75,7 @@ export async function getListItemByFieldValue(fieldName, fieldValue) {
   )
 
   const authProvider = new TokenCredentialAuthenticationProvider(credential, {
-    scopes: ['https://graph.microsoft.com/.default']
+    scopes
   })
 
   const graphClient = Client.initWithMiddleware({ authProvider })
