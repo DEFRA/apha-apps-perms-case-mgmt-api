@@ -1,6 +1,7 @@
 import { getQuestionFromSections } from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
 import {
+  getListItemByFieldValue,
   getListItemUrl,
   uploadFile
 } from '../../../common/connectors/sharepoint/sharepoint.js'
@@ -61,7 +62,10 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload submitted application to SharePoint: ${error.message}`
     )
-    throw error
+    // only throw if the error is not a conflict as that would mean the file was already uploaded
+    if (error.statusCode !== statusCodes.conflict) {
+      throw error
+    }
   }
 
   try {
@@ -70,12 +74,26 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload biosecurity map to SharePoint: ${error.message}`
     )
-    throw error
+    // only throw if the error is not a conflict as that would mean the file was already uploaded
+    if (error.statusCode !== statusCodes.conflict) {
+      throw error
+    }
   }
 
   let item
   try {
-    item = await createSharepointItem(application, reference)
+    const listItemResult = await getListItemByFieldValue(
+      'Application_x0020_Reference_x002',
+      reference
+    )
+    if (!listItemResult?.value || listItemResult.value.length === 0) {
+      item = await createSharepointItem(application, reference)
+    } else {
+      item = listItemResult.value[0]
+      logger.warn(
+        `SharePoint item for reference ${reference} already exists, skipping creation.`
+      )
+    }
   } catch (error) {
     logger.warn(`Failed to create SharePoint item: ${error.message}`)
     throw error
