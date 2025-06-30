@@ -37,11 +37,11 @@ export const pollOnce = async () => {
 
   try {
     const queuedApplicationData = JSON.parse(message.Body)
-    const allStepsSuccessfull = await processApplication(queuedApplicationData)
+    const allStepsSuccessful = await processApplication(queuedApplicationData)
     logger.info(
       `Application processed successfully: ${queuedApplicationData.reference}`
     )
-    if (allStepsSuccessfull) {
+    if (allStepsSuccessful) {
       try {
         await deleteMessageFromSQS(message)
         logger.info(
