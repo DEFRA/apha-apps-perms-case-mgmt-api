@@ -5,7 +5,10 @@ import {
 import { statusCodes } from '../../../common/constants/status-codes.js'
 import { generateHtmlBuffer } from '../../../common/helpers/export/export-html.js'
 import { fetchFile } from '../../../common/helpers/file/file-utils.js'
-import { uploadFile } from '../../../common/connectors/sharepoint/sharepoint.js'
+import {
+  getListItemByFieldValue,
+  uploadFile
+} from '../../../common/connectors/sharepoint/sharepoint.js'
 import {
   processApplication,
   sharePointApplicationHandler
@@ -37,7 +40,8 @@ jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
   uploadFile: jest.fn(),
   getListItemUrl: jest
     .fn()
-    .mockReturnValue('https://sharepoint.example.com/item')
+    .mockReturnValue('https://sharepoint.example.com/item'),
+  getListItemByFieldValue: jest.fn()
 }))
 jest.mock('./sharepoint-item.js', () => ({
   createSharepointItem: jest.fn()
@@ -60,6 +64,9 @@ jest.mock('../logging/logger.js', () => ({
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
 const mockGenerateHtmlBuffer = /** @type {jest.Mock} */ (generateHtmlBuffer)
 const mockUploadFile = /** @type {jest.Mock} */ (uploadFile)
+const mockGetListItemByFieldValue = /** @type {jest.Mock} */ (
+  getListItemByFieldValue
+)
 const mockSendMessageToSQS = /** @type {jest.Mock} */ (sendMessageToSQS)
 const mockCreateSharepointItem = /** @type {jest.Mock} */ (createSharepointItem)
 const mockSendEmailToCaseWorker = /** @type {jest.Mock} */ (
@@ -69,6 +76,11 @@ const mockSendEmailToCaseWorker = /** @type {jest.Mock} */ (
 const testEmail = 'test@example.com'
 const testFullName = 'Name Surname'
 const testReferenceNumber = 'TB-1234-5678'
+const sharepointFieldName = 'Application_x0020_Reference_x002'
+const testSharepointItem = {
+  id: '1',
+  webUrl: 'https://sharepoint.example.com'
+}
 
 const emailQuestion = {
   question: 'emailAddress',
@@ -214,6 +226,10 @@ describe('SharePoint Handler', () => {
           `${testReferenceNumber}_Submitted_Application.html`,
           Buffer.from('<html>Mock HTML</html>')
         )
+        expect(getListItemByFieldValue).toHaveBeenCalledWith(
+          sharepointFieldName,
+          testReferenceNumber
+        )
         expect(createSharepointItem).toHaveBeenCalledWith(
           mockRequest.payload,
           testReferenceNumber
@@ -252,6 +268,10 @@ describe('SharePoint Handler', () => {
           mockFileData.file
         )
 
+        expect(getListItemByFieldValue).toHaveBeenCalledWith(
+          sharepointFieldName,
+          testReferenceNumber
+        )
         expect(createSharepointItem).toHaveBeenCalledWith(
           mockRequestWithFile.payload,
           testReferenceNumber
@@ -292,26 +312,44 @@ describe('SharePoint Handler', () => {
         expect(mockSendEmailToCaseWorker).not.toHaveBeenCalled()
       })
 
-      it('should throw and log if createSharepointItem fails', async () => {
+      it('should log if list item already exists and continue processing without creating a sharepoint item', async () => {
         mockUploadFile.mockResolvedValue(undefined)
+        mockGetListItemByFieldValue.mockResolvedValue({
+          value: [testSharepointItem]
+        })
+        const result = await processApplication(mockQueuedApplicationData)
+
+        expect(mockLoggerWarn).toHaveBeenCalledWith(
+          `SharePoint item for reference ${testReferenceNumber} already exists, skipping creation.`
+        )
+        expect(uploadFile).toHaveBeenCalled()
+        expect(getListItemByFieldValue).toHaveBeenCalled()
+        expect(createSharepointItem).not.toHaveBeenCalled()
+        expect(sendEmailToCaseWorker).toHaveBeenCalled()
+        expect(result).toBeUndefined()
+      })
+
+      it('should throw if list item does not exist and createSharepointItem fails', async () => {
+        mockUploadFile.mockResolvedValue(undefined)
+        mockGetListItemByFieldValue.mockResolvedValue(null)
         mockCreateSharepointItem.mockRejectedValue(new Error('item failed'))
+
         await expect(
           processApplication(mockQueuedApplicationData)
         ).rejects.toThrow('item failed')
+
+        expect(uploadFile).toHaveBeenCalled()
+        expect(getListItemByFieldValue).toHaveBeenCalled()
+        expect(createSharepointItem).toHaveBeenCalled()
+        expect(sendEmailToCaseWorker).not.toHaveBeenCalled()
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to create SharePoint item: item failed'
         )
-        expect(mockUploadFile).toHaveBeenCalled()
-        expect(mockCreateSharepointItem).toHaveBeenCalled()
-        expect(mockSendEmailToCaseWorker).not.toHaveBeenCalled()
       })
 
       it('should throw and log if sendCaseworkerNotificationEmail fails', async () => {
         mockUploadFile.mockResolvedValue(undefined)
-        mockCreateSharepointItem.mockResolvedValue({
-          id: '1',
-          webUrl: 'https://sharepoint.example.com'
-        })
+        mockCreateSharepointItem.mockResolvedValue(testSharepointItem)
         mockSendEmailToCaseWorker.mockRejectedValueOnce(
           new Error('caseworker email failed')
         )
