@@ -60,7 +60,7 @@ describe('SQS Consumer Connector', () => {
       })
     })
 
-    it('should poll the SQS queue, process messages and delete them if no errors', async () => {
+    it('should poll the SQS queue with the right visibility timeout, process messages and delete them if no errors', async () => {
       const mockedProcessApplication = jest
         .spyOn(sharepoint, 'processApplication')
         .mockResolvedValue()
@@ -70,6 +70,12 @@ describe('SQS Consumer Connector', () => {
       expect(sqsMock.calls()).toHaveLength(2)
 
       expect(sqsMock.commandCalls(ReceiveMessageCommand)).toHaveLength(1)
+      const visibilityTimeout = sqsMock.commandCalls(ReceiveMessageCommand)[0]
+        .args[0].input.VisibilityTimeout
+      expect(typeof visibilityTimeout).toBe('number')
+      expect(visibilityTimeout).toBeGreaterThanOrEqual(120)
+      expect(visibilityTimeout).toBeLessThanOrEqual(180)
+
       expect(sqsMock.commandCalls(DeleteMessageCommand)).toHaveLength(1)
 
       expect(mockedProcessApplication).toHaveBeenCalledWith({

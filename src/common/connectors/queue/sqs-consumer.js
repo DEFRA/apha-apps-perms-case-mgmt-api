@@ -22,11 +22,17 @@ export const consumerClient = new SQSClient({
 })
 
 export const pollOnce = async () => {
+  // Calculate visibility timeout: 2 minutes + random jitter (0-60 seconds)
+  const baseTimeout = 120
+  const jitterMaxSeconds = 61
+  const jitter = Math.floor(Math.random() * jitterMaxSeconds)
+  const visibilityTimeout = baseTimeout + jitter
+
   const command = new ReceiveMessageCommand({
     QueueUrl: sqsQueueUrl,
     MaxNumberOfMessages: 1,
     WaitTimeSeconds: 10, // Long poll
-    VisibilityTimeout: 30
+    VisibilityTimeout: visibilityTimeout
   })
 
   const response = await consumerClient.send(command)
