@@ -64,9 +64,9 @@ describe('SharePoint Connector', () => {
 
       const result = await uploadFile(reference, fileName, file)
 
-      // expect(graphMocks.apiMock).toHaveBeenCalledWith(
-      //   `/drives/${driveId}/items/root:/${folderPath}/${reference}/${fileName}:/content?@microsoft.graph.conflictBehavior=fail`
-      // )
+      expect(graphMocks.apiMock).toHaveBeenCalledWith(
+        `/drives/${driveId}/items/root:/${folderPath}/${reference}/${fileName}:/content?@microsoft.graph.conflictBehavior=fail`
+      )
 
       expect(graphMocks.putMock).toHaveBeenCalledWith(file)
       expect(result).toEqual({ success: true })

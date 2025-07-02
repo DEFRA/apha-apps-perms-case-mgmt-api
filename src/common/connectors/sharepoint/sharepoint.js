@@ -28,7 +28,7 @@ export async function uploadFile(reference, fileName, file) {
   const graphClient = Client.initWithMiddleware({ authProvider })
   return graphClient
     .api(
-      `/drives/${driveId}/items/rootx:/${folderPath}/${reference}/${fileName}:/content?@microsoft.graph.conflictBehavior=fail`
+      `/drives/${driveId}/items/root:/${folderPath}/${reference}/${fileName}:/content?@microsoft.graph.conflictBehavior=fail`
       // using @microsoft.graph.conflictBehavior=fail to not allow duplicates so uploading same file returns an error
     )
     .put(file)
