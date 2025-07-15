@@ -92,7 +92,7 @@ const sendEmails = async (request, reference, linkToFile) => {
     ...(linkToFile ? { link_to_file: linkToFile } : {})
   })
   await sendEmailToApplicant({
-    email: escapeMarkdown(applicantEmail) ?? '',
+    email: applicantEmail ?? '',
     fullName: escapeMarkdown(applicantFullName) ?? '',
     reference: reference ?? ''
   })
