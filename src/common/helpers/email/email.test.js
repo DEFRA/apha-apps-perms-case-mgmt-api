@@ -28,7 +28,7 @@ jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
 const mockFetchFile = /** @type {jest.Mock} */ (fetchFile)
 const mockCompressFile = /** @type {jest.Mock} */ (compressFile)
 
-const testEmail = 'test@example.com'
+const testEmail = 'test_email@example.com'
 const testFullName = 'Name Surname'
 const testReferenceNumber = 'TB-1234-5678'
 
@@ -37,8 +37,8 @@ const emailQuestion = {
   questionKey: 'emailAddress',
   answer: {
     type: 'email',
-    value: 'test@example.com',
-    displayText: 'test@example.com'
+    value: testEmail,
+    displayText: testEmail
   }
 }
 const fullNameQuestion = {

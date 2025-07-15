@@ -182,7 +182,7 @@ const sendApplicantConfirmationEmail = async (application, reference) => {
   )?.answer.displayText
 
   await sendEmailToApplicant({
-    email: escapeMarkdown(applicantEmail) ?? '',
+    email: applicantEmail ?? '',
     fullName: escapeMarkdown(applicantFullName) ?? '',
     reference: reference ?? ''
   })
