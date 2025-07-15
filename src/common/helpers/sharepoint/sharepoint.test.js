@@ -73,7 +73,7 @@ const mockSendEmailToCaseWorker = /** @type {jest.Mock} */ (
   sendEmailToCaseWorker
 )
 
-const testEmail = 'test@example.com'
+const testEmail = 'test_email@example.com'
 const testFullName = 'Name Surname'
 const testReferenceNumber = 'TB-1234-5678'
 const sharepointFieldName = 'Application_x0020_Reference_x002'
@@ -88,8 +88,8 @@ const emailQuestion = {
   /** @type {TextAnswer} */
   answer: {
     type: 'text',
-    value: 'test@example.com',
-    displayText: 'test@example.com'
+    value: testEmail,
+    displayText: testEmail
   }
 }
 const fullNameQuestion = {
