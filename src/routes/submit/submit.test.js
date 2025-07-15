@@ -4,6 +4,7 @@ import { statusCodes } from '../../common/constants/status-codes.js'
 import { spyOnConfig } from '../../common/test-helpers/config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
+import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
 
 const testReferenceNumber = 'TB-1234-5678'
 
@@ -23,6 +24,9 @@ jest.mock('../../common/helpers/sharepoint/sharepoint.js', () => ({
 jest.mock('../../common/helpers/email/email.js', () => ({
   emailApplicationHandler: jest.fn()
 }))
+jest.mock('../../common/helpers/stub-mode/stub-mode.js', () => ({
+  stubModeApplicationHandler: jest.fn()
+}))
 
 const mockIsValidRequest = /** @type {jest.Mock} */ (isValidRequest)
 const mockIsValidPayload = /** @type {jest.Mock} */ (isValidPayload)
@@ -31,6 +35,9 @@ const mockSharePointApplicationHandler = /** @type {jest.Mock} */ (
 )
 const mockEmailApplicationHandler = /** @type {jest.Mock} */ (
   emailApplicationHandler
+)
+const mockStubModeApplicationHandler = /** @type {jest.Mock} */ (
+  stubModeApplicationHandler
 )
 
 const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
@@ -106,6 +113,23 @@ describe('submit route', () => {
     expect(mockLogger.info).toHaveBeenCalledWith(
       `Application submitted successfully with reference: ${testReferenceNumber}`
     )
+
+    expect(mockResponse.response).toHaveBeenCalledWith({
+      message: testReferenceNumber
+    })
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+  })
+
+  it('should call stub mode handler only if stubMode is true', async () => {
+    spyOnConfig('featureFlags', {
+      stubMode: true
+    })
+    mockStubModeApplicationHandler.mockResolvedValue({})
+
+    await handler(mockRequest, mockResponse)
+    expect(stubModeApplicationHandler).toHaveBeenCalled()
+    expect(sharePointApplicationHandler).not.toHaveBeenCalled()
+    expect(emailApplicationHandler).not.toHaveBeenCalled()
 
     expect(mockResponse.response).toHaveBeenCalledWith({
       message: testReferenceNumber

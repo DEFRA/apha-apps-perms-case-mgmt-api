@@ -235,6 +235,12 @@ const config = convict({
       format: Boolean,
       default: !isProduction,
       env: 'SHAREPOINT_TB25_INTEGRATION_ENABLED'
+    },
+    stubMode: {
+      doc: 'Feature flag to enable a stub mode',
+      format: Boolean,
+      default: false,
+      env: 'STUB_MODE_ENABLED'
     }
   },
   sharepoint: {

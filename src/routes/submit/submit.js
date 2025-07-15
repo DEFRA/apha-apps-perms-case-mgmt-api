@@ -7,6 +7,7 @@ import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { config } from '../../config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
+import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
 
 /** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
 
@@ -28,9 +29,8 @@ export const submit = [
 
       const reference = getApplicationReference()
 
-      const result = config.get('featureFlags').sharepointIntegrationEnabled
-        ? await sharePointApplicationHandler(request, reference)
-        : await emailApplicationHandler(request, reference)
+      const handler = getHandler()
+      const result = await handler(request, reference)
 
       if (result?.error) {
         return h
@@ -46,3 +46,16 @@ export const submit = [
     }
   }
 ]
+
+const getHandler = () => {
+  const featureFlags = config.get('featureFlags')
+  if (featureFlags.stubMode) {
+    return stubModeApplicationHandler
+  }
+
+  if (featureFlags.sharepointIntegrationEnabled) {
+    return sharePointApplicationHandler
+  }
+
+  return emailApplicationHandler
+}
