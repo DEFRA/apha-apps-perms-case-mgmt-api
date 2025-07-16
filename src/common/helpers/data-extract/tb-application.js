@@ -59,4 +59,17 @@ export class TbApplication extends Application {
 
     return ''
   }
+
+  get requesterCphNumber() {
+    const origin = this.get('origin')
+    const destination = this.get('destination')
+
+    const onOffFarm = origin?.get('onOffFarm')?.answer
+
+    const originCph = origin?.get('cphNumber')?.answer
+    const destinationCph = destination?.get('destinationFarmCph')?.answer
+
+    const isOnFarm = onOffFarm?.value === 'on'
+    return (isOnFarm ? destinationCph : originCph)?.value
+  }
 }

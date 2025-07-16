@@ -56,21 +56,3 @@ export const getQuestionFromSections = (questionKey, sectionKey, sections) => {
 export const getSectionsFromPayload = (payload) => {
   return payload.sections
 }
-
-/**
- * @param {Application} application
- * @returns {string | undefined}
- */
-export const getRequesterCphNumber = (application) => {
-  const origin = application.get('origin')
-  const destination = application.get('destination')
-
-  const onOffFarm = origin?.get('onOffFarm')?.answer
-
-  const originCph = origin?.get('cphNumber')?.answer
-  const destinationCph = destination?.get('destinationFarmCph')?.answer
-
-  const isOnFarm = onOffFarm?.value === 'on'
-  return /** @type {TextAnswer} */ (isOnFarm ? destinationCph : originCph)
-    ?.value
-}

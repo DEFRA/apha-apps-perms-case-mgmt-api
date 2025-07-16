@@ -1,9 +1,6 @@
 import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import {
-  createApplication,
-  getRequesterCphNumber
-} from '../data-extract/data-extract.js'
+import { createApplication } from '../data-extract/data-extract.js'
 
 /** @import {
  *   ApplicationData,
@@ -37,7 +34,7 @@ export const fields = (applicationData, reference) => {
   const originCph = origin?.get('cphNumber')?.answer
 
   const destinationCph = destination?.get('destinationFarmCph')?.answer
-  const cphNumber = getRequesterCphNumber(application)
+  const cphNumber = application.requesterCphNumber
 
   const originAddress = /** @type {AddressAnswer} */ (
     origin?.get('address')?.answer
