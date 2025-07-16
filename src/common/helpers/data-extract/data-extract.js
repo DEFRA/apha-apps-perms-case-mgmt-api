@@ -60,6 +60,8 @@ export class Application {
     if (this.isTb) {
       return section?.get('emailAddress')?.answer.displayText
     }
+
+    return ''
   }
 
   get applicantName() {
@@ -76,6 +78,8 @@ export class Application {
     if (this.isTb) {
       return section?.get('fullName')?.answer.displayText
     }
+
+    return ''
   }
 }
 
