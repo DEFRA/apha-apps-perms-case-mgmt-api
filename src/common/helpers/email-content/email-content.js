@@ -2,8 +2,7 @@ import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
 import {
   createApplication,
-  getRequesterCphNumber,
-  getTbLicenceType
+  getRequesterCphNumber
 } from '../data-extract/data-extract.js'
 import { escapeMarkdown } from '../escape-text.js'
 
@@ -60,7 +59,7 @@ export const generateSharepointNotificationContent = (
   link
 ) => {
   const application = createApplication(applicationData)
-  const licenceType = getTbLicenceType(applicationData)
+  const licenceType = application.licenceType
   const cphOfRequester = escapeMarkdown(getRequesterCphNumber(application))
 
   const nameOfRequester = escapeMarkdown(

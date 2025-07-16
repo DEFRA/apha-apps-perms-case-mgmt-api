@@ -57,66 +57,6 @@ export const getSectionsFromPayload = (payload) => {
   return payload.sections
 }
 
-/** @param {ApplicationData} application */
-export const getOriginType = (application) =>
-  /** @type {RadioAnswer} */ (
-    getQuestionFromSections('originType', 'origin', application.sections)
-      ?.answer
-  )
-
-/** @param {ApplicationData} application */
-export const getDestinationType = (application) =>
-  /** @type {RadioAnswer} */ (
-    getQuestionFromSections(
-      'destinationType',
-      'destination',
-      application.sections
-    )?.answer
-  )
-
-/** @param {RadioAnswer | undefined} premisesTypeAnswer */
-const isTbRestricted = (premisesTypeAnswer) =>
-  ['tb-restricted-farm', 'zoo', 'lab', 'other'].includes(
-    premisesTypeAnswer?.value ?? ''
-  )
-
-/**
- * @param {ApplicationData} application
- */
-export const getTbLicenceType = (application) => {
-  const originType = getOriginType(application)
-  const destinationType = getDestinationType(application)
-
-  if (
-    ['market', 'unrestricted-farm', 'after-import-location'].includes(
-      originType?.value
-    ) &&
-    isTbRestricted(destinationType)
-  ) {
-    return 'TB15'
-  }
-
-  if (isTbRestricted(originType) && isTbRestricted(destinationType)) {
-    return 'TB16'
-  }
-
-  if (
-    (isTbRestricted(originType) &&
-      (destinationType?.value === 'dedicated-sale' ||
-        destinationType?.value === 'afu')) ||
-    (originType?.value === 'afu' &&
-      ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType?.value))
-  ) {
-    return 'TB16e'
-  }
-
-  if (isTbRestricted(originType) && destinationType?.value === 'slaughter') {
-    return 'TB24c'
-  }
-
-  return ''
-}
-
 /**
  * @param {Application} application
  * @returns {string | undefined}

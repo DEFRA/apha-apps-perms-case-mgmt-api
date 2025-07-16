@@ -257,6 +257,7 @@ describe('getFileProps', () => {
 
 jest.mock('../data-extract/data-extract.js', () => ({
   createApplication: jest.fn().mockReturnValue({
+    licenceType: 'TB Test Licence',
     get: jest.fn().mockReturnValue({
       get: jest.fn().mockReturnValue({
         answer: {
@@ -265,7 +266,6 @@ jest.mock('../data-extract/data-extract.js', () => ({
       })
     })
   }),
-  getTbLicenceType: jest.fn().mockReturnValue('TB Test Licence'),
   getRequesterCphNumber: jest.fn(() => '12/3456/7890')
 }))
 

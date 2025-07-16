@@ -2,8 +2,7 @@ import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
 import {
   createApplication,
-  getRequesterCphNumber,
-  getTbLicenceType
+  getRequesterCphNumber
 } from '../data-extract/data-extract.js'
 
 /** @import {
@@ -69,7 +68,7 @@ export const fields = (applicationData, reference) => {
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: isOffFarm ? name?.displayText : null,
     FirstlineofAddress: originAddress?.value.addressLine1,
-    Licence: getTbLicenceType(applicationData),
+    Licence: application.licenceType,
     OriginCPH: originCph?.value,
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
