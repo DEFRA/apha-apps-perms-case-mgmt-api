@@ -16,6 +16,8 @@ describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
     /** @type {ApplicationData} */
     const payload = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         {
           sectionKey: 'section1',
@@ -73,6 +75,8 @@ describe('generateEmailContent', () => {
 
   it('should handle empty sections gracefully', () => {
     const payload = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: []
     }
 
@@ -90,6 +94,8 @@ describe('generateEmailContent', () => {
 
   it('should handle sections with no questionAnswers gracefully', () => {
     const payload = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         {
           sectionKey: 'section1',
@@ -118,6 +124,8 @@ describe('generateEmailContent', () => {
     it('should include displayText when skipped is true', () => {
       /** @type {ApplicationData} */
       const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           {
             sectionKey: 'section1',
@@ -157,6 +165,8 @@ describe('generateEmailContent', () => {
     it('should ignore displayText when skipped is false', () => {
       /** @type {ApplicationData} */
       const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           {
             sectionKey: 'section1',

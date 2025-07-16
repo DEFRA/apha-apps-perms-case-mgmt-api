@@ -9,7 +9,9 @@
  * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
- * @typedef {{ sections: SectionData[]}} ApplicationData
+ * @typedef {{ journeyId: string, sections: SectionData[]}} ApplicationData
+ *
+ * @exports SectionData
  */
 
 export class Application {
@@ -28,6 +30,52 @@ export class Application {
     )
 
     return sectionData ? new Section(sectionData) : undefined
+  }
+
+  get isExotic() {
+    return (
+      this._data.journeyId ===
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_EXOTICS'
+    )
+  }
+
+  get isTb() {
+    return (
+      this._data.journeyId ===
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND'
+    )
+  }
+
+  get journeyId() {
+    return this._data.journeyId
+  }
+
+  get emailAddress() {
+    const section = this.get('licence')
+
+    if (this.isExotic) {
+      return section?.get('email')?.answer.displayText
+    }
+
+    if (this.isTb) {
+      return section?.get('emailAddress')?.answer.displayText
+    }
+  }
+
+  get applicantName() {
+    const section = this.get('licence')
+
+    if (this.isExotic) {
+      return (
+        section?.get('keeperName')?.answer.displayText ||
+        section?.get('originResponsiblePersonName')?.answer.displayText ||
+        section?.get('visitResponsiblePersonName')?.answer.displayText
+      )
+    }
+
+    if (this.isTb) {
+      return section?.get('fullName')?.answer.displayText
+    }
   }
 }
 

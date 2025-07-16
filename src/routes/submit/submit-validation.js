@@ -1,4 +1,4 @@
-import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
+import { Application } from '../../common/helpers/data-extract/data-extract.js'
 import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
@@ -42,17 +42,11 @@ export const isValidPayload = (request) => {
     return false
   }
 
+  const application = new Application(request.payload)
+
   // continue validation only if schema validation is successful
-  const emailAddress = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
-  const fullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
+  const emailAddress = application.emailAddress
+  const fullName = application.applicantName
 
   if (!emailAddress) {
     request.logger.warn(

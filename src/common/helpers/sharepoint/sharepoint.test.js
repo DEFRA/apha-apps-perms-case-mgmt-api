@@ -118,6 +118,8 @@ const fileQuestion = {
 
 const mockRequest = {
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         title: 'licence',
@@ -130,6 +132,8 @@ const mockRequest = {
 
 const mockRequestWithFile = {
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         title: 'licence',

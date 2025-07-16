@@ -71,13 +71,21 @@ describe('getQuestionFromSections', () => {
 
   describe('getSectionsFromPayload', () => {
     it('should return the sections array from the payload', () => {
-      const payload = { sections }
+      const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections
+      }
       const result = getSectionsFromPayload(payload)
       expect(result).toBe(sections)
     })
 
     it('should return an empty array if payload.sections is an empty array', () => {
-      const payload = { sections: [] }
+      const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: []
+      }
       const result = getSectionsFromPayload(payload)
       expect(result).toEqual([])
     })
@@ -92,6 +100,8 @@ describe('getTbLicenceType', () => {
     'should return TB15 if origin type is market & destination type is restricted',
     (destinationTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType('market')]),
           destinationSection([destinationType(destinationTypeSelected)])
@@ -106,6 +116,8 @@ describe('getTbLicenceType', () => {
     'should return TB15 if origin type is unrestricted farm & destination type is tb restricted farm',
     (destinationTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType('unrestricted-farm')]),
           destinationSection([destinationType(destinationTypeSelected)])
@@ -120,6 +132,8 @@ describe('getTbLicenceType', () => {
     'should return empty string if origin type is afu & destination type is restricted (as it is not a supported journey)',
     (destinationTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType('afu')]),
           destinationSection([destinationType(destinationTypeSelected)])
@@ -134,6 +148,8 @@ describe('getTbLicenceType', () => {
     'should return TB15 if origin type is after import location & destination type is restricted',
     (destinationTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType('after-import-location')]),
           destinationSection([destinationType(destinationTypeSelected)])
@@ -148,6 +164,8 @@ describe('getTbLicenceType', () => {
     'should return TB16 if origin type is restricted & destination type is tb restricted farm',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('tb-restricted-farm')])
@@ -162,6 +180,8 @@ describe('getTbLicenceType', () => {
     'should return TB16 if origin type is restricted & destination type is zoo',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('zoo')])
@@ -176,6 +196,8 @@ describe('getTbLicenceType', () => {
     'should return TB16 if origin type is restricted & destination type is lab',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('lab')])
@@ -190,6 +212,8 @@ describe('getTbLicenceType', () => {
     'should return TB16 if origin type is restricted & destination type is other',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('other')])
@@ -204,6 +228,8 @@ describe('getTbLicenceType', () => {
     'should return TB16e if origin type is restricted & destination type is dedicated sale',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('dedicated-sale')])
@@ -218,6 +244,8 @@ describe('getTbLicenceType', () => {
     'should return TB16e if origin type is restricted & destination type is afu',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('afu')])
@@ -230,6 +258,8 @@ describe('getTbLicenceType', () => {
 
   it('should return TB16e if the origin is afu and the destination is slaughter', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         originSection([originType('afu')]),
         destinationSection([destinationType('slaughter')])
@@ -241,6 +271,8 @@ describe('getTbLicenceType', () => {
 
   it('should return TB16e if the origin is afu and the destination is afu', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         originSection([originType('afu')]),
         destinationSection([destinationType('afu')])
@@ -252,6 +284,8 @@ describe('getTbLicenceType', () => {
 
   it('should return TB16e if the origin is afu and the destination is dedicated-sale', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         originSection([originType('afu')]),
         destinationSection([destinationType('dedicated-sale')])
@@ -265,6 +299,8 @@ describe('getTbLicenceType', () => {
     'should return TB24c if the origin is restricted & the destination is slaughter',
     (originTypeSelected) => {
       const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('slaughter')])
@@ -277,6 +313,8 @@ describe('getTbLicenceType', () => {
 
   it('should return an empty string if no conditions are met', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         originSection([originType('unrestricted-farm')]),
         destinationSection([destinationType('unrestricted-farm')])

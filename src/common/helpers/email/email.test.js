@@ -68,6 +68,8 @@ const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
 const mockRequest = {
   logger: mockLogger,
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         section: 'licence',
@@ -81,6 +83,8 @@ const mockRequest = {
 const mockRequestWithFile = {
   logger: mockLogger,
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         section: 'licence',

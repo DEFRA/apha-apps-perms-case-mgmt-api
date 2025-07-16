@@ -25,6 +25,7 @@ const sqsMock = mockClient(SQSClient)
 const testReference = 'TB-AAAA-BBBB'
 /** @type {ApplicationData} */
 const applicationData = {
+  journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
   sections: [
     {
       title: 'Section 1',

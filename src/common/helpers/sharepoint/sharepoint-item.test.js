@@ -17,7 +17,10 @@ import {
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
 
-const application = { sections: [] }
+const application = {
+  journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+  sections: []
+}
 const reference = 'TB-1234-ABCD'
 
 describe('createSharepointItem', () => {
@@ -100,6 +103,8 @@ describe('fields', () => {
 
   it('should construct expected fields for off the farm', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [offFarmOrigin, licence, destination]
     }
     spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
@@ -124,6 +129,8 @@ describe('fields', () => {
 
   it('should construct expected fields for on the farm', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [onFarmOrigin, licence, destination]
     }
     spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
@@ -148,6 +155,8 @@ describe('fields', () => {
 
   it('should extract the maximum number of cattle if total number is not available', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [destinationSection([howManyAnimalsMaximum('50')])]
     }
 
@@ -156,6 +165,8 @@ describe('fields', () => {
 
   it('should prefer the total number of cattle if both are present (not a case we should encounter)', () => {
     const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         destinationSection([howManyAnimals('20'), howManyAnimalsMaximum('50')])
       ]

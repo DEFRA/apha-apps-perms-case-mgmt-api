@@ -1,4 +1,7 @@
-import { getQuestionFromSections } from '../data-extract/data-extract.js'
+import {
+  Application,
+  getQuestionFromSections
+} from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
 import {
   getListItemByFieldValue,
@@ -170,16 +173,9 @@ const sendCaseworkerNotificationEmail = async (
  * @returns {Promise<void>}
  */
 const sendApplicantConfirmationEmail = async (application, reference) => {
-  const applicantEmail = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    application?.sections
-  )?.answer.displayText
-  const applicantFullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    application?.sections
-  )?.answer.displayText
+  const app = new Application(application)
+  const applicantEmail = app.emailAddress
+  const applicantFullName = app.applicantName
 
   await sendEmailToApplicant({
     email: applicantEmail ?? '',

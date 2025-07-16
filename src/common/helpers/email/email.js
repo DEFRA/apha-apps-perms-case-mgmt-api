@@ -2,7 +2,10 @@ import {
   compressFile,
   fetchFile
 } from '../../../common/helpers/file/file-utils.js'
-import { getQuestionFromSections } from '../../../common/helpers/data-extract/data-extract.js'
+import {
+  Application,
+  getQuestionFromSections
+} from '../../../common/helpers/data-extract/data-extract.js'
 import {
   generateEmailContent,
   getFileProps
@@ -70,17 +73,11 @@ export const emailApplicationHandler = async (request, reference) => {
 }
 
 const sendEmails = async (request, reference, linkToFile) => {
+  const application = new Application(request.payload)
+
   // Send emails to case worker and applicant
-  const applicantEmail = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
-  const applicantFullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
+  const applicantEmail = application.emailAddress
+  const applicantFullName = application.applicantName
 
   const caseWorkerEmailContent = generateEmailContent(
     request.payload,
