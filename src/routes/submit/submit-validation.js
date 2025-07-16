@@ -1,4 +1,4 @@
-import { Application } from '../../common/helpers/data-extract/data-extract.js'
+import { createApplication } from '../../common/helpers/data-extract/data-extract.js'
 import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
@@ -42,7 +42,7 @@ export const isValidPayload = (request) => {
     return false
   }
 
-  const application = new Application(request.payload)
+  const application = createApplication(request.payload)
 
   // continue validation only if schema validation is successful
   const emailAddress = application.emailAddress

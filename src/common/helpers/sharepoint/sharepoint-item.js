@@ -1,7 +1,7 @@
 import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
 import {
-  Application,
+  createApplication,
   getRequesterCphNumber,
   getTbLicenceType
 } from '../data-extract/data-extract.js'
@@ -26,7 +26,7 @@ export const createSharepointItem = async (application, reference) => {
  * @param {string} reference
  */
 export const fields = (applicationData, reference) => {
-  const application = new Application(applicationData)
+  const application = createApplication(applicationData)
 
   const origin = application.get('origin')
   const destination = application.get('destination')

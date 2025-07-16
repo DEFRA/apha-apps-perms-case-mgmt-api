@@ -1,5 +1,5 @@
 import {
-  Application,
+  createApplication,
   getQuestionFromSections
 } from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
@@ -173,7 +173,7 @@ const sendCaseworkerNotificationEmail = async (
  * @returns {Promise<void>}
  */
 const sendApplicantConfirmationEmail = async (application, reference) => {
-  const app = new Application(application)
+  const app = createApplication(application)
   const applicantEmail = app.emailAddress
   const applicantFullName = app.applicantName
 

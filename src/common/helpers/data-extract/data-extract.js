@@ -14,91 +14,28 @@
  * @exports SectionData
  */
 
-export class Application {
-  /** @param {ApplicationData} data */
-  constructor(data) {
-    this._data = data
-  }
+import { Application, Section } from './application.js'
+import { ExoticsApplication } from './exotics-application.js'
+import { TbApplication } from './tb-application.js'
 
-  /**
-   * @param {string} sectionKey
-   * @returns {Section | undefined}
-   */
-  get(sectionKey) {
-    const sectionData = this._data.sections.find(
-      (section) => section.sectionKey === sectionKey
-    )
-
-    return sectionData ? new Section(sectionData) : undefined
-  }
-
-  get isExotic() {
-    return (
-      this._data.journeyId ===
-      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_EXOTICS'
-    )
-  }
-
-  get isTb() {
-    return (
-      this._data.journeyId ===
-      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND'
-    )
-  }
-
-  get journeyId() {
-    return this._data.journeyId
-  }
-
-  get emailAddress() {
-    const section = this.get('licence')
-
-    if (this.isExotic) {
-      return section?.get('email')?.answer.displayText
-    }
-
-    if (this.isTb) {
-      return section?.get('emailAddress')?.answer.displayText
-    }
-
-    return ''
-  }
-
-  get applicantName() {
-    const section = this.get('licence')
-
-    if (this.isExotic) {
-      return (
-        section?.get('keeperName')?.answer.displayText ||
-        section?.get('originResponsiblePersonName')?.answer.displayText ||
-        section?.get('visitResponsiblePersonName')?.answer.displayText
-      )
-    }
-
-    if (this.isTb) {
-      return section?.get('fullName')?.answer.displayText
-    }
-
-    return ''
-  }
+const journeyApplications = {
+  GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_EXOTICS:
+    ExoticsApplication,
+  GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND:
+    TbApplication
 }
 
-export class Section {
-  /** @param {SectionData} data */
-  constructor(data) {
-    this._data = data
+export const createApplication = (data) => {
+  let Application = journeyApplications[data.journeyId]
+
+  if (!Application) {
+    Application = TbApplication
   }
 
-  /**
-   * @param {string} questionKey
-   * @returns {QuestionAnswerData | undefined}
-   */
-  get(questionKey) {
-    return this._data?.questionAnswers.find(
-      (question) => question.questionKey === questionKey
-    )
-  }
+  return new Application(data)
 }
+
+export { Application, Section }
 
 /**
  * @param {string} questionKey

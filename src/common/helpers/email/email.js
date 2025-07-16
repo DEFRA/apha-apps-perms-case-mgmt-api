@@ -3,7 +3,7 @@ import {
   fetchFile
 } from '../../../common/helpers/file/file-utils.js'
 import {
-  Application,
+  createApplication,
   getQuestionFromSections
 } from '../../../common/helpers/data-extract/data-extract.js'
 import {
@@ -73,7 +73,7 @@ export const emailApplicationHandler = async (request, reference) => {
 }
 
 const sendEmails = async (request, reference, linkToFile) => {
-  const application = new Application(request.payload)
+  const application = createApplication(request.payload)
 
   // Send emails to case worker and applicant
   const applicantEmail = application.emailAddress

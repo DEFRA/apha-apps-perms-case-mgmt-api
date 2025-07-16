@@ -16,8 +16,7 @@ describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
     /** @type {ApplicationData} */
     const payload = {
-      journeyId:
-        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      journeyId: 'journeyId',
       sections: [
         {
           sectionKey: 'section1',
@@ -257,7 +256,7 @@ describe('getFileProps', () => {
 })
 
 jest.mock('../data-extract/data-extract.js', () => ({
-  Application: jest.fn().mockImplementation(() => ({
+  createApplication: jest.fn().mockReturnValue({
     get: jest.fn().mockReturnValue({
       get: jest.fn().mockReturnValue({
         answer: {
@@ -265,7 +264,7 @@ jest.mock('../data-extract/data-extract.js', () => ({
         }
       })
     })
-  })),
+  }),
   getTbLicenceType: jest.fn().mockReturnValue('TB Test Licence'),
   getRequesterCphNumber: jest.fn(() => '12/3456/7890')
 }))
