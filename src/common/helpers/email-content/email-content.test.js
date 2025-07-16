@@ -258,6 +258,7 @@ describe('getFileProps', () => {
 jest.mock('../data-extract/data-extract.js', () => ({
   createApplication: jest.fn().mockReturnValue({
     licenceType: 'TB Test Licence',
+    requesterCphNumber: '12/3456/7890',
     get: jest.fn().mockReturnValue({
       get: jest.fn().mockReturnValue({
         answer: {
@@ -265,8 +266,7 @@ jest.mock('../data-extract/data-extract.js', () => ({
         }
       })
     })
-  }),
-  getRequesterCphNumber: jest.fn(() => '12/3456/7890')
+  })
 }))
 
 describe('generateSharepointNotificationContent', () => {
