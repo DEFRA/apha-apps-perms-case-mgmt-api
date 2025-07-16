@@ -26,13 +26,13 @@ const journeyApplications = {
 }
 
 export const createApplication = (data) => {
-  let Application = journeyApplications[data.journeyId]
+  let ApplicationContstructor = journeyApplications[data.journeyId]
 
-  if (!Application) {
-    Application = TbApplication
+  if (!ApplicationContstructor) {
+    ApplicationContstructor = TbApplication
   }
 
-  return new Application(data)
+  return new ApplicationContstructor(data)
 }
 
 export { Application, Section }
