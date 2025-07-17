@@ -44,25 +44,44 @@ export class TbApplication extends Application {
     ].includes(originType)
     const isOriginRestricted = this.isTbRestricted(originType)
     const isDestinationRestricted = this.isTbRestricted(destinationType)
-    const isDestinationSale = ['dedicated-sale', 'afu'].includes(
-      destinationType
-    )
 
-    if (isOriginUnrestricted && isDestinationRestricted) return 'TB15'
+    if (isOriginUnrestricted && isDestinationRestricted) {
+      return 'TB15'
+    }
 
-    if (isOriginRestricted && isDestinationRestricted) return 'TB16'
+    if (isOriginRestricted && isDestinationRestricted) {
+      return 'TB16'
+    }
 
-    if (
-      (isOriginRestricted && isDestinationSale) ||
-      (originType === 'afu' &&
-        ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType))
-    ) {
+    if (this.isTb16eCase(originType, destinationType, isOriginRestricted)) {
       return 'TB16e'
     }
 
-    if (isOriginRestricted && destinationType === 'slaughter') return 'TB24c'
+    if (isOriginRestricted && destinationType === 'slaughter') {
+      return 'TB24c'
+    }
 
     return ''
+  }
+
+  /**
+   * @private
+   * @param {string} originType
+   * @param {string} destinationType
+   * @param {boolean} isOriginRestricted
+   * @returns {boolean}
+   */
+  isTb16eCase(originType, destinationType, isOriginRestricted) {
+    const isDestinationSale = ['dedicated-sale', 'afu'].includes(
+      destinationType
+    )
+    const isAfuToSpecialDestination =
+      originType === 'afu' &&
+      ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType)
+
+    return (
+      (isOriginRestricted && isDestinationSale) || isAfuToSpecialDestination
+    )
   }
 
   /**
