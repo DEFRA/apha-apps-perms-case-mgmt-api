@@ -4,7 +4,7 @@ import path from 'path'
 import { srcFolder } from '../path-utils.js'
 
 /**
- * @import { ApplicationData } from '../data-extract/data-extract.js'
+ * @import { ApplicationData } from '../data-extract/application.js'
  */
 
 const cssPath = path.join(

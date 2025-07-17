@@ -2,7 +2,10 @@ import {
   compressFile,
   fetchFile
 } from '../../../common/helpers/file/file-utils.js'
-import { getQuestionFromSections } from '../../../common/helpers/data-extract/data-extract.js'
+import {
+  createApplication,
+  getQuestionFromSections
+} from '../../../common/helpers/data-extract/data-extract.js'
 import {
   generateEmailContent,
   getFileProps
@@ -15,7 +18,7 @@ import { statusCodes } from '../../constants/status-codes.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {FileAnswer} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  */
 
@@ -70,17 +73,11 @@ export const emailApplicationHandler = async (request, reference) => {
 }
 
 const sendEmails = async (request, reference, linkToFile) => {
+  const application = createApplication(request.payload)
+
   // Send emails to case worker and applicant
-  const applicantEmail = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
-  const applicantFullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
+  const applicantEmail = application.emailAddress
+  const applicantFullName = application.applicantName
 
   const caseWorkerEmailContent = generateEmailContent(
     request.payload,

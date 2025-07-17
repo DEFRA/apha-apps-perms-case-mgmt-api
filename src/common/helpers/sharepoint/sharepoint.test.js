@@ -17,7 +17,7 @@ import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createSharepointItem } from './sharepoint-item.js'
 
 /**
- * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
  */
 
 jest.mock('../../../common/connectors/notify/notify.js')
@@ -118,6 +118,8 @@ const fileQuestion = {
 
 const mockRequest = {
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         title: 'licence',
@@ -130,6 +132,8 @@ const mockRequest = {
 
 const mockRequestWithFile = {
   payload: {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         title: 'licence',

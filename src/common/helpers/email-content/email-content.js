@@ -1,14 +1,10 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
-import {
-  Application,
-  getRequesterCphNumber,
-  getTbLicenceType
-} from '../data-extract/data-extract.js'
+import { createApplication } from '../data-extract/data-extract.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
+ * @import {ApplicationData, NameAnswer} from '../data-extract/application.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 
@@ -59,9 +55,10 @@ export const generateSharepointNotificationContent = (
   reference,
   link
 ) => {
-  const application = new Application(applicationData)
-  const licenceType = getTbLicenceType(applicationData)
-  const cphOfRequester = escapeMarkdown(getRequesterCphNumber(application))
+  const application = createApplication(applicationData)
+  const licenceType = application.licenceType
+  const cphOfRequester = escapeMarkdown(application.requesterCphNumber)
+
   const nameOfRequester = escapeMarkdown(
     /** @type {NameAnswer|undefined} */ (
       application.get('licence')?.get('fullName')?.answer

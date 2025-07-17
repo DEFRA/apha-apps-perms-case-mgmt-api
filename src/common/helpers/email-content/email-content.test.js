@@ -6,7 +6,7 @@ import {
 } from './email-content.js'
 
 /**
- * @import {ApplicationData} from '../data-extract/data-extract.js'
+ * @import {ApplicationData} from '../data-extract/application.js'
  */
 
 const testReference = 'TB-1234-5678'
@@ -16,6 +16,7 @@ describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
     /** @type {ApplicationData} */
     const payload = {
+      journeyId: 'journeyId',
       sections: [
         {
           sectionKey: 'section1',
@@ -73,6 +74,8 @@ describe('generateEmailContent', () => {
 
   it('should handle empty sections gracefully', () => {
     const payload = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: []
     }
 
@@ -90,6 +93,8 @@ describe('generateEmailContent', () => {
 
   it('should handle sections with no questionAnswers gracefully', () => {
     const payload = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
         {
           sectionKey: 'section1',
@@ -118,6 +123,8 @@ describe('generateEmailContent', () => {
     it('should include displayText when skipped is true', () => {
       /** @type {ApplicationData} */
       const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           {
             sectionKey: 'section1',
@@ -157,6 +164,8 @@ describe('generateEmailContent', () => {
     it('should ignore displayText when skipped is false', () => {
       /** @type {ApplicationData} */
       const payload = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
           {
             sectionKey: 'section1',
@@ -247,7 +256,9 @@ describe('getFileProps', () => {
 })
 
 jest.mock('../data-extract/data-extract.js', () => ({
-  Application: jest.fn().mockImplementation(() => ({
+  createApplication: jest.fn().mockReturnValue({
+    licenceType: 'TB Test Licence',
+    requesterCphNumber: '12/3456/7890',
     get: jest.fn().mockReturnValue({
       get: jest.fn().mockReturnValue({
         answer: {
@@ -255,9 +266,7 @@ jest.mock('../data-extract/data-extract.js', () => ({
         }
       })
     })
-  })),
-  getTbLicenceType: jest.fn().mockReturnValue('TB Test Licence'),
-  getRequesterCphNumber: jest.fn(() => '12/3456/7890')
+  })
 }))
 
 describe('generateSharepointNotificationContent', () => {

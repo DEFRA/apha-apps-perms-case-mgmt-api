@@ -4,7 +4,7 @@ import { convertBytesToMB } from './size.js'
 import { retrieveFile } from '../../../common/connectors/storage/s3.js'
 
 /**
- * @import {FileAnswer} from '../data-extract/data-extract.js'
+ * @import {FileAnswer} from '../data-extract/application.js'
  * @import {Readable} from 'stream'
  */
 

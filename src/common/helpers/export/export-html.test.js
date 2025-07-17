@@ -1,6 +1,6 @@
 import { generateHtmlBuffer } from './export-html.js'
 
-/** @import {TextAnswer} from '../data-extract/data-extract.js' */
+/** @import {TextAnswer} from '../data-extract/application.js' */
 
 describe('generateHtmlBuffer', () => {
   /** @type {TextAnswer} */
@@ -23,6 +23,8 @@ describe('generateHtmlBuffer', () => {
   }
 
   const sampleData = {
+    journeyId:
+      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
     sections: [
       {
         title: 'Section 1',

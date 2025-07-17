@@ -1,4 +1,7 @@
-import { getQuestionFromSections } from '../data-extract/data-extract.js'
+import {
+  createApplication,
+  getQuestionFromSections
+} from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
 import {
   getListItemByFieldValue,
@@ -18,7 +21,7 @@ import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 
 /**
- * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  * @typedef {{ application: ApplicationData, reference: string }} QueuedApplication
  */
@@ -170,16 +173,9 @@ const sendCaseworkerNotificationEmail = async (
  * @returns {Promise<void>}
  */
 const sendApplicantConfirmationEmail = async (application, reference) => {
-  const applicantEmail = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    application?.sections
-  )?.answer.displayText
-  const applicantFullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    application?.sections
-  )?.answer.displayText
+  const app = createApplication(application)
+  const applicantEmail = app.emailAddress
+  const applicantFullName = app.applicantName
 
   await sendEmailToApplicant({
     email: applicantEmail ?? '',

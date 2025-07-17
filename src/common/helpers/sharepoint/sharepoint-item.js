@@ -1,16 +1,12 @@
 import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import {
-  Application,
-  getRequesterCphNumber,
-  getTbLicenceType
-} from '../data-extract/data-extract.js'
+import { createApplication } from '../data-extract/data-extract.js'
 
 /** @import {
  *   ApplicationData,
  *   NameAnswer,
  *   AddressAnswer
- * } from '../data-extract/data-extract.js'
+ * } from '../data-extract/application.js'
  */
 
 /**
@@ -26,7 +22,7 @@ export const createSharepointItem = async (application, reference) => {
  * @param {string} reference
  */
 export const fields = (applicationData, reference) => {
-  const application = new Application(applicationData)
+  const application = createApplication(applicationData)
 
   const origin = application.get('origin')
   const destination = application.get('destination')
@@ -38,7 +34,7 @@ export const fields = (applicationData, reference) => {
   const originCph = origin?.get('cphNumber')?.answer
 
   const destinationCph = destination?.get('destinationFarmCph')?.answer
-  const cphNumber = getRequesterCphNumber(application)
+  const cphNumber = application.requesterCphNumber
 
   const originAddress = /** @type {AddressAnswer} */ (
     origin?.get('address')?.answer
@@ -69,7 +65,7 @@ export const fields = (applicationData, reference) => {
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
     Name: isOffFarm ? name?.displayText : null,
     FirstlineofAddress: originAddress?.value.addressLine1,
-    Licence: getTbLicenceType(applicationData),
+    Licence: application.licenceType,
     OriginCPH: originCph?.value,
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,

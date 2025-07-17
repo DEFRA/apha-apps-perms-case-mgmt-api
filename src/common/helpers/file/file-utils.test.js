@@ -4,7 +4,7 @@ import { compressImage } from './image-compression.js'
 import { config } from '../../../config.js'
 
 /**
- * @import {FileAnswer} from '../data-extract/data-extract.js'
+ * @import {FileAnswer} from '../data-extract/application.js'
  */
 
 const mockFileSize = 1.5

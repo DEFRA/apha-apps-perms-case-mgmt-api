@@ -3,7 +3,7 @@ import { mockClient } from 'aws-sdk-client-mock'
 import * as sqs from './sqs-producer.js'
 
 /**
- * @import {ApplicationData} from '../../helpers/data-extract/data-extract.js'
+ * @import {ApplicationData} from '../../helpers/data-extract/application.js'
  */
 
 const sqsMock = mockClient(SQSClient)
@@ -11,6 +11,7 @@ const sqsMock = mockClient(SQSClient)
 const testReference = 'TB-AAAA-BBBB'
 /** @type {ApplicationData} */
 const applicationData = {
+  journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
   sections: [
     {
       title: 'Section 1',

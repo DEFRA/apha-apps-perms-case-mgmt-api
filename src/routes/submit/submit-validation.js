@@ -1,9 +1,9 @@
-import { getQuestionFromSections } from '../../common/helpers/data-extract/data-extract.js'
+import { createApplication } from '../../common/helpers/data-extract/data-extract.js'
 import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
  * @import {Request} from "@hapi/hapi/lib/types/request.js"
- * @import {ApplicationData} from "../../common/helpers/data-extract/data-extract.js"
+ * @import {ApplicationData} from "../../common/helpers/data-extract/application.js"
  */
 
 /**
@@ -42,17 +42,11 @@ export const isValidPayload = (request) => {
     return false
   }
 
+  const application = createApplication(request.payload)
+
   // continue validation only if schema validation is successful
-  const emailAddress = getQuestionFromSections(
-    'emailAddress',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
-  const fullName = getQuestionFromSections(
-    'fullName',
-    'licence',
-    request.payload?.sections
-  )?.answer.displayText
+  const emailAddress = application.emailAddress
+  const fullName = application.applicantName
 
   if (!emailAddress) {
     request.logger.warn(

@@ -36,7 +36,7 @@ export const pollOnce = async () => {
   })
 
   const response = await consumerClient.send(command)
-  const message = response.Messages?.[0]
+  const message = response.Messages?.at(0)
   if (message?.Body) {
     try {
       const queuedApplicationData = JSON.parse(message.Body)

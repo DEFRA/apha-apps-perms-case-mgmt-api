@@ -87,7 +87,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
-          journeyId: 'journeyId',
+          journeyId:
+            'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
           journeyVersion: { major: 1, minor: 0 },
           sections: [validLicenceSection]
         }
@@ -101,7 +102,8 @@ describe('submit-validation', () => {
       mockRequest = {
         ...mockRequest,
         payload: {
-          journeyId: 'journeyId',
+          journeyId:
+            'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
           journeyVersion: { major: 1, minor: 0 },
           sections: [licenceSectionWithMissingEmail]
         }
