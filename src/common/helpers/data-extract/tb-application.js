@@ -5,6 +5,9 @@ import { Application } from './application.js'
  */
 
 export class TbApplication extends Application {
+  referencePrefix = 'TB'
+  configKey = 'tb'
+
   get emailAddress() {
     const section = this.get('licence')
     return section?.get('emailAddress')?.answer.displayText

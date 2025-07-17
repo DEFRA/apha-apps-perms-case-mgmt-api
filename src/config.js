@@ -156,17 +156,33 @@ const config = convict({
       env: 'NOTIFY_EMAIL_DOWNLOAD_CONFIRMATION'
     },
     caseDelivery: {
-      templateId: /** @type {SchemaObj<string | null>} */ {
-        format: String,
-        default: null,
-        nullable: true,
-        env: 'NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+      tb: {
+        templateId: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+        },
+        emailAddress: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+        }
       },
-      emailAddress: /** @type {SchemaObj<string | null>} */ {
-        format: String,
-        default: null,
-        nullable: true,
-        env: 'NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+      exotics: {
+        templateId: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'EXOTICS_NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+        },
+        emailAddress: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'EXOTICS_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+        }
       }
     },
     applicantConfirmation: {

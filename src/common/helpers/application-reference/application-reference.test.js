@@ -13,7 +13,7 @@ describe('#Application reference generation', () => {
     const iterations = 60_000 // annual limit of 50k applications + some buffer
 
     for (let i = 0; i < iterations; i++) {
-      const result = getApplicationReference()
+      const result = getApplicationReference('TB')
       expect(result).toBeDefined()
       expect(result).toHaveLength(12)
       expect(generatedReferences.has(result)).toBe(false)

@@ -12,7 +12,13 @@
  * @typedef {{ journeyId: string, sections: SectionData[]}} ApplicationData
  */
 
+import { config } from '../../../config.js'
+import { getApplicationReference } from '../application-reference/application-reference.js'
+
 export class Application {
+  referencePrefix = 'APP'
+  configKey
+
   /** @param {ApplicationData} data */
   constructor(data) {
     this._data = data
@@ -32,6 +38,20 @@ export class Application {
 
   get journeyId() {
     return this._data.journeyId
+  }
+
+  get emailConfig() {
+    return config.get('notify')?.[this.configKey].caseDelivery
+  }
+
+  getNewReference() {
+    return getApplicationReference(this.referencePrefix)
+  }
+
+  static async isTbApplication(application) {
+    // dynamic import required due to circular dependencies
+    const { TbApplication } = await import('./tb-application.js')
+    return application instanceof TbApplication
   }
 }
 
