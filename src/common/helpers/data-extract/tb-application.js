@@ -1,7 +1,7 @@
 import { Application } from './application.js'
 
 /**
- * @typedef {import('./data-extract.js').RadioAnswer} RadioAnswer
+ * @import {RadioAnswer, TextAnswer} from './data-extract.js'
  */
 
 export class TbApplication extends Application {
@@ -19,57 +19,69 @@ export class TbApplication extends Application {
     return ['tb-restricted-farm', 'zoo', 'lab', 'other'].includes(premesisType)
   }
 
-  get licenceType() {
-    const originType =
-      /** @type {RadioAnswer} */ (this.get('origin')?.get('originType')?.answer)
-        ?.value || ''
-    const destinationType =
+  /**
+   * @private
+   * @param {string} questionKey
+   * @param {string} sectionKey
+   * @returns {string}
+   */
+  getRadioValue(questionKey, sectionKey) {
+    return (
       /** @type {RadioAnswer} */ (
-        this.get('destination')?.get('destinationType')?.answer
+        this.get(sectionKey)?.get(questionKey)?.answer
       )?.value || ''
+    )
+  }
+
+  get licenceType() {
+    const originType = this.getRadioValue('originType', 'origin')
+    const destinationType = this.getRadioValue('destinationType', 'destination')
+
+    const isOriginUnrestricted = [
+      'market',
+      'unrestricted-farm',
+      'after-import-location'
+    ].includes(originType)
+    const isOriginRestricted = this.isTbRestricted(originType)
+    const isDestinationRestricted = this.isTbRestricted(destinationType)
+    const isDestinationSale = ['dedicated-sale', 'afu'].includes(
+      destinationType
+    )
+
+    if (isOriginUnrestricted && isDestinationRestricted) return 'TB15'
+
+    if (isOriginRestricted && isDestinationRestricted) return 'TB16'
 
     if (
-      ['market', 'unrestricted-farm', 'after-import-location'].includes(
-        originType
-      ) &&
-      this.isTbRestricted(destinationType)
-    ) {
-      return 'TB15'
-    }
-
-    if (
-      this.isTbRestricted(originType) &&
-      this.isTbRestricted(destinationType)
-    ) {
-      return 'TB16'
-    }
-
-    if (
-      (this.isTbRestricted(originType) &&
-        (destinationType === 'dedicated-sale' || destinationType === 'afu')) ||
+      (isOriginRestricted && isDestinationSale) ||
       (originType === 'afu' &&
         ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType))
     ) {
       return 'TB16e'
     }
 
-    if (this.isTbRestricted(originType) && destinationType === 'slaughter') {
-      return 'TB24c'
-    }
+    if (isOriginRestricted && destinationType === 'slaughter') return 'TB24c'
 
     return ''
   }
 
+  /**
+   * @return {string} The CPH number of the requester
+   */
   get requesterCphNumber() {
     const origin = this.get('origin')
     const destination = this.get('destination')
 
     const onOffFarm = origin?.get('onOffFarm')?.answer
 
-    const originCph = origin?.get('cphNumber')?.answer
-    const destinationCph = destination?.get('destinationFarmCph')?.answer
+    const originCph = /** @type {TextAnswer} */ (
+      origin?.get('cphNumber')?.answer
+    )
+    const destinationCph = /** @type {TextAnswer} */ (
+      destination?.get('destinationFarmCph')?.answer
+    )
 
     const isOnFarm = onOffFarm?.value === 'on'
-    return (isOnFarm ? destinationCph : originCph)?.value
+    return (isOnFarm ? destinationCph : originCph)?.value || ''
   }
 }
