@@ -18,7 +18,7 @@ import { statusCodes } from '../../constants/status-codes.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {FileAnswer} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  */
 

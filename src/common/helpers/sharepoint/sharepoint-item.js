@@ -6,7 +6,7 @@ import { createApplication } from '../data-extract/data-extract.js'
  *   ApplicationData,
  *   NameAnswer,
  *   AddressAnswer
- * } from '../data-extract/data-extract.js'
+ * } from '../data-extract/application.js'
  */
 
 /**

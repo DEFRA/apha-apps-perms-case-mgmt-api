@@ -17,7 +17,7 @@ import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createSharepointItem } from './sharepoint-item.js'
 
 /**
- * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
  */
 
 jest.mock('../../../common/connectors/notify/notify.js')

@@ -8,7 +8,7 @@ import * as sqs from './sqs-consumer.js'
 import * as sharepoint from '../../helpers/sharepoint/sharepoint.js'
 
 /**
- * @import {ApplicationData} from '../../helpers/data-extract/data-extract.js'
+ * @import {ApplicationData} from '../../helpers/data-extract/application.js'
  */
 
 const mockLoggerInfo = jest.fn()

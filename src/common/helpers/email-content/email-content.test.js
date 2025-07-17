@@ -6,7 +6,7 @@ import {
 } from './email-content.js'
 
 /**
- * @import {ApplicationData} from '../data-extract/data-extract.js'
+ * @import {ApplicationData} from '../data-extract/application.js'
  */
 
 const testReference = 'TB-1234-5678'

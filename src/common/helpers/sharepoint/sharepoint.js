@@ -21,7 +21,7 @@ import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 
 /**
- * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/data-extract.js'
+ * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  * @typedef {{ application: ApplicationData, reference: string }} QueuedApplication
  */

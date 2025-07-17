@@ -12,8 +12,7 @@ import {
 } from '../../test-helpers/application.js'
 
 /**
- * @import {QuestionAnswerData} from './data-extract.js'
- * @import {SectionData} from './data-extract.js'
+ * @import {SectionData, QuestionAnswerData} from './application.js'
  */
 
 const questionOneKey = 'q1'

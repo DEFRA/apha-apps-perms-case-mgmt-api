@@ -3,7 +3,7 @@ import { mockClient } from 'aws-sdk-client-mock'
 import * as sqs from './sqs-producer.js'
 
 /**
- * @import {ApplicationData} from '../../helpers/data-extract/data-extract.js'
+ * @import {ApplicationData} from '../../helpers/data-extract/application.js'
  */
 
 const sqsMock = mockClient(SQSClient)

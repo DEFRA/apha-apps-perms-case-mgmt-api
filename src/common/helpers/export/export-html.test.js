@@ -1,6 +1,6 @@
 import { generateHtmlBuffer } from './export-html.js'
 
-/** @import {TextAnswer} from '../data-extract/data-extract.js' */
+/** @import {TextAnswer} from '../data-extract/application.js' */
 
 describe('generateHtmlBuffer', () => {
   /** @type {TextAnswer} */

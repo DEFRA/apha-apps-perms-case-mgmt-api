@@ -1,7 +1,7 @@
 /**
  * @typedef {{ type: 'text', value: string, displayText: string }} TextAnswer
  * @typedef {{ type: 'radio', value: string, displayText: string }} RadioAnswer
- * @typedef {{ type: 'radio', value: string[], displayText: string }} CheckboxAnswer
+ * @typedef {{ type: 'checkbox', value: string[], displayText: string }} CheckboxAnswer
  * @typedef {{ type: 'name', value: { firstName: string, lastName: string }, displayText: string }} NameAnswer
  * @typedef {{ type: 'address', value: { addressLine1: string, addressLine2?: string, addressTown: string, addressCounty?: string, addressPostcode: string }, displayText: string }} AddressAnswer
  * @typedef {{ type: 'file', value: { skipped: boolean, path?: string }, displayText: string }} FileAnswer

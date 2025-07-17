@@ -1,7 +1,7 @@
 import { Application } from './application.js'
 
 /**
- * @import {RadioAnswer, TextAnswer} from './data-extract.js'
+ * @import {RadioAnswer, TextAnswer} from './application.js'
  */
 
 export class TbApplication extends Application {

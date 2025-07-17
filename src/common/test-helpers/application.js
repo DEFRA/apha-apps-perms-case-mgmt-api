@@ -1,5 +1,5 @@
 /**
- * @import {QuestionAnswerData, SectionData} from '../helpers/data-extract/data-extract.js'
+ * @import {QuestionAnswerData, SectionData} from '../helpers/data-extract/application.js'
  */
 
 /**

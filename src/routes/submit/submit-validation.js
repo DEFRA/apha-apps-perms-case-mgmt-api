@@ -3,7 +3,7 @@ import { ApplicationSchema } from './submit-payload-schema.js'
 
 /**
  * @import {Request} from "@hapi/hapi/lib/types/request.js"
- * @import {ApplicationData} from "../../common/helpers/data-extract/data-extract.js"
+ * @import {ApplicationData} from "../../common/helpers/data-extract/application.js"
  */
 
 /**

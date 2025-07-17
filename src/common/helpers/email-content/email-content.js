@@ -4,7 +4,7 @@ import { createApplication } from '../data-extract/data-extract.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {ApplicationData, NameAnswer} from '../data-extract/data-extract.js'
+ * @import {ApplicationData, NameAnswer} from '../data-extract/application.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 

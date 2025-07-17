@@ -2,7 +2,7 @@ import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import { config } from '../../../config.js'
 
 /**
- * @import {ApplicationData} from '../../helpers/data-extract/data-extract.js'
+ * @import {ApplicationData} from '../../helpers/data-extract/application.js'
  * @import {Message} from '@aws-sdk/client-sqs'
  */
 
