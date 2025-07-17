@@ -2,10 +2,10 @@ import { getApplicationReference } from './application-reference.js'
 
 describe('#Application reference generation', () => {
   it('Should generate a reference with the correct format', () => {
-    const result = getApplicationReference()
+    const result = getApplicationReference('DE')
     expect(result).toBeDefined()
     expect(result).toHaveLength(12)
-    expect(result).toMatch(/^TB-[A-Z0-9]{4}-[A-Z0-9]{4}$/)
+    expect(result).toMatch(/^DE-[A-Z0-9]{4}-[A-Z0-9]{4}$/)
   })
 
   it('Should generate unique references', () => {

@@ -19,6 +19,7 @@ import { escapeMarkdown } from '../escape-text.js'
 import { createSharepointItem } from './sharepoint-item.js'
 import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
+import { config } from '../../../config.js'
 
 /**
  * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/application.js'
@@ -34,6 +35,7 @@ const logger = createLogger()
  * @returns {Promise<void|HandlerError>}
  */
 export const sharePointApplicationHandler = async (request, reference) => {
+  console.log('Processing application for SharePoint submission...')
   try {
     await sendMessageToSQS(request.payload, reference)
   } catch (error) {
@@ -162,9 +164,12 @@ const sendCaseworkerNotificationEmail = async (
     getListItemUrl(sharePointItem?.webUrl, sharePointItem?.id)
   )
 
-  await sendEmailToCaseWorker({
-    content: emailContent // escape markdown is done when generating the content as some parts should not be escaped (urls)
-  })
+  await sendEmailToCaseWorker(
+    {
+      content: emailContent // escape markdown is done when generating the content as some parts should not be escaped (urls)
+    },
+    config.get('notify').tb.caseDelivery
+  )
 }
 
 /**
@@ -177,9 +182,12 @@ const sendApplicantConfirmationEmail = async (application, reference) => {
   const applicantEmail = app.emailAddress
   const applicantFullName = app.applicantName
 
-  await sendEmailToApplicant({
-    email: applicantEmail ?? '',
-    fullName: escapeMarkdown(applicantFullName) ?? '',
-    reference: reference ?? ''
-  })
+  await sendEmailToApplicant(
+    {
+      email: applicantEmail ?? '',
+      fullName: escapeMarkdown(applicantFullName) ?? '',
+      reference: reference ?? ''
+    },
+    config.get('notify').tb.applicantConfirmation
+  )
 }

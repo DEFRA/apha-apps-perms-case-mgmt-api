@@ -14,8 +14,8 @@ import { statusCodes } from '../../constants/status-codes.js'
 /**
  * @param {CaseWorkerEmailParams} data
  */
-export async function sendEmailToCaseWorker(data) {
-  const { templateId, emailAddress } = config.get('notify').caseDelivery
+export async function sendEmailToCaseWorker(data, config) {
+  const { templateId, emailAddress } = config
 
   const payload = {
     template_id: templateId,
@@ -32,8 +32,8 @@ export async function sendEmailToCaseWorker(data) {
 /**
  * @param {ApplicantEmailData} data
  */
-export async function sendEmailToApplicant(data) {
-  const { templateId } = config.get('notify').applicantConfirmation
+export async function sendEmailToApplicant(data, config) {
+  const { templateId } = config
 
   const payload = {
     template_id: templateId,

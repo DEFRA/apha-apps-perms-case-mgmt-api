@@ -2,7 +2,7 @@ import { statusCodes } from '../../common/constants/status-codes.js'
 
 import { isValidPayload, isValidRequest } from './submit-validation.js'
 import { createApplication } from '../../common/helpers/data-extract/data-extract.js'
-import { Application } from '../../common/helpers/data-extract/application.js'
+import { TbApplication } from '../../common/helpers/data-extract/tb-application.js'
 
 import { config } from '../../config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
@@ -46,11 +46,6 @@ export const submit = [
   }
 ]
 
-/**
- *
- * @param {Application} application
- * @returns
- */
 const getHandler = async (application) => {
   const featureFlags = config.get('featureFlags')
   if (featureFlags.stubMode) {
@@ -58,7 +53,7 @@ const getHandler = async (application) => {
   }
 
   if (
-    (await Application.isTbApplication(application)) &&
+    application instanceof TbApplication &&
     featureFlags.sharepointIntegrationEnabled
   ) {
     return sharePointApplicationHandler

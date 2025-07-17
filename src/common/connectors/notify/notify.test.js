@@ -42,7 +42,10 @@ describe('sendEmailToCaseWorker', () => {
     })
 
     it('should send a notification successfully', async () => {
-      const response = await sendEmailToCaseWorker(testData)
+      const response = await sendEmailToCaseWorker(
+        testData,
+        notifyConfig.tb.caseDelivery
+      )
 
       const [url, options] = wreckSpy.mock.calls[0]
       const payload = options.payload
@@ -51,8 +54,8 @@ describe('sendEmailToCaseWorker', () => {
 
       expect(JSON.parse(payload ?? '')).toEqual({
         personalisation: testData,
-        template_id: notifyConfig.caseDelivery.templateId,
-        email_address: notifyConfig.caseDelivery.emailAddress
+        template_id: notifyConfig.tb.caseDelivery.templateId,
+        email_address: notifyConfig.tb.caseDelivery.emailAddress
       })
       expect(options?.headers).toEqual({
         Authorization: 'Bearer mocked-jwt-token'
@@ -64,7 +67,10 @@ describe('sendEmailToCaseWorker', () => {
     it('should substitute in an empty string if link_to_file is not provided', async () => {
       const testDataWithoutFile = { content: testData.content }
 
-      const response = await sendEmailToCaseWorker(testDataWithoutFile)
+      const response = await sendEmailToCaseWorker(
+        testDataWithoutFile,
+        notifyConfig.tb.caseDelivery
+      )
 
       const [url, options] = wreckSpy.mock.calls[0]
       const payload = options.payload
@@ -76,8 +82,8 @@ describe('sendEmailToCaseWorker', () => {
           ...testDataWithoutFile,
           link_to_file: ''
         },
-        template_id: notifyConfig.caseDelivery.templateId,
-        email_address: notifyConfig.caseDelivery.emailAddress
+        template_id: notifyConfig.tb.caseDelivery.templateId,
+        email_address: notifyConfig.tb.caseDelivery.emailAddress
       })
       expect(options.headers).toEqual({
         Authorization: 'Bearer mocked-jwt-token'
@@ -95,7 +101,9 @@ describe('sendEmailToCaseWorker', () => {
         }
       })
 
-      await expect(sendEmailToCaseWorker(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToCaseWorker(testData, notifyConfig.tb.caseDelivery)
+      ).rejects.toThrow(
         `Request to GOV.uk notify timed out after ${notifyConfig.timeout}ms`
       )
     })
@@ -124,7 +132,9 @@ describe('sendEmailToCaseWorker', () => {
         }
       })
 
-      await expect(sendEmailToCaseWorker(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToCaseWorker(testData, notifyConfig.tb.caseDelivery)
+      ).rejects.toThrow(
         `HTTP failure from GOV.uk notify: status ${statusCodes.badRequest} with the following errors: Can't send to this recipient using a team-only API key, Can't send to this recipient when service is in trial mode`
       )
     })
@@ -134,7 +144,9 @@ describe('sendEmailToCaseWorker', () => {
       jest.spyOn(Wreck, 'post').mockRejectedValue({
         message: errorMessage
       })
-      await expect(sendEmailToCaseWorker(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToCaseWorker(testData, notifyConfig.tb.caseDelivery)
+      ).rejects.toThrow(
         `Request to GOV.uk notify failed with error: ${errorMessage}`
       )
     })
@@ -166,7 +178,10 @@ describe('sendEmailToApplicant', () => {
     })
 
     it('should send a notification successfully', async () => {
-      const response = await sendEmailToApplicant(testData)
+      const response = await sendEmailToApplicant(
+        testData,
+        notifyConfig.tb.applicantConfirmation
+      )
 
       const [url, options] = wreckSpy.mock.calls[0]
       const payload = options.payload
@@ -179,7 +194,7 @@ describe('sendEmailToApplicant', () => {
           application_reference_number: testData.reference
         },
         email_address: testData.email,
-        template_id: notifyConfig.applicantConfirmation.templateId
+        template_id: notifyConfig.tb.applicantConfirmation.templateId
       })
       expect(options?.headers).toEqual({
         Authorization: 'Bearer mocked-jwt-token'
@@ -197,7 +212,9 @@ describe('sendEmailToApplicant', () => {
         }
       })
 
-      await expect(sendEmailToApplicant(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToApplicant(testData, notifyConfig.tb.applicantConfirmation)
+      ).rejects.toThrow(
         `Request to GOV.uk notify timed out after ${notifyConfig.timeout}ms`
       )
     })
@@ -226,7 +243,9 @@ describe('sendEmailToApplicant', () => {
         }
       })
 
-      await expect(sendEmailToApplicant(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToApplicant(testData, notifyConfig.tb.applicantConfirmation)
+      ).rejects.toThrow(
         `HTTP failure from GOV.uk notify: status ${statusCodes.badRequest} with the following errors: Can't send to this recipient using a team-only API key, Can't send to this recipient when service is in trial mode`
       )
     })
@@ -236,7 +255,9 @@ describe('sendEmailToApplicant', () => {
       jest.spyOn(Wreck, 'post').mockRejectedValue({
         message: errorMessage
       })
-      await expect(sendEmailToApplicant(testData)).rejects.toThrow(
+      await expect(
+        sendEmailToApplicant(testData, notifyConfig.tb.applicantConfirmation)
+      ).rejects.toThrow(
         `Request to GOV.uk notify failed with error: ${errorMessage}`
       )
     })

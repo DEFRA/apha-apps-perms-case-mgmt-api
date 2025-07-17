@@ -18,6 +18,7 @@ import { getApplicationReference } from '../application-reference/application-re
 export class Application {
   referencePrefix = 'APP'
   configKey
+  expectedJourneyId = 'UNKNOWN_JOURNEY'
 
   /** @param {ApplicationData} data */
   constructor(data) {
@@ -41,17 +42,11 @@ export class Application {
   }
 
   get emailConfig() {
-    return config.get('notify')?.[this.configKey].caseDelivery
+    return config.get('notify')?.[this.configKey]
   }
 
   getNewReference() {
     return getApplicationReference(this.referencePrefix)
-  }
-
-  static async isTbApplication(application) {
-    // dynamic import required due to circular dependencies
-    const { TbApplication } = await import('./tb-application.js')
-    return application instanceof TbApplication
   }
 }
 
@@ -71,3 +66,5 @@ export class Section {
     )
   }
 }
+
+/* @export { Application, Section } */
