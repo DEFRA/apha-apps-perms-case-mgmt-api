@@ -35,7 +35,6 @@ const logger = createLogger()
  * @returns {Promise<void|HandlerError>}
  */
 export const sharePointApplicationHandler = async (request, reference) => {
-  console.log('Processing application for SharePoint submission...')
   try {
     await sendMessageToSQS(request.payload, reference)
   } catch (error) {
