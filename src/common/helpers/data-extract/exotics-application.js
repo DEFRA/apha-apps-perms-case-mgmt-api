@@ -1,6 +1,9 @@
 import { Application } from './application.js'
 
 export class ExoticsApplication extends Application {
+  referencePrefix = 'EX'
+  configKey = 'exotics'
+
   get emailAddress() {
     const section = this.get('licence')
     return section?.get('email')?.answer?.displayText

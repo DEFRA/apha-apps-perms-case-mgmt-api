@@ -1,15 +1,13 @@
 import { statusCodes } from '../../common/constants/status-codes.js'
 
-import { getApplicationReference } from '../../common/helpers/application-reference/application-reference.js'
-
 import { isValidPayload, isValidRequest } from './submit-validation.js'
+import { createApplication } from '../../common/helpers/data-extract/data-extract.js'
+import { TbApplication } from '../../common/helpers/data-extract/tb-application.js'
 
 import { config } from '../../config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
-
-/** @import {FileAnswer} from '../../common/helpers/data-extract/data-extract.js' */
 
 export const submit = [
   {
@@ -27,9 +25,10 @@ export const submit = [
           .code(statusCodes.badRequest)
       }
 
-      const reference = getApplicationReference()
+      const application = createApplication(request.payload)
+      const reference = application.getNewReference()
 
-      const handler = getHandler()
+      const handler = getHandler(application)
       const result = await handler(request, reference)
 
       if (result?.error) {
@@ -47,13 +46,16 @@ export const submit = [
   }
 ]
 
-const getHandler = () => {
+const getHandler = (application) => {
   const featureFlags = config.get('featureFlags')
   if (featureFlags.stubMode) {
     return stubModeApplicationHandler
   }
 
-  if (featureFlags.sharepointIntegrationEnabled) {
+  if (
+    application instanceof TbApplication &&
+    featureFlags.sharepointIntegrationEnabled
+  ) {
     return sharePointApplicationHandler
   }
 

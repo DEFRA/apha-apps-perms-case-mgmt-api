@@ -12,7 +12,14 @@
  * @typedef {{ journeyId: string, sections: SectionData[]}} ApplicationData
  */
 
+import { config } from '../../../config.js'
+import { getApplicationReference } from '../application-reference/application-reference.js'
+
 export class Application {
+  referencePrefix = 'APP'
+  configKey
+  expectedJourneyId = 'UNKNOWN_JOURNEY'
+
   /** @param {ApplicationData} data */
   constructor(data) {
     this._data = data
@@ -33,6 +40,14 @@ export class Application {
   get journeyId() {
     return this._data.journeyId
   }
+
+  get emailConfig() {
+    return config.get('notify')?.[this.configKey]
+  }
+
+  getNewReference() {
+    return getApplicationReference(this.referencePrefix)
+  }
 }
 
 export class Section {
@@ -51,3 +66,5 @@ export class Section {
     )
   }
 }
+
+/* @export { Application, Section } */

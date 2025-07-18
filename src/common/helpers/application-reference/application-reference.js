@@ -42,8 +42,8 @@ const generateSegment = () => {
   return Array.from({ length: 4 }).map(pick).join('')
 }
 
-export const getApplicationReference = () => {
+export const getApplicationReference = (prefix) => {
   const partOne = generateSegment()
   const partTwo = generateSegment()
-  return `TB-${partOne}-${partTwo}`
+  return `${prefix}-${partOne}-${partTwo}`
 }

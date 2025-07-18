@@ -34,7 +34,13 @@ describe('sendNotification (integration)', () => {
     const notifyConfig = {
       ...config.get('notify'),
       timeout: testTimeout,
-      url: `http://localhost:${backendPort}/mock-notify`
+      url: `http://localhost:${backendPort}/mock-notify`,
+      tb: {
+        caseDelivery: {
+          templateId: 'mock-template-id',
+          emailAddress: 'dummy@defra.com'
+        }
+      }
     }
     jest.spyOn(config, 'get').mockImplementation((name) => {
       if (name === 'notify') {
@@ -46,7 +52,7 @@ describe('sendNotification (integration)', () => {
 
     const testData = { content: 'test' }
 
-    const result = sendEmailToCaseWorker(testData)
+    const result = sendEmailToCaseWorker(testData, notifyConfig.tb.caseDelivery)
 
     await expect(result).rejects.toThrow(
       `Request to GOV.uk notify timed out after ${testTimeout}ms`

@@ -84,13 +84,19 @@ const sendEmails = async (request, reference, linkToFile) => {
     reference
   )
 
-  await sendEmailToCaseWorker({
-    content: escapeMarkdown(caseWorkerEmailContent),
-    ...(linkToFile ? { link_to_file: linkToFile } : {})
-  })
-  await sendEmailToApplicant({
-    email: applicantEmail ?? '',
-    fullName: escapeMarkdown(applicantFullName) ?? '',
-    reference: reference ?? ''
-  })
+  await sendEmailToCaseWorker(
+    {
+      content: escapeMarkdown(caseWorkerEmailContent),
+      ...(linkToFile ? { link_to_file: linkToFile } : {})
+    },
+    application.emailConfig.caseDelivery
+  )
+  await sendEmailToApplicant(
+    {
+      email: applicantEmail ?? '',
+      fullName: escapeMarkdown(applicantFullName) ?? '',
+      reference: reference ?? ''
+    },
+    application.emailConfig.applicantConfirmation
+  )
 }

@@ -15,6 +15,7 @@ import {
 } from './sharepoint.js'
 import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createSharepointItem } from './sharepoint-item.js'
+import { config } from '../../../config.js'
 
 /**
  * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
@@ -174,11 +175,14 @@ describe('SharePoint Handler', () => {
         mockRequest.payload,
         testReferenceNumber
       )
-      expect(sendEmailToApplicant).toHaveBeenCalledWith({
-        email: testEmail,
-        fullName: 'Name Surname',
-        reference: testReferenceNumber
-      })
+      expect(sendEmailToApplicant).toHaveBeenCalledWith(
+        {
+          email: testEmail,
+          fullName: 'Name Surname',
+          reference: testReferenceNumber
+        },
+        config.get('notify').tb.applicantConfirmation
+      )
       expect(response).toBeUndefined()
     })
 
@@ -239,9 +243,12 @@ describe('SharePoint Handler', () => {
           testReferenceNumber
         )
 
-        expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
-          content: 'Sharepoint notification email content'
-        })
+        expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+          {
+            content: 'Sharepoint notification email content'
+          },
+          config.get('notify').tb.caseDelivery
+        )
         expect(result).toBeUndefined()
       })
 
@@ -281,9 +288,12 @@ describe('SharePoint Handler', () => {
           testReferenceNumber
         )
 
-        expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
-          content: 'Sharepoint notification email content'
-        })
+        expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+          {
+            content: 'Sharepoint notification email content'
+          },
+          config.get('notify').tb.caseDelivery
+        )
 
         expect(response).toBeUndefined()
       })

@@ -1,3 +1,4 @@
+import { config } from '../../../config.js'
 import {
   sendEmailToApplicant,
   sendEmailToCaseWorker
@@ -152,15 +153,21 @@ describe('emailApplicationHandler', () => {
       testReferenceNumber
     )
     expect(mockCompressFile).not.toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
-      content: 'Case worker email content',
-      link_to_file: mockedFileProps
-    })
-    expect(sendEmailToApplicant).toHaveBeenCalledWith({
-      email: testEmail,
-      fullName: testFullName,
-      reference: testReferenceNumber
-    })
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+      {
+        content: 'Case worker email content',
+        link_to_file: mockedFileProps
+      },
+      config.get('notify').tb.caseDelivery
+    )
+    expect(sendEmailToApplicant).toHaveBeenCalledWith(
+      {
+        email: testEmail,
+        fullName: testFullName,
+        reference: testReferenceNumber
+      },
+      config.get('notify').tb.applicantConfirmation
+    )
     expect(response).toBeUndefined()
   })
 
@@ -173,15 +180,21 @@ describe('emailApplicationHandler', () => {
       testReferenceNumber
     )
     expect(mockCompressFile).toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
-      content: 'Case worker email content',
-      link_to_file: mockedFileProps
-    })
-    expect(sendEmailToApplicant).toHaveBeenCalledWith({
-      email: testEmail,
-      fullName: testFullName,
-      reference: testReferenceNumber
-    })
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+      {
+        content: 'Case worker email content',
+        link_to_file: mockedFileProps
+      },
+      config.get('notify').tb.caseDelivery
+    )
+    expect(sendEmailToApplicant).toHaveBeenCalledWith(
+      {
+        email: testEmail,
+        fullName: testFullName,
+        reference: testReferenceNumber
+      },
+      config.get('notify').tb.applicantConfirmation
+    )
     expect(response).toBeUndefined()
   })
 
@@ -193,14 +206,20 @@ describe('emailApplicationHandler', () => {
 
     expect(mockFetchFile).not.toHaveBeenCalled()
     expect(mockCompressFile).not.toHaveBeenCalled()
-    expect(sendEmailToCaseWorker).toHaveBeenCalledWith({
-      content: 'Case worker email content'
-    })
-    expect(sendEmailToApplicant).toHaveBeenCalledWith({
-      email: testEmail,
-      fullName: testFullName,
-      reference: testReferenceNumber
-    })
+    expect(sendEmailToCaseWorker).toHaveBeenCalledWith(
+      {
+        content: 'Case worker email content'
+      },
+      config.get('notify').tb.caseDelivery
+    )
+    expect(sendEmailToApplicant).toHaveBeenCalledWith(
+      {
+        email: testEmail,
+        fullName: testFullName,
+        reference: testReferenceNumber
+      },
+      config.get('notify').tb.applicantConfirmation
+    )
     expect(response).toBeUndefined()
   })
 })
