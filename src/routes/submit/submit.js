@@ -28,7 +28,7 @@ export const submit = [
       const application = createApplication(request.payload)
       const reference = application.getNewReference()
 
-      const handler = await getHandler(application)
+      const handler = getHandler(application)
       const result = await handler(request, reference)
 
       if (result?.error) {
@@ -46,7 +46,7 @@ export const submit = [
   }
 ]
 
-const getHandler = async (application) => {
+const getHandler = (application) => {
   const featureFlags = config.get('featureFlags')
   if (featureFlags.stubMode) {
     return stubModeApplicationHandler
