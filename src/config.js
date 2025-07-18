@@ -161,13 +161,19 @@ const config = convict({
           format: String,
           default: null,
           nullable: true,
-          env: 'NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+          env: [
+            'TB_NOTIFY_CASE_DELIVERY_TEMPLATE_ID',
+            'NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+          ]
         },
         emailAddress: /** @type {SchemaObj<string | null>} */ {
           format: String,
           default: null,
           nullable: true,
-          env: 'NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+          env: [
+            'TB_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS',
+            'NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+          ]
         }
       },
       applicantConfirmation: {
@@ -175,7 +181,10 @@ const config = convict({
           format: String,
           default: null,
           nullable: true,
-          env: 'NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
+          env: [
+            'TB_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID',
+            'NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
+          ]
         }
       }
     },
