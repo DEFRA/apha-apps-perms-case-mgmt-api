@@ -87,6 +87,8 @@ npm run dev
 | `SHAREPOINT_TB25_DRIVE_ID`                          | String  | b!ZB9XD-MkkE6-Ssl4Mwm4iJ7O4CPTLU1CsjiQmQcCZXZ30coF1EG3R7FxCg29jgyN                                    | SharePoint drive ID for TB25 documents                |
 | `SHAREPOINT_TB25_SITE_NAME`                         | String  | APHAApplicationsPermissionsTestSite                                                                   | SharePoint site name for TB25 integration             |
 | `SHAREPOINT_TB25_SITE_BASE_URL`                     | String  | https://defradev.sharepoint.com                                                                       | SharePoint base URL for TB25 integration              |
+| `SQS_ENDPOINT`                                      | String  | https://sqs.eu-west-2.amazonaws.com                                                                   | AWS SQS endpoint URL for local development            |
+| `SQS_QUEUE_URL`                                     | String  | https://sqs.eu-west-2.amazonaws.com/332499610595/apha_apps_perms_submitted_applications               | AWS SQS queue URL for submitted applications          |
 
 ### Testing
 
