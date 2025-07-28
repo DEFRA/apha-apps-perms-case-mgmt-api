@@ -8,6 +8,7 @@ Case management service responsible for accepting submissions and making them ac
   - [Local development](#local-development)
     - [Setup](#setup)
     - [Development](#development)
+      - [Environment variables required](#environment-variables-required)
     - [Testing](#testing)
     - [Production](#production)
     - [Npm scripts](#npm-scripts)
@@ -58,6 +59,34 @@ To run the application in `development` mode run:
 ```bash
 npm run dev
 ```
+
+#### Environment variables required
+
+| Environment Variable                                | Type    | Required value to run in local                                                                        | Description                                           |
+| --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `STUB_MODE_ENABLED`                                 | Boolean | true or false                                                                                         | Enables/disables stub mode for the API                |
+| `NOTIFY_API_KEY`                                    | String  | [Request to dev team]                                                                                 | API key for the Notify service                        |
+| `TB_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS`             | String  | an email that is in notify guest list                                                                 | Email address for TB case delivery notifications      |
+| `TB_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID`      | String  | ccd16b08-ce79-489b-8dc7-1d48986229d3                                                                  | Template ID for TB applicant confirmation emails      |
+| `TB_NOTIFY_CASE_DELIVERY_TEMPLATE_ID`               | String  | 0aea83a0-82c1-4ec4-ada1-27db58b47812                                                                  | Template ID for TB case delivery emails               |
+| `EXOTICS_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS`        | String  | an email that is in notify guest list                                                                 | Email address for Exotics case delivery notifications |
+| `EXOTICS_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID` | String  | ccd16b08-ce79-489b-8dc7-1d48986229d3                                                                  | Template ID for Exotics applicant confirmation emails |
+| `EXOTICS_NOTIFY_CASE_DELIVERY_TEMPLATE_ID`          | String  | 0aea83a0-82c1-4ec4-ada1-27db58b47812                                                                  | Template ID for Exotics case delivery emails          |
+| `AWS_REGION`                                        | String  | eu-west-2                                                                                             | AWS region for S3 file upload                         |
+| `AWS_ACCESS_KEY_ID`                                 | String  | test                                                                                                  | AWS access key ID for S3 authentication               |
+| `AWS_SECRET_ACCESS_KEY`                             | String  | test                                                                                                  | AWS secret access key for S3 authentication           |
+| `S3_BUCKET`                                         | String  | apha                                                                                                  | S3 bucket name for file uploads                       |
+| `GS_BINARY`                                         | String  | /usr/bin/gs                                                                                           | Path to Ghostscript binary                            |
+| `SHAREPOINT_TB25_INTEGRATION_ENABLED`               | Boolean | true or false                                                                                         | Enables/disables SharePoint TB25 integration          |
+| `SHAREPOINT_TB25_FOLDER_PATH`                       | String  | Digital Applications/TB25                                                                             | SharePoint folder path for TB25 documents             |
+| `SHAREPOINT_TB25_TENANT_ID`                         | String  | 6f504113-6b64-43f2-ade9-242e05780007                                                                  | SharePoint tenant ID for TB25 integration             |
+| `SHAREPOINT_TB25_CLIENT_ID`                         | String  | cfcf85b5-e70e-4adb-bae1-b274432d960d                                                                  | SharePoint client ID for TB25 integration             |
+| `SHAREPOINT_TB25_CLIENT_SECRET`                     | String  | [Request to dev team]                                                                                 | SharePoint client secret for TB25 integration         |
+| `SHAREPOINT_TB25_SITE_ID`                           | String  | defradev.sharepoint.com%2C0f571f64-24e3-4e90-be4a-c9783309b888%2C23e0ce9e-2dd3-424d-b238-909907026576 | SharePoint site ID for TB25 integration               |
+| `SHAREPOINT_TB25_LIST_ID`                           | String  | 74fdce34-80bd-4a8f-8a8f-02250ab1b2d7                                                                  | SharePoint list ID for TB25 documents                 |
+| `SHAREPOINT_TB25_DRIVE_ID`                          | String  | b!ZB9XD-MkkE6-Ssl4Mwm4iJ7O4CPTLU1CsjiQmQcCZXZ30coF1EG3R7FxCg29jgyN                                    | SharePoint drive ID for TB25 documents                |
+| `SHAREPOINT_TB25_SITE_NAME`                         | String  | APHAApplicationsPermissionsTestSite                                                                   | SharePoint site name for TB25 integration             |
+| `SHAREPOINT_TB25_SITE_BASE_URL`                     | String  | https://defradev.sharepoint.com                                                                       | SharePoint base URL for TB25 integration              |
 
 ### Testing
 
@@ -249,32 +278,3 @@ information providers in the public sector to license the use and re-use of thei
 licence.
 
 It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
-
-### Environment variables
-
-| Environment Variable | Type | Default | Description |
-|---------------------|------|---------|-------------|
-| `STUB_MODE_ENABLED` | Boolean | `false` | Enables/disables stub mode for the API |
-| `NOTIFY_API_KEY` | String | `null` | API key for the Notify service |
-| `TB_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS` | String | `null` | Email address for TB case delivery notifications |
-| `TB_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID` | String | `null` | Template ID for TB applicant confirmation emails |
-| `TB_NOTIFY_CASE_DELIVERY_TEMPLATE_ID` | String | `null` | Template ID for TB case delivery emails |
-| `EXOTICS_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS` | String | `null` | Email address for Exotics case delivery notifications |
-| `EXOTICS_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID` | String | `null` | Template ID for Exotics applicant confirmation emails |
-| `EXOTICS_NOTIFY_CASE_DELIVERY_TEMPLATE_ID` | String | `null` | Template ID for Exotics case delivery emails |
-| `AWS_REGION` | String | `eu-west-2` | AWS region for S3 file upload |
-| `AWS_ACCESS_KEY_ID` | String | `test` | AWS access key ID for S3 authentication |
-| `AWS_SECRET_ACCESS_KEY` | String | `test` | AWS secret access key for S3 authentication |
-| `S3_BUCKET` | String | `null` | S3 bucket name for file uploads |
-| `GS_BINARY` | String | `/usr/bin/gs` | Path to Ghostscript binary |
-| `SHAREPOINT_TB25_INTEGRATION_ENABLED` | Boolean | `true` (non-production) / `false` (production) | Enables/disables SharePoint TB25 integration |
-| `SHAREPOINT_TB25_FOLDER_PATH` | String | `Digital Applications/TB25` | SharePoint folder path for TB25 documents |
-| `SHAREPOINT_TB25_TENANT_ID` | String | `null` | SharePoint tenant ID for TB25 integration |
-| `SHAREPOINT_TB25_CLIENT_ID` | String | `null` | SharePoint client ID for TB25 integration |
-| `SHAREPOINT_TB25_CLIENT_SECRET` | String | `null` | SharePoint client secret for TB25 integration |
-| `SHAREPOINT_TB25_SITE_ID` | String | `null` | SharePoint site ID for TB25 integration |
-| `SHAREPOINT_TB25_LIST_ID` | String | `null` | SharePoint list ID for TB25 documents |
-| `SHAREPOINT_TB25_DRIVE_ID` | String | `null` | SharePoint drive ID for TB25 documents |
-| `SHAREPOINT_TB25_SITE_NAME` | String | `null` | SharePoint site name for TB25 integration |
-| `SHAREPOINT_TB25_SITE_BASE_URL` | String | `null` | SharePoint base URL for TB25 integration |
-
