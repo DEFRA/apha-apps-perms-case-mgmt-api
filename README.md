@@ -249,3 +249,32 @@ information providers in the public sector to license the use and re-use of thei
 licence.
 
 It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
+
+### Environment variables
+
+| Environment Variable | Type | Default | Description |
+|---------------------|------|---------|-------------|
+| `STUB_MODE_ENABLED` | Boolean | `false` | Enables/disables stub mode for the API |
+| `NOTIFY_API_KEY` | String | `null` | API key for the Notify service |
+| `TB_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS` | String | `null` | Email address for TB case delivery notifications |
+| `TB_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID` | String | `null` | Template ID for TB applicant confirmation emails |
+| `TB_NOTIFY_CASE_DELIVERY_TEMPLATE_ID` | String | `null` | Template ID for TB case delivery emails |
+| `EXOTICS_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS` | String | `null` | Email address for Exotics case delivery notifications |
+| `EXOTICS_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID` | String | `null` | Template ID for Exotics applicant confirmation emails |
+| `EXOTICS_NOTIFY_CASE_DELIVERY_TEMPLATE_ID` | String | `null` | Template ID for Exotics case delivery emails |
+| `AWS_REGION` | String | `eu-west-2` | AWS region for S3 file upload |
+| `AWS_ACCESS_KEY_ID` | String | `test` | AWS access key ID for S3 authentication |
+| `AWS_SECRET_ACCESS_KEY` | String | `test` | AWS secret access key for S3 authentication |
+| `S3_BUCKET` | String | `null` | S3 bucket name for file uploads |
+| `GS_BINARY` | String | `/usr/bin/gs` | Path to Ghostscript binary |
+| `SHAREPOINT_TB25_INTEGRATION_ENABLED` | Boolean | `true` (non-production) / `false` (production) | Enables/disables SharePoint TB25 integration |
+| `SHAREPOINT_TB25_FOLDER_PATH` | String | `Digital Applications/TB25` | SharePoint folder path for TB25 documents |
+| `SHAREPOINT_TB25_TENANT_ID` | String | `null` | SharePoint tenant ID for TB25 integration |
+| `SHAREPOINT_TB25_CLIENT_ID` | String | `null` | SharePoint client ID for TB25 integration |
+| `SHAREPOINT_TB25_CLIENT_SECRET` | String | `null` | SharePoint client secret for TB25 integration |
+| `SHAREPOINT_TB25_SITE_ID` | String | `null` | SharePoint site ID for TB25 integration |
+| `SHAREPOINT_TB25_LIST_ID` | String | `null` | SharePoint list ID for TB25 documents |
+| `SHAREPOINT_TB25_DRIVE_ID` | String | `null` | SharePoint drive ID for TB25 documents |
+| `SHAREPOINT_TB25_SITE_NAME` | String | `null` | SharePoint site name for TB25 integration |
+| `SHAREPOINT_TB25_SITE_BASE_URL` | String | `null` | SharePoint base URL for TB25 integration |
+
