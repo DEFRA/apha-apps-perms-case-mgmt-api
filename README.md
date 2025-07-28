@@ -66,6 +66,7 @@ npm run dev
 | --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `STUB_MODE_ENABLED`                                 | Boolean | true or false                                                                                         | Enables/disables stub mode for the API                |
 | `NOTIFY_API_KEY`                                    | String  | [Value to be provided by tech team]                                                                   | API key for the Notify service                        |
+| `NOTIFY_EMAIL_DOWNLOAD_CONFIRMATION`                | Boolean | true or false                                                                                         | Enables/disables email download confirmation          |
 | `TB_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS`             | String  | an email that is in notify guest list                                                                 | Email address for TB case delivery notifications      |
 | `TB_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID`      | String  | ccd16b08-ce79-489b-8dc7-1d48986229d3                                                                  | Template ID for TB applicant confirmation emails      |
 | `TB_NOTIFY_CASE_DELIVERY_TEMPLATE_ID`               | String  | 0aea83a0-82c1-4ec4-ada1-27db58b47812                                                                  | Template ID for TB case delivery emails               |
@@ -87,6 +88,8 @@ npm run dev
 | `SHAREPOINT_TB25_DRIVE_ID`                          | String  | b!ZB9XD-MkkE6-Ssl4Mwm4iJ7O4CPTLU1CsjiQmQcCZXZ30coF1EG3R7FxCg29jgyN                                    | SharePoint drive ID for TB25 documents                |
 | `SHAREPOINT_TB25_SITE_NAME`                         | String  | APHAApplicationsPermissionsTestSite                                                                   | SharePoint site name for TB25 integration             |
 | `SHAREPOINT_TB25_SITE_BASE_URL`                     | String  | https://defradev.sharepoint.com                                                                       | SharePoint base URL for TB25 integration              |
+| `SQS_ENDPOINT`                                      | String  | https://sqs.eu-west-2.amazonaws.com                                                                   | AWS SQS endpoint URL for local development            |
+| `SQS_QUEUE_URL`                                     | String  | https://sqs.eu-west-2.amazonaws.com/332499610595/apha_apps_perms_submitted_applications               | AWS SQS queue URL for submitted applications          |
 
 ### Testing
 
