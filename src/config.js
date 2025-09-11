@@ -202,6 +202,30 @@ const config = convict({
           env: 'EXOTICS_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
         }
       }
+    },
+    fmd: {
+      caseDelivery: {
+        templateId: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'FMD_NOTIFY_CASE_DELIVERY_TEMPLATE_ID'
+        },
+        emailAddress: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'FMD_NOTIFY_CASE_DELIVERY_EMAIL_ADDRESS'
+        }
+      },
+      applicantConfirmation: {
+        templateId: /** @type {SchemaObj<string | null>} */ {
+          format: String,
+          default: null,
+          nullable: true,
+          env: 'FMD_NOTIFY_APPLICANT_CONFIRMATION_TEMPLATE_ID'
+        }
+      }
     }
   },
   aws: {
