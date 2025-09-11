@@ -1,5 +1,6 @@
 import { Application, Section } from './application.js'
 import { ExoticsApplication } from './exotics-application.js'
+import { FmdApplication } from './fmd-application.js'
 import { TbApplication } from './tb-application.js'
 
 /**
@@ -10,17 +11,18 @@ const journeyApplications = {
   GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_EXOTICS:
     ExoticsApplication,
   GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND:
-    TbApplication
+    TbApplication,
+  GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_FMD: FmdApplication
 }
 
 export const createApplication = (data) => {
-  let ApplicationContstructor = journeyApplications[data.journeyId]
+  let ApplicationConstructor = journeyApplications[data.journeyId]
 
-  if (!ApplicationContstructor) {
-    ApplicationContstructor = TbApplication
+  if (!ApplicationConstructor) {
+    ApplicationConstructor = TbApplication
   }
 
-  return new ApplicationContstructor(data)
+  return new ApplicationConstructor(data)
 }
 
 export { Application, Section }
