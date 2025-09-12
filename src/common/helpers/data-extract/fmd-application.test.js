@@ -24,9 +24,19 @@ const EMAIL_QUESTION = {
   }
 }
 
-const RESPONSIBLE_PERSON_NAME_QUESTION = {
-  question: 'Responsible person name',
+const ORIGIN_RESPONSIBLE_PERSON_NAME_QUESTION = {
+  question: 'Origin responsible person name',
   questionKey: 'originResponsiblePersonName',
+  answer: {
+    type: /** @type {'text'} */ ('text'),
+    value: 'Jane Origin',
+    displayText: 'Jane Origin'
+  }
+}
+
+const KEEPER_NAME_QUESTION = {
+  question: 'Keeper name',
+  questionKey: 'registeredKeeperName',
   answer: {
     type: /** @type {'text'} */ ('text'),
     value: 'John Keeper',
@@ -109,13 +119,16 @@ describe('FmdApplication', () => {
   })
 
   describe('applicantName', () => {
-    it('should return responsible person name when available', () => {
+    it('should return keeper name when available', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: [
           {
             ...LICENCE_SECTION_BASE,
-            questionAnswers: [RESPONSIBLE_PERSON_NAME_QUESTION]
+            questionAnswers: [
+              KEEPER_NAME_QUESTION,
+              ORIGIN_RESPONSIBLE_PERSON_NAME_QUESTION
+            ]
           }
         ]
       }
@@ -123,6 +136,22 @@ describe('FmdApplication', () => {
       const application = new FmdApplication(applicationData)
 
       expect(application.applicantName).toBe('John Keeper')
+    })
+
+    it('should return responsible person name when available', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [ORIGIN_RESPONSIBLE_PERSON_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new FmdApplication(applicationData)
+
+      expect(application.applicantName).toBe('Jane Origin')
     })
 
     it('should return undefined when licence section does not exist', () => {

@@ -11,6 +11,9 @@ export class FmdApplication extends Application {
 
   get applicantName() {
     const section = this.get('licence')
-    return section?.get('originResponsiblePersonName')?.answer.displayText
+    return (
+      section?.get('registeredKeeperName')?.answer?.displayText ||
+      section?.get('originResponsiblePersonName')?.answer?.displayText
+    )
   }
 }
