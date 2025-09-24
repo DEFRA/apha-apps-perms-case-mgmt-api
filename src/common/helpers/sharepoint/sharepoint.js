@@ -20,6 +20,7 @@ import { createSharepointItem } from './sharepoint-item.js'
 import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 import { config } from '../../../config.js'
+import { emailApplicationHandler } from '../email/email.js'
 
 /**
  * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/application.js'
@@ -66,10 +67,19 @@ export const processApplication = async (queuedApplicationData) => {
     logger.warn(
       `Failed to upload submitted application to SharePoint: ${error.message}`
     )
-    // only throw if the error is not a conflict as that would mean the file was already uploaded
-    if (error.statusCode !== statusCodes.conflict) {
-      throw error
+
+    const emailResult = await emailApplicationHandler(application, reference)
+
+    if (emailResult?.error) {
+      // failed sahrepoint and email
+
+      // only throw if the error is not a conflict as that would mean the file was already uploaded
+      if (error.statusCode !== statusCodes.conflict) {
+        throw error
+      }
     }
+
+    return emailResult
   }
 
   try {

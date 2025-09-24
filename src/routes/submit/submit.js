@@ -28,8 +28,13 @@ export const submit = [
       const application = createApplication(request.payload)
       const reference = application.getNewReference()
 
-      const handler = getHandler(application)
-      const result = await handler(request, reference)
+      const { handler, backup } = getHandler(application)
+      let result = await handler(request, reference)
+
+      if (result?.error && backup) {
+        // sending to queue failed
+        result = await backup(request, reference)
+      }
 
       if (result?.error) {
         return h
@@ -49,15 +54,24 @@ export const submit = [
 const getHandler = (application) => {
   const featureFlags = config.get('featureFlags')
   if (featureFlags.stubMode) {
-    return stubModeApplicationHandler
+    return {
+      handler: stubModeApplicationHandler,
+      backup: null
+    }
   }
 
   if (
     application instanceof TbApplication &&
     featureFlags.sharepointIntegrationEnabled
   ) {
-    return sharePointApplicationHandler
+    return {
+      handler: sharePointApplicationHandler,
+      backup: emailApplicationHandler
+    }
   }
 
-  return emailApplicationHandler
+  return {
+    handler: emailApplicationHandler,
+    backup: null
+  }
 }
