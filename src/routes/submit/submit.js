@@ -35,7 +35,7 @@ export const submit = [
         featureFlags.sharepointIntegrationEnabled &&
         featureFlags.sharepointBackupEnabled
       ) {
-        await emailApplicationHandler(request, reference)
+        await emailApplicationHandler(request, reference, false)
       }
 
       const handler = getHandler(application)
