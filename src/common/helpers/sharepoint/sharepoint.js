@@ -35,6 +35,8 @@ const logger = createLogger()
  * @returns {Promise<void|HandlerError>}
  */
 export const sharePointApplicationHandler = async (request, reference) => {
+  const featureFlags = config.get('featureFlags')
+
   try {
     await sendMessageToSQS(request.payload, reference)
   } catch (error) {
@@ -46,7 +48,9 @@ export const sharePointApplicationHandler = async (request, reference) => {
     }
   }
   try {
-    await sendApplicantConfirmationEmail(request.payload, reference)
+    if (!featureFlags.sharepointBackupEnabled) {
+      await sendApplicantConfirmationEmail(request.payload, reference)
+    }
   } catch (error) {
     logger.error(`Failed to send email to applicant: ${error.message}`)
   }
@@ -143,7 +147,7 @@ const uploadBiosecurityMap = async (application, reference) => {
     const filename = `${reference}_Biosecurity_Map.${getFileExtension(fileData.contentType)}`
     return uploadFile(reference, filename, fileData.file)
   }
-  return Promise.resolve() // No file to upload, resolve immediately
+  return undefined // No file to upload, resolve immediately
 }
 
 /**

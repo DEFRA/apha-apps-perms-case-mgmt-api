@@ -286,6 +286,12 @@ const config = convict({
       default: !isProduction,
       env: 'SHAREPOINT_TB25_INTEGRATION_ENABLED'
     },
+    sharepointBackupEnabled: {
+      doc: 'Feature flag to enable the SharePoint integration email backup',
+      format: Boolean,
+      default: true,
+      env: 'SHAREPOINT_TB25_INTEGRATION_EMAIL_BACKUP_ENABLED'
+    },
     stubMode: {
       doc: 'Feature flag to enable a stub mode',
       format: Boolean,

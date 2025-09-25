@@ -14,6 +14,8 @@ export const submit = [
     method: 'POST',
     path: '/submit',
     handler: async (request, h) => {
+      const featureFlags = config.get('featureFlags')
+
       if (!isValidRequest(request)) {
         return h
           .response({ error: 'INVALID_REQUEST' })
@@ -27,6 +29,14 @@ export const submit = [
 
       const application = createApplication(request.payload)
       const reference = application.getNewReference()
+
+      if (
+        application instanceof TbApplication &&
+        featureFlags.sharepointIntegrationEnabled &&
+        featureFlags.sharepointBackupEnabled
+      ) {
+        await emailApplicationHandler(request, reference)
+      }
 
       const handler = getHandler(application)
       const result = await handler(request, reference)
@@ -48,6 +58,7 @@ export const submit = [
 
 const getHandler = (application) => {
   const featureFlags = config.get('featureFlags')
+
   if (featureFlags.stubMode) {
     return stubModeApplicationHandler
   }

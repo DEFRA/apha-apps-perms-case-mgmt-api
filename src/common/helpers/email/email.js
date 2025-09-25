@@ -91,6 +91,7 @@ const sendEmails = async (request, reference, linkToFile) => {
     },
     application.emailConfig.caseDelivery
   )
+
   await sendEmailToApplicant(
     {
       email: applicantEmail ?? '',
