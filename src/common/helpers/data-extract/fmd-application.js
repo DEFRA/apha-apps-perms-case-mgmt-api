@@ -13,7 +13,8 @@ export class FmdApplication extends Application {
     const section = this.get('licence')
     return (
       section?.get('registeredKeeperName')?.answer?.displayText ||
-      section?.get('originResponsiblePersonName')?.answer?.displayText
+      section?.get('originResponsiblePersonName')?.answer?.displayText ||
+      section?.get('licenseeName')?.answer?.displayText
     )
   }
 }
