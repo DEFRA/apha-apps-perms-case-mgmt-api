@@ -16,6 +16,7 @@ import {
 import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createSharepointItem } from './sharepoint-item.js'
 import { config } from '../../../config.js'
+import { spyOnConfig } from '../../test-helpers/config.js'
 
 /**
  * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
@@ -164,6 +165,10 @@ describe('SharePoint Handler', () => {
 
   describe('sharePointApplicationHandler', () => {
     it('should enqueue application for processing and send email to applicant', async () => {
+      spyOnConfig('featureFlags', {
+        sharepointBackupEnabled: false
+      })
+
       mockSendMessageToSQS.mockResolvedValue(undefined)
 
       const response = await sharePointApplicationHandler(
@@ -175,6 +180,8 @@ describe('SharePoint Handler', () => {
         mockRequest.payload,
         testReferenceNumber
       )
+
+      expect(sendEmailToApplicant).toHaveBeenCalledTimes(1)
       expect(sendEmailToApplicant).toHaveBeenCalledWith(
         {
           email: testEmail,
@@ -183,6 +190,27 @@ describe('SharePoint Handler', () => {
         },
         config.get('notify').tb.applicantConfirmation
       )
+      expect(response).toBeUndefined()
+    })
+
+    it.only('should enqueue application for processing and not send the confirmation email', async () => {
+      spyOnConfig('featureFlags', {
+        sharepointBackupEnabled: true
+      })
+
+      mockSendMessageToSQS.mockResolvedValue(undefined)
+
+      const response = await sharePointApplicationHandler(
+        mockRequest,
+        testReferenceNumber
+      )
+
+      expect(sendMessageToSQS).toHaveBeenCalledWith(
+        mockRequest.payload,
+        testReferenceNumber
+      )
+
+      expect(sendEmailToApplicant).not.toHaveBeenCalled()
       expect(response).toBeUndefined()
     })
 

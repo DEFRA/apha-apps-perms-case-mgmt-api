@@ -27,11 +27,7 @@ import { escapeMarkdown } from '../escape-text.js'
  * @param {string} reference
  * @returns {Promise<void|HandlerError>}
  */
-export const emailApplicationHandler = async (
-  request,
-  reference,
-  sendConfirmation = true
-) => {
+export const emailApplicationHandler = async (request, reference) => {
   // Upload the biosecurity map if it exists
   let linkToFile = null
   const fileAnswer = /** @type {FileAnswer} */ (
@@ -72,11 +68,11 @@ export const emailApplicationHandler = async (
     linkToFile = getFileProps(compressedFileData ?? fileData)
   }
 
-  await sendEmails(request, reference, linkToFile, sendConfirmation)
+  await sendEmails(request, reference, linkToFile)
   return undefined
 }
 
-const sendEmails = async (request, reference, linkToFile, sendConfirmation) => {
+const sendEmails = async (request, reference, linkToFile) => {
   const application = createApplication(request.payload)
 
   // Send emails to case worker and applicant
@@ -96,14 +92,12 @@ const sendEmails = async (request, reference, linkToFile, sendConfirmation) => {
     application.emailConfig.caseDelivery
   )
 
-  if (sendConfirmation) {
-    await sendEmailToApplicant(
-      {
-        email: applicantEmail ?? '',
-        fullName: escapeMarkdown(applicantFullName) ?? '',
-        reference: reference ?? ''
-      },
-      application.emailConfig.applicantConfirmation
-    )
-  }
+  await sendEmailToApplicant(
+    {
+      email: applicantEmail ?? '',
+      fullName: escapeMarkdown(applicantFullName) ?? '',
+      reference: reference ?? ''
+    },
+    application.emailConfig.applicantConfirmation
+  )
 }
