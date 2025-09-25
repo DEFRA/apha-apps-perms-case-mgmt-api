@@ -44,6 +44,16 @@ const KEEPER_NAME_QUESTION = {
   }
 }
 
+const LICENSEE_NAME_QUESTION = {
+  question: 'Licensee name',
+  questionKey: 'licenseeName',
+  answer: {
+    type: /** @type {'text'} */ ('text'),
+    value: 'Mike Licensee',
+    displayText: 'Mike Licensee'
+  }
+}
+
 describe('FmdApplication', () => {
   it('should be an instance of FmdApplication', () => {
     const application = new FmdApplication(BASE_APPLICATION_DATA)
@@ -152,6 +162,22 @@ describe('FmdApplication', () => {
       const application = new FmdApplication(applicationData)
 
       expect(application.applicantName).toBe('Jane Origin')
+    })
+
+    it('should return licensee name when available', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [LICENSEE_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new FmdApplication(applicationData)
+
+      expect(application.applicantName).toBe('Mike Licensee')
     })
 
     it('should return undefined when licence section does not exist', () => {
