@@ -193,7 +193,7 @@ describe('SharePoint Handler', () => {
       expect(response).toBeUndefined()
     })
 
-    it.only('should enqueue application for processing and not send the confirmation email', async () => {
+    it('should enqueue application for processing and not send the confirmation email', async () => {
       spyOnConfig('featureFlags', {
         sharepointBackupEnabled: true
       })
