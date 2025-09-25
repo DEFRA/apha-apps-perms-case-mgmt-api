@@ -143,7 +143,7 @@ const uploadBiosecurityMap = async (application, reference) => {
     const filename = `${reference}_Biosecurity_Map.${getFileExtension(fileData.contentType)}`
     return uploadFile(reference, filename, fileData.file)
   }
-  return Promise.resolve() // No file to upload, resolve immediately
+  return undefined // No file to upload, resolve immediately
 }
 
 /**
