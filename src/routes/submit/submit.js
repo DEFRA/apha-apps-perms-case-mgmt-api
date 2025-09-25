@@ -9,13 +9,13 @@ import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sh
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
 
-const featureFlags = config.get('featureFlags')
-
 export const submit = [
   {
     method: 'POST',
     path: '/submit',
     handler: async (request, h) => {
+      const featureFlags = config.get('featureFlags')
+
       if (!isValidRequest(request)) {
         return h
           .response({ error: 'INVALID_REQUEST' })
@@ -57,6 +57,8 @@ export const submit = [
 ]
 
 const getHandler = (application) => {
+  const featureFlags = config.get('featureFlags')
+
   if (featureFlags.stubMode) {
     return stubModeApplicationHandler
   }

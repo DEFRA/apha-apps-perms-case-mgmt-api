@@ -141,7 +141,8 @@ describe('submit route', () => {
 
   it('should call sharePointApplicationHandler when sharepointIntegrationEnabled is true', async () => {
     spyOnConfig('featureFlags', {
-      sharepointIntegrationEnabled: true
+      sharepointIntegrationEnabled: true,
+      sharepointBackupEnabled: false
     })
     mockSharePointApplicationHandler.mockResolvedValue({})
 
@@ -156,9 +157,28 @@ describe('submit route', () => {
     expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
   })
 
+  it('should call sharePointApplicationHandler when sharepointIntegrationEnabled is true and backup with email', async () => {
+    spyOnConfig('featureFlags', {
+      sharepointIntegrationEnabled: true,
+      sharepointBackupEnabled: true
+    })
+    mockSharePointApplicationHandler.mockResolvedValue({})
+
+    await handler(mockRequest, mockResponse)
+
+    expect(sharePointApplicationHandler).toHaveBeenCalled()
+    expect(emailApplicationHandler).toHaveBeenCalled()
+
+    expect(mockResponse.response).toHaveBeenCalledWith({
+      message: testReferenceNumber
+    })
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+  })
+
   it('should call emailApplicationHandler when sharepointIntegrationEnabled is false', async () => {
     spyOnConfig('featureFlags', {
-      sharepointIntegrationEnabled: false
+      sharepointIntegrationEnabled: false,
+      sharepointBackupEnabled: false
     })
     mockEmailApplicationHandler.mockResolvedValue({})
 
@@ -177,6 +197,7 @@ describe('submit route', () => {
       error: { errorCode: 'SOME_ERROR', statusCode: 500 }
     }
     spyOnConfig('featureFlags', {
+      sharepointBackupEnabled: false,
       sharepointIntegrationEnabled: true
     })
     mockSharePointApplicationHandler.mockResolvedValue(errorResponse)
