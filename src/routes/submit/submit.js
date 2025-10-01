@@ -31,6 +31,7 @@ export const submit = [
       const reference = application.getNewReference()
 
       if (
+        !featureFlags.stubMode &&
         application instanceof TbApplication &&
         featureFlags.sharepointIntegrationEnabled &&
         featureFlags.sharepointBackupEnabled
