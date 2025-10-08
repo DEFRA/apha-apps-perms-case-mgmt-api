@@ -53,8 +53,8 @@ export const fields = (applicationData, reference) => {
   )?.answer
 
   const { folderPath, siteName, siteBaseUrl } = config.get('sharepoint')
-  const supportingMaterialPath = `/sites/${siteName}/Shared Documents/${folderPath}/${reference}`
-  const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Shared%20Documents/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
+  const supportingMaterialPath = `/sites/${siteName}/Supporting Materials/${folderPath}/${reference}`
+  const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Supporting%20Materials/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
   const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   return {
