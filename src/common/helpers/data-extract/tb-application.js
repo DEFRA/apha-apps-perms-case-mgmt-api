@@ -81,8 +81,6 @@ export class TbApplication extends Application {
       originType === 'afu' &&
       ['slaughter', ...destiantionTypes].includes(destinationType)
 
-    console.log(isOriginRestricted)
-
     return (
       (isOriginRestricted && isDestinationSale) || isAfuToSpecialDestination
     )
