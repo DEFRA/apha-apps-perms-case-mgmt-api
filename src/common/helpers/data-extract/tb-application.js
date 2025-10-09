@@ -75,12 +75,13 @@ export class TbApplication extends Application {
    * @returns {boolean}
    */
   isTb16eCase(originType, destinationType, isOriginRestricted) {
-    const isDestinationSale = ['dedicated-sale', 'afu'].includes(
-      destinationType
-    )
+    const destiantionTypes = ['dedicated-sale', 'afu', 'market-afu']
+    const isDestinationSale = destiantionTypes.includes(destinationType)
     const isAfuToSpecialDestination =
       originType === 'afu' &&
-      ['slaughter', 'afu', 'dedicated-sale'].includes(destinationType)
+      ['slaughter', ...destiantionTypes].includes(destinationType)
+
+    console.log(isOriginRestricted)
 
     return (
       (isOriginRestricted && isDestinationSale) || isAfuToSpecialDestination

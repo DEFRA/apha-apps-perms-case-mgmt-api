@@ -227,185 +227,97 @@ describe('TbApplication', () => {
   })
 
   describe('licenceType', () => {
-    it('should return TB15 for unrestricted origin to restricted destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('unrestricted-farm')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('tb-restricted-farm')]
-          }
-        ]
+    it.each([
+      {
+        description: 'unrestricted origin to restricted destination',
+        originType: 'unrestricted-farm',
+        destinationType: 'tb-restricted-farm',
+        expectedLicenceType: 'TB15'
+      },
+      {
+        description: 'market origin to restricted destination',
+        originType: 'market',
+        destinationType: 'zoo',
+        expectedLicenceType: 'TB15'
+      },
+      {
+        description: 'restricted origin to restricted destination',
+        originType: 'tb-restricted-farm',
+        destinationType: 'lab',
+        expectedLicenceType: 'TB16'
+      },
+      {
+        description: 'restricted origin to dedicated sale destination',
+        originType: 'tb-restricted-farm',
+        destinationType: 'dedicated-sale',
+        expectedLicenceType: 'TB16e'
+      },
+      {
+        description: 'restricted origin to afu destination',
+        originType: 'zoo',
+        destinationType: 'afu',
+        expectedLicenceType: 'TB16e'
+      },
+      {
+        description: 'afu origin to slaughter destination',
+        originType: 'afu',
+        destinationType: 'slaughter',
+        expectedLicenceType: 'TB16e'
+      },
+      {
+        description: 'afu origin to afu destination',
+        originType: 'afu',
+        destinationType: 'afu',
+        expectedLicenceType: 'TB16e'
+      },
+
+      {
+        description: 'restricted origin to afu-market destination',
+        originType: 'zoo',
+        destinationType: 'market-afu',
+        expectedLicenceType: 'TB16e'
+      },
+      {
+        description: 'afu origin to afu-market destination',
+        originType: 'afu',
+        destinationType: 'market-afu',
+        expectedLicenceType: 'TB16e'
+      },
+
+      {
+        description: 'restricted origin to slaughter destination',
+        originType: 'tb-restricted-farm',
+        destinationType: 'slaughter',
+        expectedLicenceType: 'TB24c'
+      },
+      {
+        description: 'unrestricted origin to unrestricted destination',
+        originType: 'market',
+        destinationType: 'unrestricted-farm',
+        expectedLicenceType: ''
       }
+    ])(
+      'should return $expectedLicenceType for $description',
+      ({ originType, destinationType, expectedLicenceType }) => {
+        const applicationData = {
+          ...BASE_APPLICATION_DATA,
+          sections: [
+            {
+              ...ORIGIN_SECTION_BASE,
+              questionAnswers: [ORIGIN_TYPE_QUESTION(originType)]
+            },
+            {
+              ...DESTINATION_SECTION_BASE,
+              questionAnswers: [DESTINATION_TYPE_QUESTION(destinationType)]
+            }
+          ]
+        }
 
-      const application = new TbApplication(applicationData)
+        const application = new TbApplication(applicationData)
 
-      expect(application.licenceType).toBe('TB15')
-    })
-
-    it('should return TB15 for market origin to restricted destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('market')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('zoo')]
-          }
-        ]
+        expect(application.licenceType).toBe(expectedLicenceType)
       }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB15')
-    })
-
-    it('should return TB16 for restricted origin to restricted destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('tb-restricted-farm')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('lab')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16')
-    })
-
-    it('should return TB16e for restricted origin to dedicated sale destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('tb-restricted-farm')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('dedicated-sale')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16e')
-    })
-
-    it('should return TB16e for restricted origin to afu destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('zoo')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('afu')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16e')
-    })
-
-    it('should return TB16e for afu origin to slaughter destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('afu')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('slaughter')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16e')
-    })
-
-    it('should return TB16e for afu origin to afu destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('afu')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('afu')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16e')
-    })
-
-    it('should return TB24c for restricted origin to slaughter destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('tb-restricted-farm')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('slaughter')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB24c')
-    })
-
-    it('should return empty string for unrestricted origin to unrestricted destination', () => {
-      const applicationData = {
-        ...BASE_APPLICATION_DATA,
-        sections: [
-          {
-            ...ORIGIN_SECTION_BASE,
-            questionAnswers: [ORIGIN_TYPE_QUESTION('market')]
-          },
-          {
-            ...DESTINATION_SECTION_BASE,
-            questionAnswers: [DESTINATION_TYPE_QUESTION('unrestricted-farm')]
-          }
-        ]
-      }
-
-      const application = new TbApplication(applicationData)
-
-      expect(application.licenceType).toBe('')
-    })
+    )
 
     it('should return empty string when origin section is missing', () => {
       const applicationData = {
