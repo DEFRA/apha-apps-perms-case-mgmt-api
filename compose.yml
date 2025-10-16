@@ -46,7 +46,7 @@ services:
       context: .
       target: development
     ports:
-      - '3001:3001'
+      - '3002:3001'
     links:
       - 'localstack:localstack'
       - 'mongodb:mongodb'
