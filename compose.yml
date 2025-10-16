@@ -35,7 +35,7 @@ services:
     networks:
       - cdp-tenant
     ports:
-      - "27018:27017"   # host:container (was 27017:27017)
+      - "27018:27017"
     volumes:
       - mongodb-data:/data
     restart: always
