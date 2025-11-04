@@ -188,3 +188,17 @@ export const howManyAnimalsMaximum = (quantity) => ({
     displayText: quantity
   }
 })
+
+/**
+ * @param {string} info
+ * @returns {QuestionAnswerData}
+ */
+export const additionalInfo = (info) => ({
+  question: 'Additional information',
+  questionKey: 'additionalInfo',
+  answer: {
+    type: 'text',
+    value: info,
+    displayText: info
+  }
+})
