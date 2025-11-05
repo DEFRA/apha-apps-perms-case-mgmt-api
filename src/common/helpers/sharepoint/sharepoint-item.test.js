@@ -1,6 +1,7 @@
 import { createSharepointItem, fields } from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
+  additionalInfo,
   destinationAddress,
   destinationCph,
   destinationSection,
@@ -173,5 +174,84 @@ describe('fields', () => {
     }
 
     expect(fields(application, reference).NumberofCattle).toBe('20')
+  })
+
+  describe('additionalInfo field (Notes)', () => {
+    it('should include plain text additional info without modification', () => {
+      const plainTextInfo = 'Animals require special handling'
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [destinationSection([additionalInfo(plainTextInfo)])]
+      }
+
+      const result = fields(application, reference)
+
+      expect(result.Notes).toBe(plainTextInfo)
+    })
+
+    it('should escape HTML link tags in additional info', () => {
+      const htmlLink = '<a href="https://example.com">Click here</a>'
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [destinationSection([additionalInfo(htmlLink)])]
+      }
+
+      const result = fields(application, reference)
+
+      expect(result.Notes).toBe(
+        '&lt;a href=&quot;https://example.com&quot;&gt;Click here&lt;/a&gt;'
+      )
+      expect(result.Notes).not.toContain('<a')
+      expect(result.Notes).not.toContain('</a>')
+      expect(result.Notes).toContain('&lt;')
+      expect(result.Notes).toContain('&gt;')
+    })
+
+    it('should escape script tags in additional info', () => {
+      const scriptTag = '<script>alert("XSS")</script>'
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [destinationSection([additionalInfo(scriptTag)])]
+      }
+
+      const result = fields(application, reference)
+
+      expect(result.Notes).toBe(
+        '&lt;script&gt;alert\\(&quot;XSS&quot;\\)&lt;/script&gt;'
+      )
+      expect(result.Notes).not.toContain('<script')
+    })
+
+    it('should escape HTML special characters in additional info', () => {
+      const specialChars = 'Use < and > symbols, not & or " or \' characters'
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [destinationSection([additionalInfo(specialChars)])]
+      }
+
+      const result = fields(application, reference)
+
+      expect(result.Notes).toBe(
+        'Use &lt; and &gt; symbols, not &amp; or &quot; or &#39; characters'
+      )
+    })
+
+    it('should escape markdown link syntax', () => {
+      const markdownLink = '[Click here](https://example.com)'
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [destinationSection([additionalInfo(markdownLink)])]
+      }
+
+      const result = fields(application, reference)
+
+      expect(result.Notes).toBe('\\[Click here\\]\\(https://example.com\\)')
+      expect(result.Notes).not.toContain('[Click here](')
+    })
   })
 })
