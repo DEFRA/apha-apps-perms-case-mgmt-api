@@ -1,6 +1,7 @@
 import { createSharepointItem, fields } from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
+  additionalInfo,
   destinationAddress,
   destinationCph,
   destinationSection,
@@ -84,6 +85,7 @@ describe('fields', () => {
     originAddressQuestion
   ])
 
+  const additionalInfoText = 'Animals require special handling'
   const destination = destinationSection([
     destinationType('slaughter'),
     destinationAddress({
@@ -92,7 +94,8 @@ describe('fields', () => {
       addressPostcode: destinationAddressPostcode
     }),
     destinationCph(destinationCphNumber),
-    howManyAnimals('62')
+    howManyAnimals('62'),
+    additionalInfo(additionalInfoText)
   ])
 
   const licence = licenceSection([keeperName({ firstName, lastName })])
@@ -118,6 +121,7 @@ describe('fields', () => {
       Name: `${firstName} ${lastName}`,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      Notes: additionalInfoText,
       OriginCPH: '12/123/1234',
       DestinationCPH: destinationCphNumber,
       Destination_x0020_Name: null,
@@ -144,6 +148,7 @@ describe('fields', () => {
       Name: null,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
+      Notes: additionalInfoText,
       OriginCPH: '12/123/1234',
       DestinationCPH: destinationCphNumber,
       Destination_x0020_Name: `${firstName} ${lastName}`,

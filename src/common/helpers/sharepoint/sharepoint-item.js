@@ -1,6 +1,7 @@
 import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
 import { createApplication } from '../data-extract/data-extract.js'
+import { escapeHtml, escapeMarkdown } from '../escape-text.js'
 
 /** @import {
  *   ApplicationData,
@@ -34,6 +35,12 @@ export const fields = (applicationData, reference) => {
   const originCph = origin?.get('cphNumber')?.answer
 
   const destinationCph = destination?.get('destinationFarmCph')?.answer
+  const additionalInfo = destination?.get('additionalInfo')?.answer
+
+  const sanitizedAdditionalInfo = escapeMarkdown(
+    escapeHtml(additionalInfo?.value)
+  )
+
   const cphNumber = application.requesterCphNumber
 
   const originAddress = /** @type {AddressAnswer} */ (
@@ -66,6 +73,7 @@ export const fields = (applicationData, reference) => {
     Name: isOffFarm ? name?.displayText : null,
     FirstlineofAddress: originAddress?.value.addressLine1,
     Licence: application.licenceType,
+    Notes: sanitizedAdditionalInfo,
     OriginCPH: originCph?.value,
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
