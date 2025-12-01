@@ -263,6 +263,18 @@ jest.mock('../data-extract/data-extract.js', () => ({
   createApplication: jest.fn()
 }))
 
+/**
+ * @param {Record<string, any>} data - The data structure to mock
+ */
+const buildMockGetter = (data) =>
+  jest.fn((key) => {
+    const value = data[key]
+    if (value && typeof value === 'object' && !value.answer) {
+      return { get: buildMockGetter(value) }
+    }
+    return value
+  })
+
 describe('generateSharepointNotificationContent', () => {
   const link = 'https://example.com/tb25'
 
@@ -275,33 +287,17 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should generate content with licence type, CPH, name, reference and link using fullName', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: undefined } },
+        fullName: { answer: { displayText: 'Name Surname' } }
+      }
+    }
+
     createApplication.mockReturnValue({
       licenceType: 'TB Test Licence',
       requesterCphNumber: '12/3456/7890',
-      get: jest.fn((section) => {
-        if (section === 'licence') {
-          return {
-            get: jest.fn((question) => {
-              if (question === 'fullName') {
-                return {
-                  answer: {
-                    displayText: 'Name Surname'
-                  }
-                }
-              }
-              if (question === 'yourName') {
-                return {
-                  answer: {
-                    displayText: undefined
-                  }
-                }
-              }
-              return undefined
-            })
-          }
-        }
-        return undefined
-      })
+      get: buildMockGetter(mockStructure)
     })
 
     const applicationData = /** @type {ApplicationData} */ ({
@@ -349,33 +345,17 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should prioritize yourName over fullName when both exist', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: 'Your Name Value' } },
+        fullName: { answer: { displayText: 'Full Name Value' } }
+      }
+    }
+
     createApplication.mockReturnValue({
       licenceType: 'TB Test Licence',
       requesterCphNumber: '12/3456/7890',
-      get: jest.fn((section) => {
-        if (section === 'licence') {
-          return {
-            get: jest.fn((question) => {
-              if (question === 'yourName') {
-                return {
-                  answer: {
-                    displayText: 'Your Name Value'
-                  }
-                }
-              }
-              if (question === 'fullName') {
-                return {
-                  answer: {
-                    displayText: 'Full Name Value'
-                  }
-                }
-              }
-              return undefined
-            })
-          }
-        }
-        return undefined
-      })
+      get: buildMockGetter(mockStructure)
     })
 
     const applicationData = /** @type {ApplicationData} */ ({
@@ -432,33 +412,17 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should use fullName when yourName does not exist', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: undefined } },
+        fullName: { answer: { displayText: 'Only Full Name' } }
+      }
+    }
+
     createApplication.mockReturnValue({
       licenceType: 'TB Test Licence',
       requesterCphNumber: '12/3456/7890',
-      get: jest.fn((section) => {
-        if (section === 'licence') {
-          return {
-            get: jest.fn((question) => {
-              if (question === 'yourName') {
-                return {
-                  answer: {
-                    displayText: undefined
-                  }
-                }
-              }
-              if (question === 'fullName') {
-                return {
-                  answer: {
-                    displayText: 'Only Full Name'
-                  }
-                }
-              }
-              return undefined
-            })
-          }
-        }
-        return undefined
-      })
+      get: buildMockGetter(mockStructure)
     })
 
     const applicationData = /** @type {ApplicationData} */ ({
