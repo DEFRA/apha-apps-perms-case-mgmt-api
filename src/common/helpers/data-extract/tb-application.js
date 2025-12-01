@@ -10,12 +10,17 @@ export class TbApplication extends Application {
 
   get emailAddress() {
     const section = this.get('licence')
-    return section?.get('emailAddress')?.answer.displayText
+    const destinationEmail =
+      section?.get('destinationEmail')?.answer.displayText
+    const emailAddress = section?.get('emailAddress')?.answer.displayText
+    return emailAddress || destinationEmail || ''
   }
 
   get applicantName() {
     const section = this.get('licence')
-    return section?.get('fullName')?.answer.displayText || ''
+    const yourName = section?.get('yourName')?.answer.displayText
+    const fullName = section?.get('fullName')?.answer.displayText
+    return yourName || fullName || ''
   }
 
   isTbRestricted(premesisType) {
