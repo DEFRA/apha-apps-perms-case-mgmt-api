@@ -45,6 +45,26 @@ const FULL_NAME_QUESTION = {
   }
 }
 
+const YOUR_NAME_QUESTION = {
+  question: 'Your name',
+  questionKey: 'yourName',
+  answer: {
+    type: /** @type {'text'} */ ('text'),
+    value: 'Jane Smith',
+    displayText: 'Jane Smith'
+  }
+}
+
+const DESTINATION_EMAIL_QUESTION = {
+  question: 'Destination email',
+  questionKey: 'destinationEmail',
+  answer: {
+    type: /** @type {'text'} */ ('text'),
+    value: 'destination@example.com',
+    displayText: 'destination@example.com'
+  }
+}
+
 const ORIGIN_TYPE_QUESTION = (value, displayText = value) => ({
   question: 'Origin type',
   questionKey: 'originType',
@@ -103,7 +123,42 @@ describe('TbApplication', () => {
   })
 
   describe('emailAddress', () => {
-    it('should return email address from licence section', () => {
+    it('should return emailAddress when both emailAddress and destinationEmail exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [
+              EMAIL_ADDRESS_QUESTION,
+              DESTINATION_EMAIL_QUESTION
+            ]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.emailAddress).toBe('test@example.com')
+    })
+
+    it('should return destinationEmail when emailAddress does not exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [DESTINATION_EMAIL_QUESTION]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.emailAddress).toBe('destination@example.com')
+    })
+
+    it('should return emailAddress from licence section', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: [
@@ -119,7 +174,7 @@ describe('TbApplication', () => {
       expect(application.emailAddress).toBe('test@example.com')
     })
 
-    it('should return undefined when licence section does not exist', () => {
+    it('should return empty string when licence section does not exist', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: []
@@ -127,10 +182,10 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.emailAddress).toBeUndefined()
+      expect(application.emailAddress).toBe('')
     })
 
-    it('should return undefined when emailAddress question does not exist', () => {
+    it('should return empty string when neither emailAddress nor destinationEmail exist', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: [
@@ -143,12 +198,28 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.emailAddress).toBeUndefined()
+      expect(application.emailAddress).toBe('')
     })
   })
 
   describe('applicantName', () => {
-    it('should return full name from licence section', () => {
+    it('should return yourName when both yourName and fullName exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [YOUR_NAME_QUESTION, FULL_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantName).toBe('Jane Smith')
+    })
+
+    it('should return fullName when yourName does not exist', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: [
@@ -164,7 +235,23 @@ describe('TbApplication', () => {
       expect(application.applicantName).toBe('John Doe')
     })
 
-    it('should return empty string when fullName question does not exist', () => {
+    it('should return yourName when only yourName exists', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [YOUR_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantName).toBe('Jane Smith')
+    })
+
+    it('should return empty string when neither yourName nor fullName exist', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
         sections: [
@@ -173,6 +260,17 @@ describe('TbApplication', () => {
             questionAnswers: []
           }
         ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantName).toBe('')
+    })
+
+    it('should return empty string when licence section does not exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: []
       }
 
       const application = new TbApplication(applicationData)

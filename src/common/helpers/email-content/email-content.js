@@ -4,7 +4,7 @@ import { createApplication } from '../data-extract/data-extract.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {ApplicationData, NameAnswer} from '../data-extract/application.js'
+ * @import {ApplicationData} from '../data-extract/application.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 
@@ -59,11 +59,10 @@ export const generateSharepointNotificationContent = (
   const licenceType = application.licenceType
   const cphOfRequester = escapeMarkdown(application.requesterCphNumber)
 
-  const nameOfRequester = escapeMarkdown(
-    /** @type {NameAnswer|undefined} */ (
-      application.get('licence')?.get('fullName')?.answer
-    )?.displayText
-  )
+  const section = application.get('licence')
+  const yourName = section?.get('yourName')?.answer.displayText
+  const fullName = section?.get('fullName')?.answer.displayText
+  const nameOfRequester = escapeMarkdown(yourName || fullName || '')
 
   /**
    * @type {string[]}

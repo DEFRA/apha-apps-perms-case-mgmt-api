@@ -255,24 +255,51 @@ describe('getFileProps', () => {
   })
 })
 
+const { createApplication } = jest.requireMock(
+  '../data-extract/data-extract.js'
+)
+
 jest.mock('../data-extract/data-extract.js', () => ({
-  createApplication: jest.fn().mockReturnValue({
-    licenceType: 'TB Test Licence',
-    requesterCphNumber: '12/3456/7890',
-    get: jest.fn().mockReturnValue({
-      get: jest.fn().mockReturnValue({
-        answer: {
-          displayText: 'Name Surname'
-        }
-      })
-    })
-  })
+  createApplication: jest.fn()
 }))
 
-describe('generateSharepointNotificationContent', () => {
-  afterAll(jest.restoreAllMocks)
+/**
+ * @param {Record<string, any>} data - The data structure to mock
+ */
+const buildMockGetter = (data) =>
+  jest.fn((key) => {
+    const value = data[key]
+    if (value && typeof value === 'object' && !value.answer) {
+      return { get: buildMockGetter(value) }
+    }
+    return value
+  })
 
-  it('should generate content with licence type, CPH, name, reference and link', () => {
+describe('generateSharepointNotificationContent', () => {
+  const link = 'https://example.com/tb25'
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('should generate content with licence type, CPH, name, reference and link using fullName', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: undefined } },
+        fullName: { answer: { displayText: 'Name Surname' } }
+      }
+    }
+
+    createApplication.mockReturnValue({
+      licenceType: 'TB Test Licence',
+      requesterCphNumber: '12/3456/7890',
+      get: buildMockGetter(mockStructure)
+    })
+
     const applicationData = /** @type {ApplicationData} */ ({
       sections: [
         {
@@ -292,7 +319,6 @@ describe('generateSharepointNotificationContent', () => {
         }
       ]
     })
-    const link = 'https://example.com/tb25'
 
     const result = generateSharepointNotificationContent(
       applicationData,
@@ -308,6 +334,131 @@ describe('generateSharepointNotificationContent', () => {
       '12/3456/7890',
       '## Name of requester:',
       'Name Surname',
+      '## Application reference number:',
+      testReference,
+      '',
+      '---',
+      `Full details can be found on TB25 with the following link: ${link}`
+    ].join('\n')
+
+    expect(result).toBe(expectedContent)
+  })
+
+  it('should prioritize yourName over fullName when both exist', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: 'Your Name Value' } },
+        fullName: { answer: { displayText: 'Full Name Value' } }
+      }
+    }
+
+    createApplication.mockReturnValue({
+      licenceType: 'TB Test Licence',
+      requesterCphNumber: '12/3456/7890',
+      get: buildMockGetter(mockStructure)
+    })
+
+    const applicationData = /** @type {ApplicationData} */ ({
+      sections: [
+        {
+          title: 'Receiving the licence',
+          sectionKey: 'licence',
+          questionAnswers: [
+            {
+              question: 'yourName',
+              questionKey: 'yourName',
+              answer: {
+                type: 'name',
+                value: { firstName: 'Your', lastName: 'Name Value' },
+                displayText: 'Your Name Value'
+              }
+            },
+            {
+              question: 'fullName',
+              questionKey: 'fullName',
+              answer: {
+                type: 'name',
+                value: { firstName: 'Full', lastName: 'Name Value' },
+                displayText: 'Full Name Value'
+              }
+            }
+          ]
+        }
+      ]
+    })
+
+    const result = generateSharepointNotificationContent(
+      applicationData,
+      testReference,
+      link
+    )
+
+    const expectedContent = [
+      'A Bovine TB licence application has been received with the following details:',
+      '## Licence type:',
+      'TB Test Licence',
+      '## CPH of requester:',
+      '12/3456/7890',
+      '## Name of requester:',
+      'Your Name Value',
+      '## Application reference number:',
+      testReference,
+      '',
+      '---',
+      `Full details can be found on TB25 with the following link: ${link}`
+    ].join('\n')
+
+    expect(result).toBe(expectedContent)
+  })
+
+  it('should use fullName when yourName does not exist', () => {
+    const mockStructure = {
+      licence: {
+        yourName: { answer: { displayText: undefined } },
+        fullName: { answer: { displayText: 'Only Full Name' } }
+      }
+    }
+
+    createApplication.mockReturnValue({
+      licenceType: 'TB Test Licence',
+      requesterCphNumber: '12/3456/7890',
+      get: buildMockGetter(mockStructure)
+    })
+
+    const applicationData = /** @type {ApplicationData} */ ({
+      sections: [
+        {
+          title: 'Receiving the licence',
+          sectionKey: 'licence',
+          questionAnswers: [
+            {
+              question: 'fullName',
+              questionKey: 'fullName',
+              answer: {
+                type: 'name',
+                value: { firstName: 'Only', lastName: 'Full Name' },
+                displayText: 'Only Full Name'
+              }
+            }
+          ]
+        }
+      ]
+    })
+
+    const result = generateSharepointNotificationContent(
+      applicationData,
+      testReference,
+      link
+    )
+
+    const expectedContent = [
+      'A Bovine TB licence application has been received with the following details:',
+      '## Licence type:',
+      'TB Test Licence',
+      '## CPH of requester:',
+      '12/3456/7890',
+      '## Name of requester:',
+      'Only Full Name',
       '## Application reference number:',
       testReference,
       '',
