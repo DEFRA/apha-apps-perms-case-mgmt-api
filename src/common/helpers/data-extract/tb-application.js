@@ -41,31 +41,46 @@ export class TbApplication extends Application {
     )
   }
 
+  get originType() {
+    return this.getRadioValue('originType', 'origin')
+  }
+
+  get destinationType() {
+    return this.getRadioValue('destinationType', 'destination')
+  }
+
+  get isOriginRestricted() {
+    return this.isTbRestricted(this.originType)
+  }
+
+  get isOriginUnrestricted() {
+    return ['market', 'unrestricted-farm', 'after-import-location'].includes(
+      this.originType
+    )
+  }
+
   get licenceType() {
-    const originType = this.getRadioValue('originType', 'origin')
-    const destinationType = this.getRadioValue('destinationType', 'destination')
+    const isDestinationRestricted = this.isTbRestricted(this.destinationType)
 
-    const isOriginUnrestricted = [
-      'market',
-      'unrestricted-farm',
-      'after-import-location'
-    ].includes(originType)
-    const isOriginRestricted = this.isTbRestricted(originType)
-    const isDestinationRestricted = this.isTbRestricted(destinationType)
-
-    if (isOriginUnrestricted && isDestinationRestricted) {
+    if (this.isOriginUnrestricted && isDestinationRestricted) {
       return 'TB15'
     }
 
-    if (isOriginRestricted && isDestinationRestricted) {
+    if (this.isOriginRestricted && isDestinationRestricted) {
       return 'TB16'
     }
 
-    if (this.isTb16eCase(originType, destinationType, isOriginRestricted)) {
+    if (
+      this.isTb16eCase(
+        this.originType,
+        this.destinationType,
+        this.isOriginRestricted
+      )
+    ) {
       return 'TB16e'
     }
 
-    if (isOriginRestricted && destinationType === 'slaughter') {
+    if (this.isOriginRestricted && this.destinationType === 'slaughter') {
       return 'TB24c'
     }
 

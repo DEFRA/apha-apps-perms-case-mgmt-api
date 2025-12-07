@@ -14,7 +14,8 @@ import {
   originAddress,
   originCph,
   originSection,
-  originType
+  originType,
+  yourName
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
 
@@ -131,11 +132,18 @@ describe('fields', () => {
     })
   })
 
-  it('should construct expected fields for on the farm', () => {
+  it('should construct expected fields for on the farm with restricted origin', () => {
+    const yourFirstName = 'Alice'
+    const yourLastName = 'Jones'
+    const licenceWithYourName = licenceSection([
+      keeperName({ firstName, lastName }),
+      yourName({ firstName: yourFirstName, lastName: yourLastName })
+    ])
+
     const application = {
       journeyId:
         'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-      sections: [onFarmOrigin, licence, destination]
+      sections: [onFarmOrigin, licenceWithYourName, destination]
     }
     spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
 
@@ -145,13 +153,13 @@ describe('fields', () => {
       Office: 'Polwhele',
       MethodofReceipt: 'Digital (Automatically Receipted)',
       ApplicationSubmittedby: 'Owner/Keeper - Destination',
-      Name: null,
+      Name: `${firstName} ${lastName}`,
       FirstlineofAddress: originAddressLine1,
       Licence: 'TB24c',
       Notes: additionalInfoText,
       OriginCPH: '12/123/1234',
       DestinationCPH: destinationCphNumber,
-      Destination_x0020_Name: `${firstName} ${lastName}`,
+      Destination_x0020_Name: `${yourFirstName} ${yourLastName}`,
       DestinationAddress_x0028_FirstLi: destinationAddressLine1,
       NumberofCattle: '62',
       SupportingMaterial: supportingMaterial
@@ -178,5 +186,59 @@ describe('fields', () => {
     }
 
     expect(fields(application, reference).NumberofCattle).toBe('20')
+  })
+
+  it('should handle on the farm with restricted origin when only yourName exists (no fullName)', () => {
+    const yourFirstName = 'Alice'
+    const yourLastName = 'Jones'
+    const licenceWithOnlyYourName = licenceSection([
+      yourName({ firstName: yourFirstName, lastName: yourLastName })
+    ])
+
+    const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      sections: [onFarmOrigin, licenceWithOnlyYourName, destination]
+    }
+    spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+
+    const result = fields(application, reference)
+    expect(result.Name).toBeUndefined()
+    expect(result.Destination_x0020_Name).toBe(
+      `${yourFirstName} ${yourLastName}`
+    )
+  })
+
+  it('should handle on the farm with restricted origin when yourName is missing', () => {
+    const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      sections: [onFarmOrigin, licence, destination]
+    }
+    spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+
+    const result = fields(application, reference)
+    expect(result.Name).toBe(`${firstName} ${lastName}`)
+    expect(result.Destination_x0020_Name).toBeUndefined()
+  })
+
+  it('should construct expected fields for on the farm with unrestricted origin', () => {
+    const onFarmUnrestrictedOrigin = originSection([
+      onOffFarm('on'),
+      originType('market'),
+      originCph(originCphNumber),
+      originAddressQuestion
+    ])
+
+    const application = {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      sections: [onFarmUnrestrictedOrigin, licence, destination]
+    }
+    spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+
+    const result = fields(application, reference)
+    expect(result.Name).toBeNull()
+    expect(result.Destination_x0020_Name).toBe(`${firstName} ${lastName}`)
   })
 })

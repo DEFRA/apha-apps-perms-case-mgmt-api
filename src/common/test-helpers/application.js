@@ -78,6 +78,23 @@ export const keeperName = ({ firstName, lastName }) => ({
 })
 
 /**
+ * @param {{firstName: string, lastName: string}} name
+ * @returns {QuestionAnswerData}
+ */
+export const yourName = ({ firstName, lastName }) => ({
+  question: 'What is your name?',
+  questionKey: 'yourName',
+  answer: {
+    type: 'name',
+    value: {
+      firstName,
+      lastName
+    },
+    displayText: `${firstName} ${lastName}`
+  }
+})
+
+/**
  * @param {'on'|'off'} onOffFarmValue
  * @returns {QuestionAnswerData}
  */

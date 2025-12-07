@@ -31,6 +31,7 @@ export const fields = (applicationData, reference) => {
   const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
   const isOffFarm = onOffFarm?.value === 'off'
+  const isOriginRestricted = application.isOriginRestricted
 
   const originCph = origin?.get('cphNumber')?.answer
 
@@ -50,8 +51,11 @@ export const fields = (applicationData, reference) => {
     destination?.get('destinationFarmAddress')?.answer
   )
 
-  const name = /** @type {NameAnswer} */ (
+  const fullName = /** @type {NameAnswer} */ (
     application.get('licence')?.get('fullName')?.answer
+  )
+  const yourName = /** @type {NameAnswer} */ (
+    application.get('licence')?.get('yourName')?.answer
   )
 
   const numberOfCattle = destination?.get('howManyAnimals')?.answer
@@ -64,20 +68,30 @@ export const fields = (applicationData, reference) => {
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Supporting%20Materials/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
   const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
+  const originName =
+    isOffFarm || (isOnFarm && isOriginRestricted) ? fullName?.displayText : null
+
+  let destinationName = null
+  if (isOnFarm) {
+    destinationName = isOriginRestricted
+      ? yourName?.displayText
+      : fullName?.displayText
+  }
+
   return {
     Application_x0020_Reference_x002: reference,
     Title: cphNumber,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital (Automatically Receipted)',
     ApplicationSubmittedby: `Owner/Keeper - ${isOnFarm ? 'Destination' : 'Origin'}`,
-    Name: isOffFarm ? name?.displayText : null,
+    Name: originName,
     FirstlineofAddress: originAddress?.value.addressLine1,
     Licence: application.licenceType,
     Notes: sanitizedAdditionalInfo,
     OriginCPH: originCph?.value,
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
-    Destination_x0020_Name: isOnFarm ? name?.displayText : null,
+    Destination_x0020_Name: destinationName,
     NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
     SupportingMaterial
   }
