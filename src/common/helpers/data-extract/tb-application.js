@@ -59,24 +59,20 @@ export class TbApplication extends Application {
     )
   }
 
-  get licenceType() {
-    const isDestinationRestricted = this.isTbRestricted(this.destinationType)
+  get isDestinationRestricted() {
+    return this.isTbRestricted(this.destinationType)
+  }
 
-    if (this.isOriginUnrestricted && isDestinationRestricted) {
+  get licenceType() {
+    if (this.isOriginUnrestricted && this.isDestinationRestricted) {
       return 'TB15'
     }
 
-    if (this.isOriginRestricted && isDestinationRestricted) {
+    if (this.isOriginRestricted && this.isDestinationRestricted) {
       return 'TB16'
     }
 
-    if (
-      this.isTb16eCase(
-        this.originType,
-        this.destinationType,
-        this.isOriginRestricted
-      )
-    ) {
+    if (this.isTb16eCase()) {
       return 'TB16e'
     }
 
@@ -89,20 +85,20 @@ export class TbApplication extends Application {
 
   /**
    * @private
-   * @param {string} originType
-   * @param {string} destinationType
-   * @param {boolean} isOriginRestricted
    * @returns {boolean}
    */
-  isTb16eCase(originType, destinationType, isOriginRestricted) {
-    const destiantionTypes = ['dedicated-sale', 'afu', 'market-afu']
-    const isDestinationSale = destiantionTypes.includes(destinationType)
+  isTb16eCase() {
+    const saleDestinationTypes = ['dedicated-sale', 'afu', 'market-afu']
+    const isDestinationSale = saleDestinationTypes.includes(
+      this.destinationType
+    )
     const isAfuToSpecialDestination =
-      originType === 'afu' &&
-      ['slaughter', ...destiantionTypes].includes(destinationType)
+      this.originType === 'afu' &&
+      ['slaughter', ...saleDestinationTypes].includes(this.destinationType)
 
     return (
-      (isOriginRestricted && isDestinationSale) || isAfuToSpecialDestination
+      (this.isOriginRestricted && isDestinationSale) ||
+      isAfuToSpecialDestination
     )
   }
 
