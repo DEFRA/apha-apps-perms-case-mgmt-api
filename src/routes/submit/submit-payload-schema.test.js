@@ -1128,3 +1128,62 @@ describe('ApplicationSchema - section and question structure', () => {
     )
   })
 })
+
+describe('ApplicationSchema - keyFacts field', () => {
+  it('accepts a valid payload without keyFacts field', () => {
+    const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
+      sections: [section]
+    }
+    const { error } = ApplicationSchema.validate(payload)
+    expect(error).toBeUndefined()
+  })
+
+  it('accepts a valid payload with keyFacts containing mixed value types', () => {
+    const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
+      sections: [section],
+      keyFacts: {
+        licenceType: 'TB15',
+        numberOfCattle: 150,
+        originCph: '12/123/1234',
+        originAddress: {
+          addressLine1: '2 the street',
+          addressTown: 'Cityville',
+          addressPostcode: 'ZZ09 9ZZ'
+        },
+        originKeeperName: {
+          firstName: 'Bob',
+          lastName: 'Barry'
+        },
+        movementDate: {
+          day: '15',
+          month: '06',
+          year: '2024'
+        },
+        biosecurityMaps: ['biosecurity-map/S3/path']
+      }
+    }
+    const { error } = ApplicationSchema.validate(payload)
+    expect(error).toBeUndefined()
+  })
+
+  it('fails if keyFacts contains invalid structured values', () => {
+    const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
+      sections: [section],
+      keyFacts: {
+        originAddress: {
+          addressLine1: '2 the street'
+          // missing required addressTown and addressPostcode
+        }
+      }
+    }
+    const { error } = ApplicationSchema.validate(payload)
+    expect(error).toBeDefined()
+    expect(error?.details.length).toBeGreaterThan(0)
+  })
+})
