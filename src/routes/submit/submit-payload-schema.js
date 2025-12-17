@@ -27,7 +27,8 @@ const AnswerValueSchemas = {
     day: Joi.string().required(),
     month: Joi.string().required(),
     year: Joi.string().required()
-  })
+  }),
+  number: Joi.number()
 }
 
 const AnswerSchema = Joi.object({
@@ -57,8 +58,7 @@ const SectionSchema = Joi.object({
 })
 
 const KeyFactValueSchema = Joi.alternatives().try(
-  ...Object.values(AnswerValueSchemas),
-  Joi.number()
+  ...Object.values(AnswerValueSchemas)
 )
 
 export const ApplicationSchema = Joi.object({
