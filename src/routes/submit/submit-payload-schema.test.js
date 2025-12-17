@@ -58,6 +58,15 @@ const textQuestion = {
     displayText: 'some text'
   }
 }
+const numberQuestion = {
+  question: 'Number Question',
+  questionKey: 'numberQuestionKey',
+  answer: {
+    type: 'number',
+    value: 1,
+    displayText: '1'
+  }
+}
 const dateQuestion = {
   question: 'Date Question',
   questionKey: 'dateQuestionKey',
@@ -77,6 +86,7 @@ const section = {
     radioQuestion,
     checkboxQuestion,
     textQuestion,
+    numberQuestion,
     dateQuestion
   ]
 }
@@ -943,6 +953,51 @@ describe('ApplicationSchema - answer types', () => {
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
         '"sections[0].questionAnswers[0].answer.displayText" is required'
+      )
+    })
+  })
+
+  describe('number answer', () => {
+    it('validates a correct number answer', () => {
+      const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [numberQuestion]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeUndefined()
+    })
+    it('fails if number value is not a number', () => {
+      const numberValueNotNumber = {
+        question: 'Number Question',
+        questionKey: 'numberQuestionKey',
+        answer: {
+          type: 'number',
+          value: 'not-a-number', // should be a number
+          displayText: '1'
+        }
+      }
+      const payload = {
+        journeyId: 'journeyId',
+        journeyVersion: { major: 1, minor: 0 },
+        sections: [
+          {
+            sectionKey: 'sectionKey',
+            title: 'Section Title',
+            questionAnswers: [numberValueNotNumber]
+          }
+        ]
+      }
+      const { error } = ApplicationSchema.validate(payload)
+      expect(error).toBeDefined()
+      expect(error?.details[0].message).toEqual(
+        '"sections[0].questionAnswers[0].answer.value" must be a number'
       )
     })
   })
