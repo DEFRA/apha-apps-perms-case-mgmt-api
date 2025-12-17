@@ -972,7 +972,7 @@ describe('ApplicationSchema - answer types', () => {
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
       expect(error?.details[0].message).toEqual(
-        '"sections[0].questionAnswers[0].answer.type" must be one of [file, text, radio, address, checkbox, name, date]'
+        '"sections[0].questionAnswers[0].answer.type" must be one of [file, text, radio, address, checkbox, name, date, number]'
       )
     })
   })
