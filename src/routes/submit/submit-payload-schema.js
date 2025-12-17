@@ -27,7 +27,8 @@ const AnswerValueSchemas = {
     day: Joi.string().required(),
     month: Joi.string().required(),
     year: Joi.string().required()
-  })
+  }),
+  number: Joi.number()
 }
 
 const AnswerSchema = Joi.object({
@@ -56,11 +57,16 @@ const SectionSchema = Joi.object({
   questionAnswers: Joi.array().items(QuestionAnswerSchema).required()
 })
 
+const KeyFactValueSchema = Joi.alternatives().try(
+  ...Object.values(AnswerValueSchemas)
+)
+
 export const ApplicationSchema = Joi.object({
   journeyId: Joi.string().required(),
   journeyVersion: Joi.object({
     major: Joi.number().required(),
     minor: Joi.number().required()
   }).required(),
-  sections: Joi.array().items(SectionSchema).required()
+  sections: Joi.array().items(SectionSchema).required(),
+  keyFacts: Joi.object().pattern(Joi.string(), KeyFactValueSchema).optional()
 }).options({ abortEarly: false })
