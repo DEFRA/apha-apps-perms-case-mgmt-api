@@ -260,6 +260,12 @@ const config = convict({
         'http://localhost:4567/000000000000/apha_apps_perms_submitted_applications',
       env: 'SQS_QUEUE_URL'
     },
+    sqsMaxNumberOfMessages: {
+      doc: 'Maximum number of messages to retrieve from SQS in one poll',
+      format: Number,
+      default: 5,
+      env: 'SQS_MAX_NUMBER_OF_MESSAGES'
+    },
     accessKeyId: {
       doc: 'AWS access key ID',
       format: String,
