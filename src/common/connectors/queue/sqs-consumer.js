@@ -32,7 +32,7 @@ export const pollOnce = async () => {
   const command = new ReceiveMessageCommand({
     QueueUrl: sqsQueueUrl,
     MaxNumberOfMessages: sqsMaxNumberOfMessages,
-    WaitTimeSeconds: 100, // Long poll
+    WaitTimeSeconds: 10, // Long poll
     VisibilityTimeout: visibilityTimeout
   })
 
