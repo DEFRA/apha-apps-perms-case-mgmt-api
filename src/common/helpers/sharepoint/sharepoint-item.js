@@ -2,6 +2,7 @@ import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
 import { createApplication } from '../data-extract/data-extract.js'
 import { escapeHtml, escapeMarkdown } from '../escape-text.js'
+import { createLogger } from '../logging/logger.js'
 
 /** @import {
  *   ApplicationData,
@@ -10,12 +11,15 @@ import { escapeHtml, escapeMarkdown } from '../escape-text.js'
  * } from '../data-extract/application.js'
  */
 
+const logger = createLogger()
+
 /**
  * @param {ApplicationData} application
  * @param {string} reference
  */
 export const createSharepointItem = async (application, reference) => {
-  return addItem(fields(application, reference))
+  const payload = fields(application, reference)
+  return addItem(payload)
 }
 
 /**
@@ -23,6 +27,175 @@ export const createSharepointItem = async (application, reference) => {
  * @param {string} reference
  */
 export const fields = (applicationData, reference) => {
+  return generateLegacyFields(applicationData, reference)
+}
+
+/**
+ * Generates SharePoint payload using keyFacts data
+ * @param {ApplicationData} applicationData
+ * @param {string} reference
+ */
+const generatePayloadFromKeyFacts = (applicationData, reference) => {
+  const { keyFacts } = applicationData
+
+  if (!keyFacts) {
+    return null
+  }
+
+  const sanitizedAdditionalInfo = escapeMarkdown(
+    escapeHtml(keyFacts.additionalInformation)
+  )
+
+  const originName = keyFacts.originKeeperName
+    ? `${keyFacts.originKeeperName.firstName} ${keyFacts.originKeeperName.lastName}`
+    : null
+
+  const destinationName = keyFacts.destinationKeeperName
+    ? `${keyFacts.destinationKeeperName.firstName} ${keyFacts.destinationKeeperName.lastName}`
+    : null
+
+  const applicationSubmittedBy =
+    keyFacts.movementDirection === 'on'
+      ? 'Owner/Keeper - Destination'
+      : 'Owner/Keeper - Origin'
+
+  const { folderPath, siteName, siteBaseUrl } = config.get('sharepoint')
+  const supportingMaterialPath = `/sites/${siteName}/Supporting Materials/${folderPath}/${reference}`
+  const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Supporting%20Materials/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
+  const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
+
+  return {
+    Application_x0020_Reference_x002: reference,
+    Title: keyFacts.requesterCph,
+    Office: 'Polwhele',
+    MethodofReceipt: 'Digital (Automatically Receipted)',
+    ApplicationSubmittedby: applicationSubmittedBy,
+    Name: originName,
+    FirstlineofAddress: keyFacts.originAddress?.addressLine1,
+    Licence: keyFacts.licenceType,
+    Notes: sanitizedAdditionalInfo,
+    OriginCPH: keyFacts.originCph,
+    DestinationAddress_x0028_FirstLi: keyFacts.destinationAddress?.addressLine1,
+    DestinationCPH: keyFacts.destinationCph,
+    Destination_x0020_Name: destinationName,
+    NumberofCattle: keyFacts.numberOfCattle,
+    SupportingMaterial
+  }
+}
+
+/**
+ * Compares two SharePoint payloads and logs differences
+ * @param {object} existingPayload - Payload generated using existing approach
+ * @param {object} keyFactsGeneratePayload - Payload generated using keyFacts
+ * @param {string} reference - Application reference number
+ */
+const comparePayloads = (
+  existingPayload,
+  keyFactsGeneratePayload,
+  reference
+) => {
+  const fieldMapping = {
+    Application_x0020_Reference_x002: 'Application Reference',
+    Title: 'Title',
+    Office: 'Office',
+    MethodofReceipt: 'Method of Receipt',
+    ApplicationSubmittedby: 'Application Submitted By',
+    Name: 'Name',
+    FirstlineofAddress: 'First Line of Address',
+    Licence: 'Licence',
+    Notes: 'Notes',
+    OriginCPH: 'Origin CPH',
+    DestinationAddress_x0028_FirstLi: 'Destination Address (First Line)',
+    DestinationCPH: 'Destination CPH',
+    Destination_x0020_Name: 'Destination Name',
+    NumberofCattle: 'Number of Cattle'
+  }
+
+  for (const [fieldKey, fieldName] of Object.entries(fieldMapping)) {
+    const existingValue = existingPayload[fieldKey]
+    const candidateValue = keyFactsGeneratePayload[fieldKey]
+
+    if (existingValue !== candidateValue) {
+      logger.error(
+        `${reference} key facts matching error: ${fieldName} differs (existing: "${existingValue}", candidate: "${candidateValue}")`
+      )
+    }
+  }
+}
+
+/**
+ * Compares biosecurity map keys between keyFacts and existing approach
+ * @param {ApplicationData} applicationData
+ * @param {string} reference - Application reference number
+ */
+const compareBiosecurityMapKeys = (applicationData, reference) => {
+  const { keyFacts } = applicationData
+
+  // Get biosecurity maps from keyFacts
+  const keyFactsBiosecurityMaps = keyFacts?.biosecurityMaps || []
+
+  if (keyFactsBiosecurityMaps.length === 0) {
+    return // Nothing to compare
+  }
+
+  // Get the first biosecurity map key from keyFacts
+  const keyFactsFirstKey = keyFactsBiosecurityMaps[0]
+
+  // Get biosecurity map from the existing approach
+  const application = createApplication(applicationData)
+  const destination = application.get('destination')
+  const biosecurityMapAnswer = destination?.get('biosecurity-map')?.answer
+
+  // Get the key from existing approach
+  const existingKey = biosecurityMapAnswer?.value?.path
+
+  // Compare the first keys
+  if (keyFactsFirstKey !== existingKey) {
+    logger.error(
+      `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsFirstKey}", existing: "${existingKey}")`
+    )
+  }
+}
+
+/**
+ * Validates keyFacts payload against existing implementation
+ * @param {ApplicationData} applicationData
+ * @param {string} reference
+ */
+export const validateKeyFactsPayload = (applicationData, reference) => {
+  const { keyFacts } = applicationData
+
+  if (!keyFacts) {
+    return
+  }
+
+  try {
+    if (keyFacts.biosecurityMaps?.length) {
+      compareBiosecurityMapKeys(applicationData, reference)
+    }
+
+    const keyFactsGeneratePayload = generatePayloadFromKeyFacts(
+      applicationData,
+      reference
+    )
+    const existingPayload = generateLegacyFields(applicationData, reference)
+
+    if (keyFactsGeneratePayload) {
+      comparePayloads(existingPayload, keyFactsGeneratePayload, reference)
+    }
+  } catch (error) {
+    logger.warn(
+      `Failed to validate keyFacts payload for ${reference}: ${error.message}`
+    )
+  }
+}
+
+/**
+ * Generates SharePoint fields using the legacy (existing) approach
+ * @param {ApplicationData} applicationData
+ * @param {string} reference
+ */
+const generateLegacyFields = (applicationData, reference) => {
   const application = createApplication(applicationData)
 
   const origin = application.get('origin')

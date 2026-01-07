@@ -219,3 +219,20 @@ export const additionalInfo = (info) => ({
     displayText: info
   }
 })
+
+/**
+ * @param {string} path
+ * @returns {QuestionAnswerData}
+ */
+export const biosecurityMap = (path) => ({
+  question: 'Upload your biosecurity map',
+  questionKey: 'biosecurity-map',
+  answer: {
+    type: 'file',
+    value: {
+      path,
+      skipped: false
+    },
+    displayText: ''
+  }
+})

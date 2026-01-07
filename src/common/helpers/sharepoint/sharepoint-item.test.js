@@ -1,4 +1,8 @@
-import { createSharepointItem, fields } from './sharepoint-item.js'
+import {
+  createSharepointItem,
+  fields,
+  validateKeyFactsPayload
+} from './sharepoint-item.js'
 import * as sharepoint from '../../connectors/sharepoint/sharepoint.js'
 import {
   additionalInfo,
@@ -15,9 +19,34 @@ import {
   originCph,
   originSection,
   originType,
-  yourName
+  yourName,
+  biosecurityMap
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
+
+const mockLogger = {
+  error: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+  trace: jest.fn(),
+  fatal: jest.fn(),
+  child: jest.fn(function () {
+    return this
+  })
+}
+
+jest.mock('pino', () => {
+  return {
+    __esModule: true,
+    pino: jest.fn(() => mockLogger),
+    default: jest.fn(() => mockLogger)
+  }
+})
+
+jest.mock('../logging/logger-options.js', () => ({
+  loggerOptions: {}
+}))
 
 const application = {
   journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
@@ -240,5 +269,115 @@ describe('fields', () => {
     const result = fields(application, reference)
     expect(result.Name).toBeNull()
     expect(result.Destination_x0020_Name).toBe(`${firstName} ${lastName}`)
+  })
+
+  describe('keyFacts', () => {
+    it('should use legacy approach even when keyFacts exists (soft launch)', () => {
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [],
+        keyFacts: {
+          licenceType: 'TB16',
+          requester: 'destination',
+          movementDirection: 'on',
+          additionalInformation: 'additional information notes',
+          numberOfCattle: 1,
+          originCph: '12/345/6789',
+          destinationCph: '12/345/0000',
+          originAddress: {
+            addressLine1: 'New XYZ',
+            addressTown: 'MK',
+            addressPostcode: 'MK5 6AA'
+          },
+          destinationAddress: {
+            addressLine1: '12 WRONG',
+            addressTown: 'Milton Keynes',
+            addressPostcode: 'MK5 6BB'
+          },
+          originKeeperName: { firstName: 'Mike', lastName: 'Kilo' },
+          destinationKeeperName: { firstName: 'TEST', lastName: 'USER' },
+          requesterCph: '12/345/0000',
+          biosecurityMaps: [
+            'biosecurity-map/c79126dd-b3f7-499c-afad-12959fa95ff6/3ec67f40-9a24-41b6-acc7-a7397ae198a9'
+          ]
+        }
+      }
+      spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+
+      const result = fields(application, reference)
+      expect(result.Title).toBe('')
+      expect(result.Licence).toBe('')
+      expect(result.ApplicationSubmittedby).toBe('Owner/Keeper - Origin')
+    })
+  })
+
+  describe('validateKeyFactsPayload', () => {
+    beforeEach(() => {
+      spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
+      mockLogger.error.mockClear()
+      mockLogger.warn.mockClear()
+    })
+
+    it('should not log errors when keyFacts and legacy payloads match', () => {
+      const biosecurityMapPath = 'biosecurity-map/path/to/file'
+      const destinationWithBiosecurity = destinationSection([
+        destinationType('slaughter'),
+        destinationAddress({
+          addressLine1: destinationAddressLine1,
+          addressTown: destinationAddressTown,
+          addressPostcode: destinationAddressPostcode
+        }),
+        destinationCph(destinationCphNumber),
+        howManyAnimals('62'),
+        additionalInfo(additionalInfoText),
+        biosecurityMap(biosecurityMapPath)
+      ])
+
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [offFarmOrigin, licence, destinationWithBiosecurity],
+        keyFacts: {
+          licenceType: 'TB24c',
+          requester: 'origin',
+          movementDirection: 'off',
+          additionalInformation: additionalInfoText,
+          numberOfCattle: 62,
+          originCph: originCphNumber,
+          destinationCph: destinationCphNumber,
+          originAddress: {
+            addressLine1: originAddressLine1,
+            addressTown: originAddressTown,
+            addressPostcode: originAddressPostcode
+          },
+          destinationAddress: {
+            addressLine1: destinationAddressLine1,
+            addressTown: destinationAddressTown,
+            addressPostcode: destinationAddressPostcode
+          },
+          originKeeperName: { firstName, lastName },
+          destinationKeeperName: undefined,
+          requesterCph: originCphNumber,
+          biosecurityMaps: [biosecurityMapPath]
+        }
+      }
+
+      validateKeyFactsPayload(application, reference)
+
+      expect(mockLogger.error).not.toHaveBeenCalled()
+    })
+
+    it('should not run validation when keyFacts is missing', () => {
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [offFarmOrigin, licence, destination]
+      }
+
+      expect(() =>
+        validateKeyFactsPayload(application, reference)
+      ).not.toThrow()
+    })
   })
 })
