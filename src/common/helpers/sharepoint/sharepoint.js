@@ -16,7 +16,10 @@ import {
   sendEmailToCaseWorker
 } from '../../connectors/notify/notify.js'
 import { escapeMarkdown } from '../escape-text.js'
-import { createSharepointItem } from './sharepoint-item.js'
+import {
+  createSharepointItem,
+  validateKeyFactsPayload
+} from './sharepoint-item.js'
 import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 import { config } from '../../../config.js'
@@ -63,6 +66,8 @@ export const sharePointApplicationHandler = async (request, reference) => {
  */
 export const processApplication = async (queuedApplicationData) => {
   const { reference, application } = queuedApplicationData
+
+  validateKeyFactsPayload(application, reference)
 
   try {
     await uploadSubmittedApplication(application, reference)

@@ -46,7 +46,8 @@ jest.mock('../../../common/connectors/sharepoint/sharepoint.js', () => ({
   getListItemByFieldValue: jest.fn()
 }))
 jest.mock('./sharepoint-item.js', () => ({
-  createSharepointItem: jest.fn()
+  createSharepointItem: jest.fn(),
+  validateKeyFactsPayload: jest.fn()
 }))
 jest.mock('../../connectors/queue/sqs-producer.js', () => ({
   sendMessageToSQS: jest.fn()
@@ -404,6 +405,76 @@ describe('SharePoint Handler', () => {
         expect(mockUploadFile).toHaveBeenCalled()
         expect(mockCreateSharepointItem).toHaveBeenCalled()
         expect(mockSendEmailToCaseWorker).toHaveBeenCalled()
+      })
+
+      it('should use legacy approach even when keyFacts.biosecurityMaps exists (soft launch)', async () => {
+        const mockFileData = { ...mockFile, fileSizeInMB: 5 }
+        mockFetchFile.mockResolvedValue(mockFileData)
+        mockUploadFile.mockResolvedValue(undefined)
+
+        const biosecurityMapQuestion = {
+          question: 'upload-plan',
+          questionKey: 'upload-plan',
+          /** @type {FileAnswer} */
+          answer: {
+            type: 'file',
+            value: {
+              skipped: false,
+              path: 'biosecurity-map/legacy-file.pdf'
+            },
+            displayText: 'legacy-file.pdf'
+          }
+        }
+
+        const mockApplicationWithBothApproaches = {
+          reference: testReferenceNumber,
+          application: {
+            journeyId:
+              'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+            sections: [
+              {
+                title: 'licence',
+                sectionKey: 'licence',
+                questionAnswers: [emailQuestion, fullNameQuestion]
+              },
+              {
+                title: 'biosecurity-map',
+                sectionKey: 'biosecurity-map',
+                questionAnswers: [biosecurityMapQuestion]
+              }
+            ],
+            keyFacts: {
+              licenceType: 'TB16',
+              movementDirection: 'on',
+              requesterCph: '12/345/0000',
+              biosecurityMaps: [
+                'biosecurity-map/keyfacts-file1.pdf',
+                'biosecurity-map/keyfacts-file2.pdf'
+              ]
+            }
+          }
+        }
+
+        const response = await processApplication(
+          mockApplicationWithBothApproaches
+        )
+
+        expect(uploadFile).toHaveBeenCalledTimes(2)
+        expect(uploadFile).toHaveBeenNthCalledWith(
+          1,
+          testReferenceNumber,
+          `${testReferenceNumber}_Submitted_Application.html`,
+          Buffer.from('<html>Mock HTML</html>')
+        )
+        expect(uploadFile).toHaveBeenNthCalledWith(
+          2,
+          testReferenceNumber,
+          `${testReferenceNumber}_Biosecurity_Map.pdf`,
+          mockFileData.file
+        )
+        expect(fetchFile).toHaveBeenCalledTimes(1)
+        expect(fetchFile).toHaveBeenCalledWith(biosecurityMapQuestion.answer)
+        expect(response).toBeUndefined()
       })
     })
   })

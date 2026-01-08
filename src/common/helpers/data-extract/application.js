@@ -1,15 +1,18 @@
 /**
+ * @typedef {{ firstName: string, lastName: string }} Name
+ * @typedef {{ addressLine1: string, addressLine2?: string, addressTown: string, addressCounty?: string, addressPostcode: string }} Address
  * @typedef {{ type: 'text', value: string, displayText: string }} TextAnswer
  * @typedef {{ type: 'radio', value: string, displayText: string }} RadioAnswer
  * @typedef {{ type: 'checkbox', value: string[], displayText: string }} CheckboxAnswer
- * @typedef {{ type: 'name', value: { firstName: string, lastName: string }, displayText: string }} NameAnswer
- * @typedef {{ type: 'address', value: { addressLine1: string, addressLine2?: string, addressTown: string, addressCounty?: string, addressPostcode: string }, displayText: string }} AddressAnswer
+ * @typedef {{ type: 'name', value: Name, displayText: string }} NameAnswer
+ * @typedef {{ type: 'address', value: Address, displayText: string }} AddressAnswer
  * @typedef {{ type: 'file', value: { skipped: boolean, path?: string }, displayText: string }} FileAnswer
  * @typedef {{ type: 'date', value: { day: string, month: string, year: string }, displayText: string }} DateAnswer
  * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
- * @typedef {{ journeyId: string, sections: SectionData[]}} ApplicationData
+ * @typedef {{ licenceType?: string, requester?: string, movementDirection?: string, additionalInformation?: string, numberOfCattle?: number, originCph?: string, destinationCph?: string, originAddress?: Address, destinationAddress?: Address, originKeeperName?: Name, destinationKeeperName?: Name, requesterCph?: string, biosecurityMaps?: string[] }} TBKeyFacts
+ * @typedef {{ journeyId: string, sections: SectionData[], keyFacts?: TBKeyFacts }} ApplicationData
  */
 
 import { config } from '../../../config.js'
