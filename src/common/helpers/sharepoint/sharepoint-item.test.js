@@ -315,7 +315,6 @@ describe('fields', () => {
   describe('validateKeyFactsPayload', () => {
     beforeEach(() => {
       spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
-      mockLogger.error.mockClear()
       mockLogger.warn.mockClear()
     })
 
@@ -365,7 +364,7 @@ describe('fields', () => {
 
       validateKeyFactsPayload(application, reference)
 
-      expect(mockLogger.error).not.toHaveBeenCalled()
+      expect(mockLogger.warn).not.toHaveBeenCalled()
     })
 
     it('should not run validation when keyFacts is missing', () => {

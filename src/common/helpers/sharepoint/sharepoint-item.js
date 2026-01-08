@@ -78,7 +78,7 @@ const generatePayloadFromKeyFacts = (applicationData, reference) => {
     DestinationAddress_x0028_FirstLi: keyFacts.destinationAddress?.addressLine1,
     DestinationCPH: keyFacts.destinationCph,
     Destination_x0020_Name: destinationName,
-    NumberofCattle: keyFacts.numberOfCattle,
+    NumberofCattle: keyFacts.numberOfCattle?.toString(),
     SupportingMaterial
   }
 }
@@ -94,30 +94,30 @@ const comparePayloads = (
   keyFactsGeneratePayload,
   reference
 ) => {
-  const fieldMapping = {
-    Application_x0020_Reference_x002: 'Application Reference',
-    Title: 'Title',
-    Office: 'Office',
-    MethodofReceipt: 'Method of Receipt',
-    ApplicationSubmittedby: 'Application Submitted By',
-    Name: 'Name',
-    FirstlineofAddress: 'First Line of Address',
-    Licence: 'Licence',
-    Notes: 'Notes',
-    OriginCPH: 'Origin CPH',
-    DestinationAddress_x0028_FirstLi: 'Destination Address (First Line)',
-    DestinationCPH: 'Destination CPH',
-    Destination_x0020_Name: 'Destination Name',
-    NumberofCattle: 'Number of Cattle'
-  }
+  const fields = [
+    'Application_x0020_Reference_x002',
+    'Title',
+    'Office',
+    'MethodofReceipt',
+    'ApplicationSubmittedby',
+    'Name',
+    'FirstlineofAddress',
+    'Licence',
+    'Notes',
+    'OriginCPH',
+    'DestinationAddress_x0028_FirstLi',
+    'DestinationCPH',
+    'Destination_x0020_Name',
+    'NumberofCattle'
+  ]
 
-  for (const [fieldKey, fieldName] of Object.entries(fieldMapping)) {
+  for (const fieldKey of fields) {
     const existingValue = existingPayload[fieldKey]
     const candidateValue = keyFactsGeneratePayload[fieldKey]
 
     if (existingValue !== candidateValue) {
-      logger.error(
-        `${reference} key facts matching error: ${fieldName} differs (existing: "${existingValue}", candidate: "${candidateValue}")`
+      logger.warn(
+        `${reference} key facts matching error: ${fieldKey} differs (existing: "${existingValue}", candidate: "${candidateValue}")`
       )
     }
   }
@@ -151,7 +151,7 @@ const compareBiosecurityMapKeys = (applicationData, reference) => {
 
   // Compare the first keys
   if (keyFactsFirstKey !== existingKey) {
-    logger.error(
+    logger.warn(
       `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsFirstKey}", existing: "${existingKey}")`
     )
   }
