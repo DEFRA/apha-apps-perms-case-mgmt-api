@@ -94,7 +94,7 @@ const comparePayloads = (
   keyFactsGeneratePayload,
   reference
 ) => {
-  const fields = [
+  const fieldKeys = [
     'Application_x0020_Reference_x002',
     'Title',
     'Office',
@@ -111,7 +111,7 @@ const comparePayloads = (
     'NumberofCattle'
   ]
 
-  for (const fieldKey of fields) {
+  for (const fieldKey of fieldKeys) {
     const existingValue = existingPayload[fieldKey]
     const candidateValue = keyFactsGeneratePayload[fieldKey]
 
