@@ -19,10 +19,14 @@ import {
   originCph,
   originSection,
   originType,
-  yourName,
-  biosecurityMap
+  yourName
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
+
+/** @import {
+  FileAnswer
+ * } from '../data-extract/application.js'
+ */
 
 const mockLogger = {
   error: jest.fn(),
@@ -36,6 +40,8 @@ const mockLogger = {
   })
 }
 
+const mockLoggerWarn = jest.fn()
+
 jest.mock('pino', () => {
   return {
     __esModule: true,
@@ -46,6 +52,20 @@ jest.mock('pino', () => {
 
 jest.mock('../logging/logger-options.js', () => ({
   loggerOptions: {}
+}))
+
+jest.mock('../logging/logger.js', () => ({
+  createLogger: () => ({
+    error: jest.fn(),
+    warn: (...args) => mockLoggerWarn(...args),
+    info: jest.fn(),
+    debug: jest.fn(),
+    trace: jest.fn(),
+    fatal: jest.fn(),
+    child: jest.fn(function () {
+      return this
+    })
+  })
 }))
 
 const application = {
@@ -315,12 +335,12 @@ describe('fields', () => {
   describe('validateKeyFactsPayload', () => {
     beforeEach(() => {
       spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
-      mockLogger.warn.mockClear()
+      mockLoggerWarn.mockClear()
     })
 
     it('should not log errors when keyFacts and legacy payloads match', () => {
       const biosecurityMapPath = 'biosecurity-map/path/to/file'
-      const destinationWithBiosecurity = destinationSection([
+      const destination = destinationSection([
         destinationType('slaughter'),
         destinationAddress({
           addressLine1: destinationAddressLine1,
@@ -329,14 +349,33 @@ describe('fields', () => {
         }),
         destinationCph(destinationCphNumber),
         howManyAnimals('62'),
-        additionalInfo(additionalInfoText),
-        biosecurityMap(biosecurityMapPath)
+        additionalInfo(additionalInfoText)
       ])
+
+      const biosecurityMapSection = {
+        title: 'biosecurity-map',
+        sectionKey: 'biosecurity-map',
+        questionAnswers: [
+          {
+            question: 'Upload your biosecurity map',
+            questionKey: 'upload-plan',
+            /** @type {FileAnswer} */
+            answer: {
+              type: 'file',
+              value: {
+                path: biosecurityMapPath,
+                skipped: false
+              },
+              displayText: ''
+            }
+          }
+        ]
+      }
 
       const application = {
         journeyId:
           'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-        sections: [offFarmOrigin, licence, destinationWithBiosecurity],
+        sections: [offFarmOrigin, licence, destination, biosecurityMapSection],
         keyFacts: {
           licenceType: 'TB24c',
           requester: 'origin',
@@ -364,7 +403,7 @@ describe('fields', () => {
 
       validateKeyFactsPayload(application, reference)
 
-      expect(mockLogger.warn).not.toHaveBeenCalled()
+      expect(mockLoggerWarn).not.toHaveBeenCalled()
     })
 
     it('should not run validation when keyFacts is missing', () => {
@@ -377,6 +416,200 @@ describe('fields', () => {
       expect(() =>
         validateKeyFactsPayload(application, reference)
       ).not.toThrow()
+    })
+
+    it('should log warning when biosecurity map paths differ', () => {
+      const legacyBiosecurityMapPath = 'biosecurity-map/legacy-path.pdf'
+      const keyFactsBiosecurityMapPath = 'biosecurity-map/keyfacts-path.pdf'
+
+      const biosecurityMapSection = {
+        title: 'biosecurity-map',
+        sectionKey: 'biosecurity-map',
+        questionAnswers: [
+          {
+            question: 'Upload your biosecurity map',
+            questionKey: 'upload-plan',
+            /** @type {FileAnswer} */
+            answer: {
+              type: 'file',
+              value: {
+                path: legacyBiosecurityMapPath,
+                skipped: false
+              },
+              displayText: ''
+            }
+          }
+        ]
+      }
+
+      const destination = destinationSection([
+        destinationType('slaughter'),
+        destinationAddress({
+          addressLine1: destinationAddressLine1,
+          addressTown: destinationAddressTown,
+          addressPostcode: destinationAddressPostcode
+        }),
+        destinationCph(destinationCphNumber),
+        howManyAnimals('62'),
+        additionalInfo(additionalInfoText)
+      ])
+
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [offFarmOrigin, licence, destination, biosecurityMapSection],
+        keyFacts: {
+          licenceType: 'TB24c',
+          requester: 'origin',
+          movementDirection: 'off',
+          additionalInformation: additionalInfoText,
+          numberOfCattle: 62,
+          originCph: originCphNumber,
+          destinationCph: destinationCphNumber,
+          originAddress: {
+            addressLine1: originAddressLine1,
+            addressTown: originAddressTown,
+            addressPostcode: originAddressPostcode
+          },
+          destinationAddress: {
+            addressLine1: destinationAddressLine1,
+            addressTown: destinationAddressTown,
+            addressPostcode: destinationAddressPostcode
+          },
+          originKeeperName: { firstName, lastName },
+          destinationKeeperName: undefined,
+          requesterCph: originCphNumber,
+          biosecurityMaps: [keyFactsBiosecurityMapPath]
+        }
+      }
+
+      validateKeyFactsPayload(application, reference)
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsBiosecurityMapPath}", existing: "${legacyBiosecurityMapPath}")`
+      )
+    })
+
+    it('should log warning when keyFacts has biosecurity map but legacy does not', () => {
+      const keyFactsBiosecurityMapPath = 'biosecurity-map/keyfacts-path.pdf'
+
+      const destination = destinationSection([
+        destinationType('slaughter'),
+        destinationAddress({
+          addressLine1: destinationAddressLine1,
+          addressTown: destinationAddressTown,
+          addressPostcode: destinationAddressPostcode
+        }),
+        destinationCph(destinationCphNumber),
+        howManyAnimals('62'),
+        additionalInfo(additionalInfoText)
+      ])
+
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [offFarmOrigin, licence, destination],
+        keyFacts: {
+          licenceType: 'TB24c',
+          requester: 'origin',
+          movementDirection: 'off',
+          additionalInformation: additionalInfoText,
+          numberOfCattle: 62,
+          originCph: originCphNumber,
+          destinationCph: destinationCphNumber,
+          originAddress: {
+            addressLine1: originAddressLine1,
+            addressTown: originAddressTown,
+            addressPostcode: originAddressPostcode
+          },
+          destinationAddress: {
+            addressLine1: destinationAddressLine1,
+            addressTown: destinationAddressTown,
+            addressPostcode: destinationAddressPostcode
+          },
+          originKeeperName: { firstName, lastName },
+          destinationKeeperName: undefined,
+          requesterCph: originCphNumber,
+          biosecurityMaps: [keyFactsBiosecurityMapPath]
+        }
+      }
+
+      validateKeyFactsPayload(application, reference)
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsBiosecurityMapPath}", existing: "undefined")`
+      )
+    })
+
+    it('should log warning when legacy has biosecurity map but keyFacts does not', () => {
+      const legacyBiosecurityMapPath = 'biosecurity-map/legacy-path.pdf'
+
+      const biosecurityMapSection = {
+        title: 'biosecurity-map',
+        sectionKey: 'biosecurity-map',
+        questionAnswers: [
+          {
+            question: 'Upload your biosecurity map',
+            questionKey: 'upload-plan',
+            /** @type {FileAnswer} */
+            answer: {
+              type: 'file',
+              value: {
+                path: legacyBiosecurityMapPath,
+                skipped: false
+              },
+              displayText: ''
+            }
+          }
+        ]
+      }
+
+      const destination = destinationSection([
+        destinationType('slaughter'),
+        destinationAddress({
+          addressLine1: destinationAddressLine1,
+          addressTown: destinationAddressTown,
+          addressPostcode: destinationAddressPostcode
+        }),
+        destinationCph(destinationCphNumber),
+        howManyAnimals('62'),
+        additionalInfo(additionalInfoText)
+      ])
+
+      const application = {
+        journeyId:
+          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+        sections: [offFarmOrigin, licence, destination, biosecurityMapSection],
+        keyFacts: {
+          licenceType: 'TB24c',
+          requester: 'origin',
+          movementDirection: 'off',
+          additionalInformation: additionalInfoText,
+          numberOfCattle: 62,
+          originCph: originCphNumber,
+          destinationCph: destinationCphNumber,
+          originAddress: {
+            addressLine1: originAddressLine1,
+            addressTown: originAddressTown,
+            addressPostcode: originAddressPostcode
+          },
+          destinationAddress: {
+            addressLine1: destinationAddressLine1,
+            addressTown: destinationAddressTown,
+            addressPostcode: destinationAddressPostcode
+          },
+          originKeeperName: { firstName, lastName },
+          destinationKeeperName: undefined,
+          requesterCph: originCphNumber,
+          biosecurityMaps: []
+        }
+      }
+
+      validateKeyFactsPayload(application, reference)
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "undefined", existing: "${legacyBiosecurityMapPath}")`
+      )
     })
   })
 })
