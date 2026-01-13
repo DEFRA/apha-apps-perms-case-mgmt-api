@@ -1,13 +1,17 @@
 import { config } from '../../../config.js'
 import { addItem } from '../../connectors/sharepoint/sharepoint.js'
-import { createApplication } from '../data-extract/data-extract.js'
+import {
+  createApplication,
+  getQuestionFromSections
+} from '../data-extract/data-extract.js'
 import { escapeHtml, escapeMarkdown } from '../escape-text.js'
 import { createLogger } from '../logging/logger.js'
 
 /** @import {
  *   ApplicationData,
  *   NameAnswer,
- *   AddressAnswer
+ *   AddressAnswer,
+ *   FileAnswer
  * } from '../data-extract/application.js'
  */
 
@@ -131,25 +135,19 @@ const comparePayloads = (
 const compareBiosecurityMapKeys = (applicationData, reference) => {
   const { keyFacts } = applicationData
 
-  // Get biosecurity maps from keyFacts
   const keyFactsBiosecurityMaps = keyFacts?.biosecurityMaps || []
-
-  if (keyFactsBiosecurityMaps.length === 0) {
-    return // Nothing to compare
-  }
-
-  // Get the first biosecurity map key from keyFacts
   const keyFactsFirstKey = keyFactsBiosecurityMaps[0]
 
-  // Get biosecurity map from the existing approach
-  const application = createApplication(applicationData)
-  const destination = application.get('destination')
-  const biosecurityMapAnswer = destination?.get('biosecurity-map')?.answer
+  const fileAnswer = /** @type {FileAnswer} */ (
+    getQuestionFromSections(
+      'upload-plan',
+      'biosecurity-map',
+      applicationData?.sections
+    )?.answer
+  )
 
-  // Get the key from existing approach
-  const existingKey = biosecurityMapAnswer?.value?.path
+  const existingKey = fileAnswer?.value?.path
 
-  // Compare the first keys
   if (keyFactsFirstKey !== existingKey) {
     logger.warn(
       `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsFirstKey}", existing: "${existingKey}")`
@@ -170,9 +168,7 @@ export const validateKeyFactsPayload = (applicationData, reference) => {
   }
 
   try {
-    if (keyFacts.biosecurityMaps?.length) {
-      compareBiosecurityMapKeys(applicationData, reference)
-    }
+    compareBiosecurityMapKeys(applicationData, reference)
 
     const keyFactsGeneratePayload = generatePayloadFromKeyFacts(
       applicationData,
