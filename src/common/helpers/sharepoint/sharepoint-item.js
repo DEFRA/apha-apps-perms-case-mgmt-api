@@ -11,7 +11,7 @@ import { createLogger } from '../logging/logger.js'
  *   ApplicationData,
  *   NameAnswer,
  *   AddressAnswer,
- FileAnswer
+ *   FileAnswer
  * } from '../data-extract/application.js'
  */
 
@@ -31,8 +31,7 @@ export const createSharepointItem = async (application, reference) => {
  * @param {string} reference
  */
 export const fields = (applicationData, reference) => {
-  const legacyFields = generateLegacyFields(applicationData, reference)
-  return legacyFields
+  return generateLegacyFields(applicationData, reference)
 }
 
 /**
