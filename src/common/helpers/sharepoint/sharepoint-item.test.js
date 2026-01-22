@@ -225,7 +225,7 @@ describe('fields', () => {
     spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
 
     const result = fields(application, reference)
-    expect(result.Name).toBeUndefined()
+    expect(result.Name).toBeNull()
     expect(result.Destination_x0020_Name).toBe(
       `${yourFirstName} ${yourLastName}`
     )
@@ -241,7 +241,7 @@ describe('fields', () => {
 
     const result = fields(application, reference)
     expect(result.Name).toBe(`${firstName} ${lastName}`)
-    expect(result.Destination_x0020_Name).toBeUndefined()
+    expect(result.Destination_x0020_Name).toBeNull()
   })
 
   it('should construct expected fields for on the farm with unrestricted origin', () => {

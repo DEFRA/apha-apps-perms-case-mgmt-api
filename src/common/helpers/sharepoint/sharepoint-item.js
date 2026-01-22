@@ -240,14 +240,14 @@ const generateLegacyFields = (applicationData, reference) => {
   const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   const originName =
-    isOffFarm || (isOnFarm && isOriginRestricted) ? fullName?.displayText : null
+    isOffFarm || (isOnFarm && isOriginRestricted)
+      ? (fullName?.displayText ?? null)
+      : null
 
-  let destinationName = null
-  if (isOnFarm) {
-    destinationName = isOriginRestricted
-      ? yourName?.displayText
-      : fullName?.displayText
-  }
+  const destinationName = isOnFarm
+    ? ((isOriginRestricted ? yourName?.displayText : fullName?.displayText) ??
+      null)
+    : null
 
   return {
     Application_x0020_Reference_x002: reference,
