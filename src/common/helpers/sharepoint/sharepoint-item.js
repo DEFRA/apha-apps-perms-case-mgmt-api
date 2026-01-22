@@ -244,10 +244,12 @@ const generateLegacyFields = (applicationData, reference) => {
       ? (fullName?.displayText ?? null)
       : null
 
-  const destinationName = isOnFarm
-    ? ((isOriginRestricted ? yourName?.displayText : fullName?.displayText) ??
-      null)
-    : null
+  const resolveDestinationName = () =>
+    isOriginRestricted
+      ? (yourName?.displayText ?? null)
+      : (fullName?.displayText ?? null)
+
+  const destinationName = isOnFarm ? resolveDestinationName() : null
 
   return {
     Application_x0020_Reference_x002: reference,
