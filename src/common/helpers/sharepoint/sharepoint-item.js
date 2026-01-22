@@ -120,9 +120,7 @@ const comparePayloads = (
     const candidateValue = keyFactsGeneratePayload[fieldKey]
 
     if (existingValue !== candidateValue) {
-      logger.warn(
-        `${reference} key facts matching error: ${fieldKey} differs (existing: "${existingValue}", candidate: "${candidateValue}")`
-      )
+      logger.warn(`${reference} key facts matching error: ${fieldKey} differs`)
     }
   }
 }
@@ -150,7 +148,7 @@ const compareBiosecurityMapKeys = (applicationData, reference) => {
 
   if (keyFactsFirstKey !== existingKey) {
     logger.warn(
-      `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsFirstKey}", existing: "${existingKey}")`
+      `${reference} key facts matching error: biosecurity map keys differ`
     )
   }
 }

@@ -419,7 +419,7 @@ describe('fields', () => {
       validateKeyFactsPayload(application, reference)
 
       expect(mockLoggerWarn).toHaveBeenCalledWith(
-        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsBiosecurityMapPath}", existing: "${legacyBiosecurityMapPath}")`
+        `${reference} key facts matching error: biosecurity map keys differ`
       )
     })
 
@@ -435,7 +435,7 @@ describe('fields', () => {
       validateKeyFactsPayload(application, reference)
 
       expect(mockLoggerWarn).toHaveBeenCalledWith(
-        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsBiosecurityMapPath}", existing: "undefined")`
+        `${reference} key facts matching error: biosecurity map keys differ`
       )
     })
 
@@ -454,7 +454,7 @@ describe('fields', () => {
       validateKeyFactsPayload(application, reference)
 
       expect(mockLoggerWarn).toHaveBeenCalledWith(
-        `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "undefined", existing: "${legacyBiosecurityMapPath}")`
+        `${reference} key facts matching error: biosecurity map keys differ`
       )
     })
   })
