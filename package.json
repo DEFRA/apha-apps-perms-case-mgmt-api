@@ -55,7 +55,7 @@
     "pino": "9.13.1",
     "pino-pretty": "13.0.0",
     "sharp": "0.34.2",
-    "undici": "7.9.0"
+    "undici": "7.18.2"
   },
   "devDependencies": {
     "@babel/core": "7.26.9",

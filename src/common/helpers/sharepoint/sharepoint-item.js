@@ -163,6 +163,10 @@ const compareBiosecurityMapKeys = (applicationData, reference) => {
 export const validateKeyFactsPayload = (applicationData, reference) => {
   const { keyFacts } = applicationData
 
+  logger.debug(
+    `received key facts from application ${reference}: ${JSON.stringify(keyFacts, null, 2)}`
+  )
+
   if (!keyFacts) {
     return
   }
