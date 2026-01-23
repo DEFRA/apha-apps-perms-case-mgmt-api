@@ -120,9 +120,7 @@ const comparePayloads = (
     const candidateValue = keyFactsGeneratePayload[fieldKey]
 
     if (existingValue !== candidateValue) {
-      logger.warn(
-        `${reference} key facts matching error: ${fieldKey} differs (existing: "${existingValue}", candidate: "${candidateValue}")`
-      )
+      logger.warn(`${reference} key facts matching error: ${fieldKey} differs`)
     }
   }
 }
@@ -150,7 +148,7 @@ const compareBiosecurityMapKeys = (applicationData, reference) => {
 
   if (keyFactsFirstKey !== existingKey) {
     logger.warn(
-      `${reference} key facts matching error: biosecurity map keys differ (keyFacts: "${keyFactsFirstKey}", existing: "${existingKey}")`
+      `${reference} key facts matching error: biosecurity map keys differ`
     )
   }
 }
@@ -242,14 +240,15 @@ const generateLegacyFields = (applicationData, reference) => {
   const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
   const originName =
-    isOffFarm || (isOnFarm && isOriginRestricted) ? fullName?.displayText : null
+    isOffFarm || (isOnFarm && isOriginRestricted)
+      ? (fullName?.displayText ?? null)
+      : null
 
-  let destinationName = null
-  if (isOnFarm) {
-    destinationName = isOriginRestricted
-      ? yourName?.displayText
-      : fullName?.displayText
-  }
+  const destinationName = isOnFarm
+    ? isOriginRestricted
+      ? (yourName?.displayText ?? null)
+      : (fullName?.displayText ?? null)
+    : null
 
   return {
     Application_x0020_Reference_x002: reference,
