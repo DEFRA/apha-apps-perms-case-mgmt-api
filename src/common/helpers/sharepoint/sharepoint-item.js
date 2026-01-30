@@ -264,7 +264,9 @@ const generateLegacyFields = (applicationData, reference) => {
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
     Destination_x0020_Name: destinationName,
-    NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
+    NumberofCattle: (
+      numberOfCattle?.value ?? numberOfCattleMaximum?.value
+    )?.toString(),
     SupportingMaterial
   }
 }

@@ -8,7 +8,8 @@
  * @typedef {{ type: 'address', value: Address, displayText: string }} AddressAnswer
  * @typedef {{ type: 'file', value: { skipped: boolean, path?: string }, displayText: string }} FileAnswer
  * @typedef {{ type: 'date', value: { day: string, month: string, year: string }, displayText: string }} DateAnswer
- * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer } AnswerData
+ * @typedef {{ type: 'number', value: number, displayText: string }} NumberAnswer
+ * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer | DateAnswer | NumberAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
  * @typedef {{ licenceType?: string, requester?: string, movementDirection?: string, additionalInformation?: string, numberOfCattle?: number, originCph?: string, destinationCph?: string, originAddress?: Address, destinationAddress?: Address, originKeeperName?: Name, destinationKeeperName?: Name, requesterCph?: string, biosecurityMaps?: string[] }} TBKeyFacts
