@@ -117,7 +117,7 @@ describe('fields', () => {
       addressPostcode: destinationAddressPostcode
     }),
     destinationCph(destinationCphNumber),
-    howManyAnimals('62'),
+    howManyAnimals(62),
     additionalInfo(additionalInfoText)
   ])
 
@@ -192,7 +192,7 @@ describe('fields', () => {
     const application = {
       journeyId:
         'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-      sections: [destinationSection([howManyAnimalsMaximum('50')])]
+      sections: [destinationSection([howManyAnimalsMaximum(50)])]
     }
 
     expect(fields(application, reference).NumberofCattle).toBe('50')
@@ -203,7 +203,7 @@ describe('fields', () => {
       journeyId:
         'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
-        destinationSection([howManyAnimals('20'), howManyAnimalsMaximum('50')])
+        destinationSection([howManyAnimals(20), howManyAnimalsMaximum(50)])
       ]
     }
 
@@ -335,7 +335,7 @@ describe('fields', () => {
           addressPostcode: destinationAddressPostcode
         }),
         destinationCph(destinationCphNumber),
-        howManyAnimals('62'),
+        howManyAnimals(62),
         additionalInfo(additionalInfoText)
       ])
 
