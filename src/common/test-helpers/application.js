@@ -179,30 +179,30 @@ export const reasonForMovement = (reason) => ({
 })
 
 /**
- * @param {string} quantity
+ * @param {number} quantity
  * @returns {QuestionAnswerData}
  */
 export const howManyAnimals = (quantity) => ({
   question: 'How any animals are you moving?',
   questionKey: 'howManyAnimals',
   answer: {
-    type: 'text',
+    type: 'number',
     value: quantity,
-    displayText: quantity
+    displayText: String(quantity)
   }
 })
 
 /**
- * @param {string} quantity
+ * @param {number} quantity
  * @returns {QuestionAnswerData}
  */
 export const howManyAnimalsMaximum = (quantity) => ({
   question: 'How any animals are you moving maximum?',
   questionKey: 'howManyAnimalsMaximum',
   answer: {
-    type: 'text',
+    type: 'number',
     value: quantity,
-    displayText: quantity
+    displayText: String(quantity)
   }
 })
 

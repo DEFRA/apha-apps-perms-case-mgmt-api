@@ -189,6 +189,41 @@ export const validateKeyFactsPayload = (applicationData, reference) => {
 }
 
 /**
+ * @param {boolean} isOffFarm
+ * @param {boolean} isOnFarm
+ * @param {boolean} isOriginRestricted
+ * @param {NameAnswer} [fullName]
+ */
+const getOriginName = (isOffFarm, isOnFarm, isOriginRestricted, fullName) => {
+  const shouldShowOriginName = isOffFarm || (isOnFarm && isOriginRestricted)
+  return shouldShowOriginName ? (fullName?.displayText ?? null) : null
+}
+
+/**
+ * @param {boolean} isOnFarm
+ * @param {boolean} isOriginRestricted
+ * @param {NameAnswer} [yourName]
+ * @param {NameAnswer} [fullName]
+ * @returns {string | null}
+ */
+const getDestinationName = (
+  isOnFarm,
+  isOriginRestricted,
+  yourName,
+  fullName
+) => {
+  if (!isOnFarm) {
+    return null
+  }
+
+  if (isOriginRestricted) {
+    return yourName?.displayText ?? null
+  }
+
+  return fullName?.displayText ?? null
+}
+
+/**
  * Generates SharePoint fields using the legacy (existing) approach
  * @param {ApplicationData} applicationData
  * @param {string} reference
@@ -239,16 +274,18 @@ const generateLegacyFields = (applicationData, reference) => {
   const supportingMaterialLink = `${siteBaseUrl}/sites/${siteName}/Supporting%20Materials/Forms/AllItems.aspx?id=${encodeURIComponent(supportingMaterialPath)}`
   const SupportingMaterial = `<a href=${supportingMaterialLink} target="_blank">Supporting Material</a>`
 
-  const originName =
-    isOffFarm || (isOnFarm && isOriginRestricted)
-      ? (fullName?.displayText ?? null)
-      : null
-
-  const destinationName = isOnFarm
-    ? isOriginRestricted
-      ? (yourName?.displayText ?? null)
-      : (fullName?.displayText ?? null)
-    : null
+  const originName = getOriginName(
+    isOffFarm,
+    isOnFarm,
+    isOriginRestricted,
+    fullName
+  )
+  const destinationName = getDestinationName(
+    isOnFarm,
+    isOriginRestricted,
+    yourName,
+    fullName
+  )
 
   return {
     Application_x0020_Reference_x002: reference,
@@ -264,7 +301,9 @@ const generateLegacyFields = (applicationData, reference) => {
     DestinationAddress_x0028_FirstLi: destinationAddress?.value.addressLine1,
     DestinationCPH: destinationCph?.value,
     Destination_x0020_Name: destinationName,
-    NumberofCattle: numberOfCattle?.value ?? numberOfCattleMaximum?.value,
+    NumberofCattle: (
+      numberOfCattle?.value ?? numberOfCattleMaximum?.value
+    )?.toString(),
     SupportingMaterial
   }
 }
