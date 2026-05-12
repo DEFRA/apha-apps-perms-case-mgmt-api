@@ -30,8 +30,8 @@
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@aws-sdk/client-s3": "3.810.0",
-    "@aws-sdk/client-sqs": "3.831.0",
+    "@aws-sdk/client-s3": "3.1045.0",
+    "@aws-sdk/client-sqs": "3.1045.0",
     "@azure/identity": "4.10.0",
     "@defra/hapi-tracing": "1.0.0",
     "@elastic/ecs-pino-format": "1.5.0",
@@ -41,8 +41,8 @@
     "@microsoft/microsoft-graph-client": "3.0.7",
     "aws-embedded-metrics": "4.2.0",
     "aws4": "1.13.2",
-    "compress-pdf": "0.5.3",
-    "convict": "6.2.4",
+    "compress-pdf": "0.6.2",
+    "convict": "6.2.5",
     "convict-format-with-validator": "6.2.0",
     "global-agent": "3.0.0",
     "hapi-pino": "13.0.0",
@@ -55,7 +55,7 @@
     "pino": "9.13.1",
     "pino-pretty": "13.0.0",
     "sharp": "0.34.2",
-    "undici": "7.18.2"
+    "undici": "7.25.0"
   },
   "devDependencies": {
     "@babel/core": "7.26.9",
