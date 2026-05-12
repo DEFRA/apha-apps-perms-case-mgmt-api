@@ -25,7 +25,7 @@ LABEL uk.gov.defra.ffc.parent-image=defradigital/node:${PARENT_VERSION}
 # CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk update \
-    && apk add curl ghostscript=10.05.1-r0 \
+    && apk add curl ghostscript \
     && apk cache clean
 USER node
 
