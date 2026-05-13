@@ -54,9 +54,7 @@ export class TbApplication extends Application {
   }
 
   get isOriginUnrestricted() {
-    return ['market', 'unrestricted-farm', 'after-import-location'].includes(
-      this.originType
-    )
+    return ['market', 'unrestricted-farm'].includes(this.originType)
   }
 
   get isDestinationRestricted() {

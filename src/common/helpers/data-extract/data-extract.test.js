@@ -150,24 +150,6 @@ describe('getTbLicenceType', () => {
   )
 
   it.each(restrictedTypes)(
-    'should return TB15 if origin type is after import location & destination type is restricted',
-    (destinationTypeSelected) => {
-      const applicationData = {
-        journeyId:
-          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-        sections: [
-          originSection([originType('after-import-location')]),
-          destinationSection([destinationType(destinationTypeSelected)])
-        ]
-      }
-
-      const application = createApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB15')
-    }
-  )
-
-  it.each(restrictedTypes)(
     'should return TB16 if origin type is restricted & destination type is tb restricted farm',
     (originTypeSelected) => {
       const applicationData = {

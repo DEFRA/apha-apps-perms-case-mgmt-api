@@ -311,10 +311,6 @@ describe('TbApplication', () => {
       expect(application.isTbRestricted('market')).toBe(false)
     })
 
-    it('should return false for after-import-location', () => {
-      expect(application.isTbRestricted('after-import-location')).toBe(false)
-    })
-
     it('should return false for slaughter', () => {
       expect(application.isTbRestricted('slaughter')).toBe(false)
     })
