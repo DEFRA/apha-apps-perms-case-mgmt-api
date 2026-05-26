@@ -1,0 +1,129 @@
+{
+  "journeyId": "SOME_JOURNEY",
+  "journeyVersion": {
+    "major": 1,
+    "minor": 1
+  },
+  "sections": [
+    {
+      "sectionKey": "origin",
+      "title": "Movement origin",
+      "questionAnswers": [
+        {
+          "question": "Are the animals moving off of or on to the premises?",
+          "questionKey": "onOffFarm",
+          "answer": {
+            "type": "radio",
+            "value": "off",
+            "displayText": "off"
+          }
+        },
+        {
+          "questionKey": "originType",
+          "question": "What type of premises are the animals moving from?",
+          "answer": {
+            "type": "radio",
+            "value": "tb-restricted-farm",
+            "displayText": "tb-restricted-farm"
+          }
+        },
+        {
+          "question": "What is the CPH number of the origin farm?",
+          "questionKey": "cphNumber",
+          "answer": {
+            "type": "text",
+            "value": "12/123/1234",
+            "displayText": "12/123/1234"
+          }
+        },
+        {
+          "question": "What is the address of the origin farm?",
+          "questionKey": "address",
+          "answer": {
+            "type": "address",
+            "value": {
+              "addressLine1": "1 the road",
+              "addressTown": "Townhamlet",
+              "addressPostcode": "AA10 1AA"
+            },
+            "displayText": "1 the road\nTownhamlet\nAA10 1AA"
+          }
+        }
+      ]
+    },
+    {
+      "sectionKey": "licence",
+      "title": "Receiving the licence",
+      "questionAnswers": [
+        {
+          "question": "What is the full name of the keeper of the animals?",
+          "questionKey": "fullName",
+          "answer": {
+            "type": "name",
+            "value": {
+              "firstName": "Bob",
+              "lastName": "Barry"
+            },
+            "displayText": "Bob Barry"
+          }
+        },
+
+        {
+          "question": "What is the email address of the keeper of the animals?",
+          "questionKey": "emailAddress",
+          "answer": {
+            "type": "text",
+            "value": "bob@barry.com",
+            "displayText": "bob@barry.com"
+          }
+        }
+      ]
+    },
+    {
+      "sectionKey": "destination",
+      "title": "Movement destination",
+      "questionAnswers": [
+        {
+          "questionKey": "destinationType",
+          "question": "What type of premises are the animals moving to?",
+          "answer": {
+            "type": "radio",
+            "value": "slaughter",
+            "displayText": "slaughter"
+          }
+        },
+        {
+          "question": "What is the address the animals are moving to?",
+          "questionKey": "destinationFarmAddress",
+          "answer": {
+            "type": "address",
+            "value": {
+              "addressLine1": "2 the street",
+              "addressTown": "Cityville",
+              "addressPostcode": "ZZ09 9ZZ"
+            },
+            "displayText": "2 the street\nCityville\nZZ09 9ZZ"
+          }
+        },
+        {
+          "question": "What is the CPH number of the destination farm?",
+          "questionKey": "destinationFarmCph",
+          "answer": {
+            "type": "text",
+            "value": "98/987/9876",
+            "displayText": "98/987/9876"
+          }
+        },
+        {
+          "question": "What is the reason for the movement?",
+          "questionKey": "reasonForMovement",
+          "answer": {
+            "type": "radio",
+            "value": "welfare",
+            "displayText": "Welfare"
+          }
+        }
+      ]
+    }
+  ]
+}
