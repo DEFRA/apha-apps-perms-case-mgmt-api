@@ -41,6 +41,7 @@
     "@microsoft/microsoft-graph-client": "3.0.7",
     "aws-embedded-metrics": "4.2.0",
     "aws4": "1.13.2",
+    "cacheable-lookup": "7.0.0",
     "compress-pdf": "0.6.2",
     "convict": "6.2.5",
     "convict-format-with-validator": "6.2.0",

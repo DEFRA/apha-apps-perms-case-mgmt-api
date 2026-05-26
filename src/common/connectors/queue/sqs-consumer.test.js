@@ -9,6 +9,7 @@ import * as sharepoint from '../../helpers/sharepoint/sharepoint.js'
 
 /**
  * @import {ApplicationData} from '../../helpers/data-extract/application.js'
+ * @import {Agent} from 'node:https'
  */
 
 const mockLoggerInfo = jest.fn()
@@ -52,6 +53,20 @@ const sqsMessage = {
 describe('SQS Consumer Connector', () => {
   beforeEach(() => {
     sqsMock.reset()
+  })
+
+  describe('consumerClient', () => {
+    it('should use the a custom httpsAgent', async () => {
+      const config =
+        // @ts-ignore
+        await sqs.consumerClient.config.requestHandler.configProvider
+
+      const httpsAgent = /** @type {Agent} */ (config.httpsAgent)
+
+      expect(httpsAgent.maxSockets).toBe(50)
+      expect(httpsAgent.options.keepAlive).toBe(true)
+      expect(httpsAgent.options.keepAliveMsecs).toBe(1000)
+    })
   })
 
   describe('pollOnce', () => {
