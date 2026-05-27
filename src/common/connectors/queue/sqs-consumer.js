@@ -6,10 +6,20 @@ import {
 import { config } from '../../../config.js'
 import { processApplication } from '../../helpers/sharepoint/sharepoint.js'
 import { createLogger } from '../../helpers/logging/logger.js'
+import { Agent } from 'node:https'
+import CacheableLookup from 'cacheable-lookup'
 
 const retryTimeout = 5000 // 5 seconds
 
 const logger = createLogger()
+
+const cachedDns = new CacheableLookup()
+const httpsAgent = new Agent({
+  keepAlive: true,
+  maxSockets: 50,
+  keepAliveMsecs: 1000
+})
+cachedDns.install(httpsAgent)
 
 /**
  * @import {Message} from '@aws-sdk/client-sqs'
@@ -19,7 +29,10 @@ const { region, sqsEndpoint, sqsQueueUrl, sqsMaxNumberOfMessages } =
   config.get('aws')
 export const consumerClient = new SQSClient({
   region,
-  endpoint: sqsEndpoint
+  endpoint: sqsEndpoint,
+  requestHandler: {
+    httpsAgent
+  }
 })
 
 export const pollOnce = async () => {
