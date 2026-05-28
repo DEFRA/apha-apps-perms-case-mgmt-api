@@ -32,7 +32,7 @@ Case management service responsible for accepting submissions and making them ac
 
 ### Node.js
 
-Please install [Node.js](http://nodejs.org/) `>= v22` and [npm](https://nodejs.org/) `>= v11`. You will find it
+Please install [Node.js](http://nodejs.org/) `>= v24` and [npm](https://nodejs.org/) `>= v11`. You will find it
 easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
 
 To use the correct version of Node.js for this application, via nvm:
@@ -257,8 +257,7 @@ docker compose up --build -d
 
 ### Dependabot
 
-We have added an example dependabot configuration file to the repository. You can enable it by renaming
-the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github/dependabot.yml`
+Dependabot is configured in [.github/dependabot.yml](.github/dependabot.yml).
 
 ### SonarCloud
 
