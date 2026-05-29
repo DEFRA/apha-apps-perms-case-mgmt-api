@@ -8,6 +8,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "compose:up": "docker compose -f compose.yml up -d",
+    "compose:rm": "docker compose -f compose.yml down --remove-orphans --volumes",
     "docker:dev": "NODE_ENV=development npm run server:watch",
     "dev": "NODE_ENV=development npm run server:watch",
     "dev:debug": "NODE_ENV=development npm run server:debug",
@@ -31,6 +33,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@aws-sdk/client-s3": "3.1055.0",
+    "@aws-sdk/credential-providers": "3.1055.0",
     "@aws-sdk/client-sqs": "3.1055.0",
     "@azure/identity": "4.13.1",
     "@defra/hapi-tracing": "1.30.0",
