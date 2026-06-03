@@ -86,7 +86,7 @@ export class TbApplication extends Application {
    * @returns {boolean}
    */
   isTb16eCase() {
-    const saleDestinationTypes = ['dedicated-sale', 'afu', 'market-afu']
+    const saleDestinationTypes = ['dedicated-sale', 'afu', 'afu-or-market']
     const isDestinationSale = saleDestinationTypes.includes(
       this.destinationType
     )

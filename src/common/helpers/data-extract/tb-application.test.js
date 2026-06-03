@@ -366,15 +366,15 @@ describe('TbApplication', () => {
       },
 
       {
-        description: 'restricted origin to afu-market destination',
+        description: 'restricted origin to afu-or-market destination',
         originType: 'zoo',
-        destinationType: 'market-afu',
+        destinationType: 'afu-or-market',
         expectedLicenceType: 'TB16e'
       },
       {
-        description: 'afu origin to afu-market destination',
+        description: 'afu origin to afu-or-market destination',
         originType: 'afu',
-        destinationType: 'market-afu',
+        destinationType: 'afu-or-market',
         expectedLicenceType: 'TB16e'
       },
 
