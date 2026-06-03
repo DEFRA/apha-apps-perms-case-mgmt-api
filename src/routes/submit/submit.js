@@ -42,6 +42,7 @@ export const submit = [
       const handler = getHandler(application)
       const result = await handler(request, reference)
 
+      // @ts-ignore - result may be void but optional chaining handles it safely
       if (result?.error) {
         return h
           .response({ error: result.error.errorCode })
