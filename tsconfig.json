@@ -9,8 +9,10 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "noImplicitAny": false,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
+    "useUnknownInCatchVariables": false,
     "types": ["jest"]
   },
   "exclude": [
