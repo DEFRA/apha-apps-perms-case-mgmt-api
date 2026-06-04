@@ -92,9 +92,9 @@ describe('getQuestionFromSections', () => {
 })
 
 describe('getTbLicenceType', () => {
-  const restrictedTypes = ['tb-restricted-farm', 'zoo', 'other', 'lab'].map(
-    (destination) => [destination]
-  )
+  const restrictedTypes = ['tb-restricted-farm', 'other'].map((destination) => [
+    destination
+  ])
   it.each(restrictedTypes)(
     'should return TB15 if origin type is market & destination type is restricted',
     (destinationTypeSelected) => {
@@ -158,42 +158,6 @@ describe('getTbLicenceType', () => {
         sections: [
           originSection([originType(originTypeSelected)]),
           destinationSection([destinationType('tb-restricted-farm')])
-        ]
-      }
-
-      const application = createApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16')
-    }
-  )
-
-  it.each(restrictedTypes)(
-    'should return TB16 if origin type is restricted & destination type is zoo',
-    (originTypeSelected) => {
-      const applicationData = {
-        journeyId:
-          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-        sections: [
-          originSection([originType(originTypeSelected)]),
-          destinationSection([destinationType('zoo')])
-        ]
-      }
-
-      const application = createApplication(applicationData)
-
-      expect(application.licenceType).toBe('TB16')
-    }
-  )
-
-  it.each(restrictedTypes)(
-    'should return TB16 if origin type is restricted & destination type is lab',
-    (originTypeSelected) => {
-      const applicationData = {
-        journeyId:
-          'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-        sections: [
-          originSection([originType(originTypeSelected)]),
-          destinationSection([destinationType('lab')])
         ]
       }
 

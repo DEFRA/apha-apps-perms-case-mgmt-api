@@ -24,7 +24,7 @@ export class TbApplication extends Application {
   }
 
   isTbRestricted(premesisType) {
-    return ['tb-restricted-farm', 'zoo', 'lab', 'other'].includes(premesisType)
+    return ['tb-restricted-farm', 'other'].includes(premesisType)
   }
 
   /**
