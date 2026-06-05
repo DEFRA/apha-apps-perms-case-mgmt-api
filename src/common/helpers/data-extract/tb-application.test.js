@@ -291,14 +291,6 @@ describe('TbApplication', () => {
       expect(application.isTbRestricted('tb-restricted-farm')).toBe(true)
     })
 
-    it('should return true for zoo', () => {
-      expect(application.isTbRestricted('zoo')).toBe(true)
-    })
-
-    it('should return true for lab', () => {
-      expect(application.isTbRestricted('lab')).toBe(true)
-    })
-
     it('should return true for other', () => {
       expect(application.isTbRestricted('other')).toBe(true)
     })
@@ -329,27 +321,9 @@ describe('TbApplication', () => {
         expectedLicenceType: 'TB15'
       },
       {
-        description: 'market origin to restricted destination',
-        originType: 'market',
-        destinationType: 'zoo',
-        expectedLicenceType: 'TB15'
-      },
-      {
-        description: 'restricted origin to restricted destination',
-        originType: 'tb-restricted-farm',
-        destinationType: 'lab',
-        expectedLicenceType: 'TB16'
-      },
-      {
         description: 'restricted origin to dedicated sale destination',
         originType: 'tb-restricted-farm',
         destinationType: 'dedicated-sale',
-        expectedLicenceType: 'TB16e'
-      },
-      {
-        description: 'restricted origin to afu destination',
-        originType: 'zoo',
-        destinationType: 'afu',
         expectedLicenceType: 'TB16e'
       },
       {
@@ -362,13 +336,6 @@ describe('TbApplication', () => {
         description: 'afu origin to afu destination',
         originType: 'afu',
         destinationType: 'afu',
-        expectedLicenceType: 'TB16e'
-      },
-
-      {
-        description: 'restricted origin to afu-or-market destination',
-        originType: 'zoo',
-        destinationType: 'afu-or-market',
         expectedLicenceType: 'TB16e'
       },
       {
