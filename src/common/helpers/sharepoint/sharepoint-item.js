@@ -192,18 +192,18 @@ export const validateKeyFactsPayload = (applicationData, reference) => {
  * @param {boolean} isOffFarm
  * @param {boolean} isOnFarm
  * @param {boolean} isOriginRestricted
- * @param {NameAnswer} [fullName]
+ * @param {string | null} fullName
  */
 const getOriginName = (isOffFarm, isOnFarm, isOriginRestricted, fullName) => {
   const shouldShowOriginName = isOffFarm || (isOnFarm && isOriginRestricted)
-  return shouldShowOriginName ? (fullName?.displayText ?? null) : null
+  return shouldShowOriginName ? fullName : null
 }
 
 /**
  * @param {boolean} isOnFarm
  * @param {boolean} isOriginRestricted
- * @param {NameAnswer} [yourName]
- * @param {NameAnswer} [fullName]
+ * @param {string | null} yourName
+ * @param {string | null} fullName
  * @returns {string | null}
  */
 const getDestinationName = (
@@ -217,10 +217,10 @@ const getDestinationName = (
   }
 
   if (isOriginRestricted) {
-    return yourName?.displayText ?? null
+    return yourName
   }
 
-  return fullName?.displayText ?? null
+  return fullName
 }
 
 /**
@@ -257,12 +257,19 @@ const generateLegacyFields = (applicationData, reference) => {
     destination?.get('destinationFarmAddress')?.answer
   )
 
-  const fullName = /** @type {NameAnswer} */ (
+  const fullNameAnswer = /** @type {NameAnswer} */ (
     application.get('licence')?.get('fullName')?.answer
   )
-  const yourName = /** @type {NameAnswer} */ (
+  const fullName = fullNameAnswer?.value
+    ? `${fullNameAnswer.value.firstName} ${fullNameAnswer.value.lastName}`
+    : null
+
+  const yourNameAnswer = /** @type {NameAnswer} */ (
     application.get('licence')?.get('yourName')?.answer
   )
+  const yourName = yourNameAnswer?.value
+    ? `${yourNameAnswer.value.firstName} ${yourNameAnswer.value.lastName}`
+    : null
 
   const numberOfCattle = destination?.get('howManyAnimals')?.answer
   const numberOfCattleMaximum = destination?.get(
