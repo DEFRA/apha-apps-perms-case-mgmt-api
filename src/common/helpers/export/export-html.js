@@ -47,7 +47,7 @@ const buildHtml = (data, reference) => {
                 ${question}
               </dt>
               <dd class="govuk-summary-list__value">
-                ${answer.displayText.replace(/\n/g, '<br />')}
+                ${answer.displayText.replace(/\r?\n/g, '<br />')}
               </dd>
             </div>
             `
