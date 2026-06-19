@@ -5,7 +5,7 @@ const gitignoreEntries = readFileSync(
   new URL('./.gitignore', import.meta.url),
   'utf8'
 )
-  .split('\n')
+  .split(/\r?\n/)
   .map((line) => line.trim())
   .filter((line) => line && !line.startsWith('#') && !line.startsWith('!'))
 
