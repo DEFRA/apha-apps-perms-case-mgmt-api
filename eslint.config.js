@@ -9,7 +9,11 @@ const gitignoreEntries = readFileSync(
   .map((line) => line.trim())
   .filter((line) => line && !line.startsWith('#') && !line.startsWith('!'))
 
-const ignores = gitignoreEntries.flatMap((entry) => [entry, `${entry}/**`])
+const ignores = gitignoreEntries.flatMap((entry) =>
+  entry.endsWith('/')
+    ? [entry, `${entry}**`]
+    : [entry]
+)
 
 export default neostandard({
   env: ['node', 'jest'],
