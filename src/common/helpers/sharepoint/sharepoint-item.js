@@ -51,15 +51,11 @@ const generatePayloadFromKeyFacts = (applicationData, reference) => {
   )
 
   const originName = keyFacts.originKeeperName
-    ? escapeHtml(
-        `${keyFacts.originKeeperName.firstName} ${keyFacts.originKeeperName.lastName}`
-      )
+    ? `${keyFacts.originKeeperName.firstName} ${keyFacts.originKeeperName.lastName}`
     : null
 
   const destinationName = keyFacts.destinationKeeperName
-    ? escapeHtml(
-        `${keyFacts.destinationKeeperName.firstName} ${keyFacts.destinationKeeperName.lastName}`
-      )
+    ? `${keyFacts.destinationKeeperName.firstName} ${keyFacts.destinationKeeperName.lastName}`
     : null
 
   const applicationSubmittedBy =
@@ -237,7 +233,6 @@ const generateLegacyFields = (applicationData, reference) => {
 
   const origin = application.get('origin')
   const destination = application.get('destination')
-  const licence = application.get('licence')
 
   const onOffFarm = origin?.get('onOffFarm')?.answer
   const isOnFarm = onOffFarm?.value === 'on'
@@ -262,8 +257,12 @@ const generateLegacyFields = (applicationData, reference) => {
     destination?.get('destinationFarmAddress')?.answer
   )
 
-  const fullName = /** @type {NameAnswer} */ (licence?.get('fullName')?.answer)
-  const yourName = /** @type {NameAnswer} */ (licence?.get('yourName')?.answer)
+  const fullName = /** @type {NameAnswer} */ (
+    application.get('licence')?.get('fullName')?.answer
+  )
+  const yourName = /** @type {NameAnswer} */ (
+    application.get('licence')?.get('yourName')?.answer
+  )
 
   const numberOfCattle = destination?.get('howManyAnimals')?.answer
   const numberOfCattleMaximum = destination?.get(
