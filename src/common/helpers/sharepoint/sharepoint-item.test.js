@@ -64,7 +64,7 @@ describe('createSharepointItem', () => {
     const error = new Error('Item creation failed')
     mockAddItem.mockRejectedValue(error)
 
-    expect(createSharepointItem(application, reference)).rejects.toThrow(
+    await expect(createSharepointItem(application, reference)).rejects.toThrow(
       'Item creation failed'
     )
   })

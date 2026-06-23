@@ -50,10 +50,10 @@ describe('SQS Producer Connector', () => {
       expect(parsedBody.reference).toBe(testReference)
     })
 
-    it('should handle errors when sending a message', () => {
+    it('should handle errors when sending a message', async () => {
       sqsMock.on(SendMessageCommand).rejects(new Error('SQS send error'))
 
-      expect(
+      await expect(
         sqs.sendMessageToSQS(applicationData, testReference)
       ).rejects.toThrow('SQS send error')
     })
