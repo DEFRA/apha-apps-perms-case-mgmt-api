@@ -62,7 +62,7 @@
     "undici": "8.5.0"
   },
   "devDependencies": {
-    "@babel/core": "7.29.7",
+    "@babel/core": "8.0.1",
     "@babel/preset-env": "7.29.7",
     "@shelf/jest-mongodb": "6.0.2",
     "@types/jest": "30.0.0",
