@@ -228,6 +228,68 @@ const config = convict({
       }
     }
   },
+  integrationBridge: {
+    baseUrl: {
+      doc: 'Base URL for the APHA Integration Bridge service',
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'APHA_INTEGRATION_BRIDGE_BASE_URL'
+    },
+    tokenUrl: {
+      doc: 'Cognito OAuth token endpoint for the APHA Integration Bridge',
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'APHA_INTEGRATION_BRIDGE_TOKEN_URL'
+    },
+    clientId: {
+      doc: 'Client ID to authenticate with the APHA Integration Bridge',
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'APHA_INTEGRATION_BRIDGE_CLIENT_ID'
+    },
+    clientSecret: {
+      doc: 'Client secret to authenticate with the APHA Integration Bridge',
+      format: String,
+      default: null,
+      nullable: true,
+      env: 'APHA_INTEGRATION_BRIDGE_CLIENT_SECRET'
+    },
+    timeout: {
+      doc: 'Timeout for integration bridge requests in milliseconds',
+      format: Number,
+      default: 5000,
+      env: 'INTEGRATION_BRIDGE_TIMEOUT'
+    }
+  },
+  featureFlags: {
+    sharepointIntegrationEnabled: {
+      doc: 'Feature flag to enable the SharePoint integration',
+      format: Boolean,
+      default: !isProduction,
+      env: 'SHAREPOINT_TB25_INTEGRATION_ENABLED'
+    },
+    sharepointBackupEnabled: {
+      doc: 'Feature flag to enable the SharePoint integration email backup',
+      format: Boolean,
+      default: true,
+      env: 'SHAREPOINT_TB25_INTEGRATION_EMAIL_BACKUP_ENABLED'
+    },
+    stubMode: {
+      doc: 'Feature flag to enable a stub mode',
+      format: Boolean,
+      default: false,
+      env: 'STUB_MODE_ENABLED'
+    },
+    cphMatchingEnabled: {
+      doc: 'Feature flag to enable CPH matching after submit',
+      format: Boolean,
+      default: false,
+      env: 'CPH_MATCHING_ENABLED'
+    }
+  },
   aws: {
     region: {
       doc: 'AWS region to use',
@@ -284,26 +346,6 @@ const config = convict({
     format: String,
     default: '/usr/bin/gs',
     env: 'GS_BINARY'
-  },
-  featureFlags: {
-    sharepointIntegrationEnabled: {
-      doc: 'Feature flag to enable the SharePoint integration',
-      format: Boolean,
-      default: !isProduction,
-      env: 'SHAREPOINT_TB25_INTEGRATION_ENABLED'
-    },
-    sharepointBackupEnabled: {
-      doc: 'Feature flag to enable the SharePoint integration email backup',
-      format: Boolean,
-      default: true,
-      env: 'SHAREPOINT_TB25_INTEGRATION_EMAIL_BACKUP_ENABLED'
-    },
-    stubMode: {
-      doc: 'Feature flag to enable a stub mode',
-      format: Boolean,
-      default: false,
-      env: 'STUB_MODE_ENABLED'
-    }
   },
   sharepoint: {
     tenantId: /** @type {SchemaObj<string | null>} */ {

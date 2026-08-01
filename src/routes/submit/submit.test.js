@@ -5,6 +5,14 @@ import { spyOnConfig } from '../../common/test-helpers/config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
+import { runCphMatching } from '../../common/connectors/integration-bridge/integration-bridge.js'
+
+jest.mock(
+  '../../common/connectors/integration-bridge/integration-bridge.js',
+  () => ({
+    runCphMatching: jest.fn().mockResolvedValue(undefined)
+  })
+)
 
 const testReferenceNumber = 'TB-1234-5678'
 
@@ -39,6 +47,7 @@ const mockEmailApplicationHandler = /** @type {jest.Mock} */ (
 const mockStubModeApplicationHandler = /** @type {jest.Mock} */ (
   stubModeApplicationHandler
 )
+const mockRunCphMatching = /** @type {jest.Mock} */ (runCphMatching)
 
 const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
 
@@ -116,6 +125,22 @@ describe('submit route', () => {
       `Application submitted successfully with reference: ${testReferenceNumber}`
     )
 
+    expect(mockResponse.response).toHaveBeenCalledWith({
+      message: testReferenceNumber
+    })
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+  })
+
+  it('should trigger CPH matching after successful submission', async () => {
+    mockRunCphMatching.mockResolvedValue(undefined)
+
+    await handler(mockRequest, mockResponse)
+
+    expect(mockRunCphMatching).toHaveBeenCalledWith({
+      payload: mockRequest.payload,
+      applicationId: testReferenceNumber,
+      logger: mockLogger
+    })
     expect(mockResponse.response).toHaveBeenCalledWith({
       message: testReferenceNumber
     })

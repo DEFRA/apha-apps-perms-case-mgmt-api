@@ -8,6 +8,7 @@ import { config } from '../../config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
+import { runCphMatching } from '../../common/connectors/integration-bridge/integration-bridge.js'
 
 export const submit = [
   {
@@ -52,6 +53,12 @@ export const submit = [
       request.logger.info(
         `Application submitted successfully with reference: ${reference}`
       )
+
+      runCphMatching({
+        payload: request.payload,
+        applicationId: reference,
+        logger: request.logger
+      })
 
       return h.response({ message: reference }).code(statusCodes.ok)
     }
