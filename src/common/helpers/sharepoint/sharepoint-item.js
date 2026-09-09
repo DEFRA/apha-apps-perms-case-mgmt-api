@@ -46,20 +46,33 @@ const generatePayloadFromKeyFacts = (applicationData, reference) => {
     return null
   }
 
-  const sanitizedAdditionalInfo = escapeMarkdown(
-    escapeHtml(keyFacts.additionalInformation)
+  const originAddress = /** @type {AddressAnswer['value']} */ (
+    keyFacts.originAddress?.value
+  )
+  const destinationAddress = /** @type {AddressAnswer['value']} */ (
+    keyFacts.destinationAddress?.value
+  )
+  const originKeeperName = /** @type {NameAnswer['value']} */ (
+    keyFacts.originKeeperName?.value
+  )
+  const destinationKeeperName = /** @type {NameAnswer['value']} */ (
+    keyFacts.destinationKeeperName?.value
   )
 
-  const originName = keyFacts.originKeeperName
-    ? `${keyFacts.originKeeperName.firstName} ${keyFacts.originKeeperName.lastName}`
+  const sanitizedAdditionalInfo = escapeMarkdown(
+    escapeHtml(/** @type {string} */ (keyFacts.additionalInformation?.value))
+  )
+
+  const originName = originKeeperName
+    ? `${originKeeperName.firstName} ${originKeeperName.lastName}`
     : null
 
-  const destinationName = keyFacts.destinationKeeperName
-    ? `${keyFacts.destinationKeeperName.firstName} ${keyFacts.destinationKeeperName.lastName}`
+  const destinationName = destinationKeeperName
+    ? `${destinationKeeperName.firstName} ${destinationKeeperName.lastName}`
     : null
 
   const applicationSubmittedBy =
-    keyFacts.movementDirection === 'on'
+    keyFacts.movementDirection?.value === 'on'
       ? 'Owner/Keeper - Destination'
       : 'Owner/Keeper - Origin'
 
@@ -70,19 +83,21 @@ const generatePayloadFromKeyFacts = (applicationData, reference) => {
 
   return {
     Application_x0020_Reference_x002: reference,
-    Title: keyFacts.requesterCph,
+    Title: keyFacts.requesterCph?.value,
     Office: 'Polwhele',
     MethodofReceipt: 'Digital (Automatically Receipted)',
     ApplicationSubmittedby: applicationSubmittedBy,
     Name: originName,
-    FirstlineofAddress: keyFacts.originAddress?.addressLine1,
-    Licence: keyFacts.licenceType,
+    FirstlineofAddress: originAddress?.addressLine1,
+    Licence: keyFacts.licenceType?.value,
     Notes: sanitizedAdditionalInfo,
-    OriginCPH: keyFacts.originCph,
-    DestinationAddress_x0028_FirstLi: keyFacts.destinationAddress?.addressLine1,
-    DestinationCPH: keyFacts.destinationCph,
+    OriginCPH: keyFacts.originCph?.value,
+    DestinationAddress_x0028_FirstLi: destinationAddress?.addressLine1,
+    DestinationCPH: keyFacts.destinationCph?.value,
     Destination_x0020_Name: destinationName,
-    NumberofCattle: keyFacts.numberOfCattle?.toString(),
+    NumberofCattle: /** @type {number} */ (
+      keyFacts.numberOfCattle?.value
+    )?.toString(),
     SupportingMaterial
   }
 }
@@ -133,7 +148,7 @@ const comparePayloads = (
 const compareBiosecurityMapKeys = (applicationData, reference) => {
   const { keyFacts } = applicationData
 
-  const keyFactsBiosecurityMaps = keyFacts?.biosecurityMaps || []
+  const keyFactsBiosecurityMaps = keyFacts?.biosecurityMaps?.value || []
   const keyFactsFirstKey = keyFactsBiosecurityMaps[0]
 
   const fileAnswer = /** @type {FileAnswer} */ (

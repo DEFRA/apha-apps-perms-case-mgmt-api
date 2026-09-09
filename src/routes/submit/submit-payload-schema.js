@@ -31,7 +31,7 @@ const AnswerValueSchemas = {
   number: Joi.number()
 }
 
-const AnswerSchema = Joi.object({
+const TypedValueSchema = {
   type: Joi.string()
     .valid(...Object.keys(AnswerValueSchemas))
     .required(),
@@ -41,7 +41,11 @@ const AnswerSchema = Joi.object({
       then: schema.required()
     })),
     otherwise: Joi.any().required()
-  }),
+  })
+}
+
+const AnswerSchema = Joi.object({
+  ...TypedValueSchema,
   displayText: Joi.string().allow('').required()
 })
 
@@ -57,9 +61,16 @@ const SectionSchema = Joi.object({
   questionAnswers: Joi.array().items(QuestionAnswerSchema).required()
 })
 
-const KeyFactValueSchema = Joi.alternatives().try(
-  ...Object.values(AnswerValueSchemas)
-)
+const KeyFactSchema = Joi.object(TypedValueSchema)
+
+const BiosecurityMapsKeyFactSchema = Joi.object({
+  type: Joi.string().valid('file').required(),
+  value: Joi.array().items(Joi.string()).required()
+})
+
+const KeyFactsSchema = Joi.object({
+  biosecurityMaps: BiosecurityMapsKeyFactSchema.optional()
+}).pattern(Joi.string(), KeyFactSchema)
 
 export const ApplicationSchema = Joi.object({
   journeyId: Joi.string().required(),
@@ -68,5 +79,5 @@ export const ApplicationSchema = Joi.object({
     minor: Joi.number().required()
   }).required(),
   sections: Joi.array().items(SectionSchema).required(),
-  keyFacts: Joi.object().pattern(Joi.string(), KeyFactValueSchema).optional()
+  keyFacts: KeyFactsSchema.optional()
 }).options({ abortEarly: false })
