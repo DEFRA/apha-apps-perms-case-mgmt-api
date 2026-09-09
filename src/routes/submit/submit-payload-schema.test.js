@@ -1195,45 +1195,53 @@ describe('ApplicationSchema - keyFacts field', () => {
     expect(error).toBeUndefined()
   })
 
-  it('accepts a valid payload with keyFacts containing mixed value types', () => {
+  it('accepts a valid payload with typed keyFacts', () => {
     const payload = {
       journeyId: 'journeyId',
       journeyVersion: { major: 1, minor: 0 },
       sections: [section],
       keyFacts: {
-        licenceType: 'TB15',
-        numberOfCattle: 150,
-        originCph: '12/123/1234',
+        licenceType: { type: 'text', value: 'TB15' },
+        numberOfCattle: { type: 'number', value: 150 },
+        originCph: { type: 'text', value: '12/123/1234' },
         originAddress: {
-          addressLine1: '2 the street',
-          addressTown: 'Cityville',
-          addressPostcode: 'ZZ09 9ZZ'
+          type: 'address',
+          value: {
+            addressLine1: '2 the street',
+            addressTown: 'Cityville',
+            addressPostcode: 'ZZ09 9ZZ'
+          }
         },
         originKeeperName: {
-          firstName: 'Bob',
-          lastName: 'Barry'
+          type: 'name',
+          value: { firstName: 'Bob', lastName: 'Barry' }
         },
         movementDate: {
-          day: '15',
-          month: '06',
-          year: '2024'
+          type: 'date',
+          value: { day: '15', month: '06', year: '2024' }
         },
-        biosecurityMaps: ['biosecurity-map/S3/path']
+        biosecurityMaps: {
+          type: 'checkbox',
+          value: ['biosecurity-map/S3/path']
+        }
       }
     }
     const { error } = ApplicationSchema.validate(payload)
     expect(error).toBeUndefined()
   })
 
-  it('fails if keyFacts contains invalid structured values', () => {
+  it('fails if a keyFact contains an invalid structured value', () => {
     const payload = {
       journeyId: 'journeyId',
       journeyVersion: { major: 1, minor: 0 },
       sections: [section],
       keyFacts: {
         originAddress: {
-          addressLine1: '2 the street'
-          // missing required addressTown and addressPostcode
+          type: 'address',
+          value: {
+            addressLine1: '2 the street'
+            // missing required addressTown and addressPostcode
+          }
         }
       }
     }
