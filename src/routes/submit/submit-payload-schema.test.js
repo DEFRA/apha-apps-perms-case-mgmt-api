@@ -1221,7 +1221,7 @@ describe('ApplicationSchema - keyFacts field', () => {
           value: { day: '15', month: '06', year: '2024' }
         },
         biosecurityMaps: {
-          type: 'checkbox',
+          type: 'file',
           value: ['biosecurity-map/S3/path']
         }
       }

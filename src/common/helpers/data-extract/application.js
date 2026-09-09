@@ -12,8 +12,13 @@
  * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer | DateAnswer | NumberAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
- * @typedef {{ type: string, value: unknown }} TypedKeyFact
- * @typedef {{ licenceType?: TypedKeyFact, requester?: TypedKeyFact, movementDirection?: TypedKeyFact, additionalInformation?: TypedKeyFact, numberOfCattle?: TypedKeyFact, originCph?: TypedKeyFact, destinationCph?: TypedKeyFact, originAddress?: TypedKeyFact, destinationAddress?: TypedKeyFact, originKeeperName?: TypedKeyFact, destinationKeeperName?: TypedKeyFact, requesterCph?: TypedKeyFact, biosecurityMaps?: TypedKeyFact }} TBKeyFacts
+ * @typedef {{ type: 'text', value: string }} TextKeyFact
+ * @typedef {{ type: 'number', value: number }} NumberKeyFact
+ * @typedef {{ type: 'address', value: Address }} AddressKeyFact
+ * @typedef {{ type: 'name', value: Name }} NameKeyFact
+ * @typedef {{ type: 'file', value: string[] }} FileKeyFact
+ * @typedef { TextKeyFact | NumberKeyFact | AddressKeyFact | NameKeyFact | FileKeyFact } TypedKeyFact
+ * @typedef {{ licenceType?: TypedKeyFact, requester?: TypedKeyFact, movementDirection?: TypedKeyFact, additionalInformation?: TypedKeyFact, numberOfCattle?: TypedKeyFact, originCph?: TypedKeyFact, destinationCph?: TypedKeyFact, originAddress?: TypedKeyFact, destinationAddress?: TypedKeyFact, originKeeperName?: TypedKeyFact, destinationKeeperName?: TypedKeyFact, requesterCph?: TypedKeyFact, biosecurityMaps?: FileKeyFact }} TBKeyFacts
  * @typedef {{ journeyId: string, sections: SectionData[], keyFacts?: TBKeyFacts }} ApplicationData
  */
 

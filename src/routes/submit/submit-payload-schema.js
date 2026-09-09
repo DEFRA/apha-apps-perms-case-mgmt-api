@@ -63,6 +63,15 @@ const SectionSchema = Joi.object({
 
 const KeyFactSchema = Joi.object(TypedValueSchema)
 
+const BiosecurityMapsKeyFactSchema = Joi.object({
+  type: Joi.string().valid('file').required(),
+  value: Joi.array().items(Joi.string()).required()
+})
+
+const KeyFactsSchema = Joi.object({
+  biosecurityMaps: BiosecurityMapsKeyFactSchema.optional()
+}).pattern(Joi.string(), KeyFactSchema)
+
 export const ApplicationSchema = Joi.object({
   journeyId: Joi.string().required(),
   journeyVersion: Joi.object({
@@ -70,5 +79,5 @@ export const ApplicationSchema = Joi.object({
     minor: Joi.number().required()
   }).required(),
   sections: Joi.array().items(SectionSchema).required(),
-  keyFacts: Joi.object().pattern(Joi.string(), KeyFactSchema).optional()
+  keyFacts: KeyFactsSchema.optional()
 }).options({ abortEarly: false })

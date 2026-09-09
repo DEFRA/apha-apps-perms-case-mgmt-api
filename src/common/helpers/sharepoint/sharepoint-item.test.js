@@ -23,7 +23,7 @@ import {
 } from '../../test-helpers/application.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
 
-/** @import { FileAnswer } from '../data-extract/application.js' */
+/** @import { FileAnswer, ApplicationData } from '../data-extract/application.js' */
 
 const mockLoggerWarn = jest.fn()
 
@@ -266,6 +266,7 @@ describe('fields', () => {
 
   describe('keyFacts', () => {
     it('should use legacy approach even when keyFacts exists (soft launch)', () => {
+      /** @type {ApplicationData} */
       const application = {
         journeyId:
           'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
@@ -307,7 +308,7 @@ describe('fields', () => {
           },
           requesterCph: { type: 'text', value: '12/345/0000' },
           biosecurityMaps: {
-            type: 'checkbox',
+            type: 'file',
             value: [
               'biosecurity-map/c79126dd-b3f7-499c-afad-12959fa95ff6/3ec67f40-9a24-41b6-acc7-a7397ae198a9'
             ]
@@ -379,7 +380,7 @@ describe('fields', () => {
       }),
       originKeeperName: createKeyFact('name', { firstName, lastName }),
       requesterCph: createKeyFact('text', originCphNumber),
-      biosecurityMaps: createKeyFact('checkbox', biosecurityMaps)
+      biosecurityMaps: createKeyFact('file', biosecurityMaps)
     })
 
     const createApplication = (sections, keyFacts) => ({

@@ -20,6 +20,7 @@ import { spyOnConfig } from '../../test-helpers/config.js'
 
 /**
  * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
+ * @import {QueuedApplication} from './sharepoint.js'
  */
 
 jest.mock('../../../common/connectors/notify/notify.js')
@@ -426,37 +427,38 @@ describe('SharePoint Handler', () => {
           }
         }
 
-        const mockApplicationWithBothApproaches = {
-          reference: testReferenceNumber,
-          application: {
-            journeyId:
-              'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-            sections: [
-              {
-                title: 'licence',
-                sectionKey: 'licence',
-                questionAnswers: [emailQuestion, fullNameQuestion]
-              },
-              {
-                title: 'biosecurity-map',
-                sectionKey: 'biosecurity-map',
-                questionAnswers: [biosecurityMapQuestion]
-              }
-            ],
-            keyFacts: {
-              licenceType: { type: 'text', value: 'TB16' },
-              movementDirection: { type: 'text', value: 'on' },
-              requesterCph: { type: 'text', value: '12/345/0000' },
-              biosecurityMaps: {
-                type: 'checkbox',
-                value: [
-                  'biosecurity-map/keyfacts-file1.pdf',
-                  'biosecurity-map/keyfacts-file2.pdf'
-                ]
+        const mockApplicationWithBothApproaches =
+          /** @type {QueuedApplication} */ ({
+            reference: testReferenceNumber,
+            application: {
+              journeyId:
+                'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+              sections: [
+                {
+                  title: 'licence',
+                  sectionKey: 'licence',
+                  questionAnswers: [emailQuestion, fullNameQuestion]
+                },
+                {
+                  title: 'biosecurity-map',
+                  sectionKey: 'biosecurity-map',
+                  questionAnswers: [biosecurityMapQuestion]
+                }
+              ],
+              keyFacts: {
+                licenceType: { type: 'text', value: 'TB16' },
+                movementDirection: { type: 'text', value: 'on' },
+                requesterCph: { type: 'text', value: '12/345/0000' },
+                biosecurityMaps: {
+                  type: 'file',
+                  value: [
+                    'biosecurity-map/keyfacts-file1.pdf',
+                    'biosecurity-map/keyfacts-file2.pdf'
+                  ]
+                }
               }
             }
-          }
-        }
+          })
 
         const response = await processApplication(
           mockApplicationWithBothApproaches
