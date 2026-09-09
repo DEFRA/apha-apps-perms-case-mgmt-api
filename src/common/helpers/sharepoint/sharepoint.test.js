@@ -444,13 +444,16 @@ describe('SharePoint Handler', () => {
               }
             ],
             keyFacts: {
-              licenceType: 'TB16',
-              movementDirection: 'on',
-              requesterCph: '12/345/0000',
-              biosecurityMaps: [
-                'biosecurity-map/keyfacts-file1.pdf',
-                'biosecurity-map/keyfacts-file2.pdf'
-              ]
+              licenceType: { type: 'text', value: 'TB16' },
+              movementDirection: { type: 'text', value: 'on' },
+              requesterCph: { type: 'text', value: '12/345/0000' },
+              biosecurityMaps: {
+                type: 'checkbox',
+                value: [
+                  'biosecurity-map/keyfacts-file1.pdf',
+                  'biosecurity-map/keyfacts-file2.pdf'
+                ]
+              }
             }
           }
         }

@@ -12,7 +12,8 @@
  * @typedef { TextAnswer | RadioAnswer | CheckboxAnswer | NameAnswer | AddressAnswer | FileAnswer | DateAnswer | NumberAnswer } AnswerData
  * @typedef {{ question: string, questionKey: string, answer: AnswerData }} QuestionAnswerData
  * @typedef {{ title: string, sectionKey: string, questionAnswers: QuestionAnswerData[]}} SectionData
- * @typedef {{ licenceType?: string, requester?: string, movementDirection?: string, additionalInformation?: string, numberOfCattle?: number, originCph?: string, destinationCph?: string, originAddress?: Address, destinationAddress?: Address, originKeeperName?: Name, destinationKeeperName?: Name, requesterCph?: string, biosecurityMaps?: string[] }} TBKeyFacts
+ * @typedef {{ type: string, value: unknown }} TypedKeyFact
+ * @typedef {{ licenceType?: TypedKeyFact, requester?: TypedKeyFact, movementDirection?: TypedKeyFact, additionalInformation?: TypedKeyFact, numberOfCattle?: TypedKeyFact, originCph?: TypedKeyFact, destinationCph?: TypedKeyFact, originAddress?: TypedKeyFact, destinationAddress?: TypedKeyFact, originKeeperName?: TypedKeyFact, destinationKeeperName?: TypedKeyFact, requesterCph?: TypedKeyFact, biosecurityMaps?: TypedKeyFact }} TBKeyFacts
  * @typedef {{ journeyId: string, sections: SectionData[], keyFacts?: TBKeyFacts }} ApplicationData
  */
 

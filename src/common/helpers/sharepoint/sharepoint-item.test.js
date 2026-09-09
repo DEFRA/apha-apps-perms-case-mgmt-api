@@ -271,29 +271,47 @@ describe('fields', () => {
           'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [],
         keyFacts: {
-          licenceType: 'TB16',
-          requester: 'destination',
-          movementDirection: 'on',
-          additionalInformation: 'additional information notes',
-          numberOfCattle: 1,
-          originCph: '12/345/6789',
-          destinationCph: '12/345/0000',
+          licenceType: { type: 'text', value: 'TB16' },
+          requester: { type: 'text', value: 'destination' },
+          movementDirection: { type: 'text', value: 'on' },
+          additionalInformation: {
+            type: 'text',
+            value: 'additional information notes'
+          },
+          numberOfCattle: { type: 'number', value: 1 },
+          originCph: { type: 'text', value: '12/345/6789' },
+          destinationCph: { type: 'text', value: '12/345/0000' },
           originAddress: {
-            addressLine1: 'New XYZ',
-            addressTown: 'MK',
-            addressPostcode: 'MK5 6AA'
+            type: 'address',
+            value: {
+              addressLine1: 'New XYZ',
+              addressTown: 'MK',
+              addressPostcode: 'MK5 6AA'
+            }
           },
           destinationAddress: {
-            addressLine1: '12 WRONG',
-            addressTown: 'Milton Keynes',
-            addressPostcode: 'MK5 6BB'
+            type: 'address',
+            value: {
+              addressLine1: '12 WRONG',
+              addressTown: 'Milton Keynes',
+              addressPostcode: 'MK5 6BB'
+            }
           },
-          originKeeperName: { firstName: 'Mike', lastName: 'Kilo' },
-          destinationKeeperName: { firstName: 'TEST', lastName: 'USER' },
-          requesterCph: '12/345/0000',
-          biosecurityMaps: [
-            'biosecurity-map/c79126dd-b3f7-499c-afad-12959fa95ff6/3ec67f40-9a24-41b6-acc7-a7397ae198a9'
-          ]
+          originKeeperName: {
+            type: 'name',
+            value: { firstName: 'Mike', lastName: 'Kilo' }
+          },
+          destinationKeeperName: {
+            type: 'name',
+            value: { firstName: 'TEST', lastName: 'USER' }
+          },
+          requesterCph: { type: 'text', value: '12/345/0000' },
+          biosecurityMaps: {
+            type: 'checkbox',
+            value: [
+              'biosecurity-map/c79126dd-b3f7-499c-afad-12959fa95ff6/3ec67f40-9a24-41b6-acc7-a7397ae198a9'
+            ]
+          }
         }
       }
       spyOnConfig('sharepoint', { siteName, folderPath, siteBaseUrl })
@@ -339,28 +357,29 @@ describe('fields', () => {
         additionalInfo(additionalInfoText)
       ])
 
+    const createKeyFact = (type, value) => ({ type, value })
+
     const createKeyFacts = (biosecurityMaps = []) => ({
-      licenceType: 'TB24c',
-      requester: 'origin',
-      movementDirection: 'off',
-      additionalInformation: additionalInfoText,
-      numberOfCattle: 62,
-      originCph: originCphNumber,
-      destinationCph: destinationCphNumber,
-      originAddress: {
+      licenceType: createKeyFact('text', 'TB24c'),
+      requester: createKeyFact('text', 'origin'),
+      movementDirection: createKeyFact('text', 'off'),
+      additionalInformation: createKeyFact('text', additionalInfoText),
+      numberOfCattle: createKeyFact('number', 62),
+      originCph: createKeyFact('text', originCphNumber),
+      destinationCph: createKeyFact('text', destinationCphNumber),
+      originAddress: createKeyFact('address', {
         addressLine1: originAddressLine1,
         addressTown: originAddressTown,
         addressPostcode: originAddressPostcode
-      },
-      destinationAddress: {
+      }),
+      destinationAddress: createKeyFact('address', {
         addressLine1: destinationAddressLine1,
         addressTown: destinationAddressTown,
         addressPostcode: destinationAddressPostcode
-      },
-      originKeeperName: { firstName, lastName },
-      destinationKeeperName: undefined,
-      requesterCph: originCphNumber,
-      biosecurityMaps
+      }),
+      originKeeperName: createKeyFact('name', { firstName, lastName }),
+      requesterCph: createKeyFact('text', originCphNumber),
+      biosecurityMaps: createKeyFact('checkbox', biosecurityMaps)
     })
 
     const createApplication = (sections, keyFacts) => ({
