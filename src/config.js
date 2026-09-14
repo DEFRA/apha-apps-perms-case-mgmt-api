@@ -303,6 +303,12 @@ const config = convict({
       format: Boolean,
       default: false,
       env: 'STUB_MODE_ENABLED'
+    },
+    caseManagementIntegrationEnabled: {
+      doc: 'Feature flag to enable the Case Management integration',
+      format: Boolean,
+      default: !isProduction,
+      env: 'CASE_MANAGEMENT_INTEGRATION_ENABLED'
     }
   },
   sharepoint: {
@@ -359,6 +365,39 @@ const config = convict({
       default: 'Digital Applications/TB25',
       nullable: true,
       env: 'SHAREPOINT_TB25_FOLDER_PATH'
+    }
+  },
+  integrationBridge: {
+    baseUrl: {
+      doc: 'Integration Bridge base URL',
+      format: String,
+      default: 'http://localhost:5676',
+      env: 'INTEGRATION_BRIDGE_URL'
+    },
+    tokenUrl: {
+      doc: 'Integration Bridge OAuth token URL',
+      format: String,
+      default: 'http://localhost:5676/oauth2/token',
+      env: 'INTEGRATION_BRIDGE_TOKEN_URL'
+    },
+    clientId: {
+      doc: 'Integration Bridge client ID',
+      format: String,
+      default: '',
+      env: 'INTEGRATION_BRIDGE_CLIENT_ID'
+    },
+    clientSecret: {
+      doc: 'Integration Bridge client secret',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'INTEGRATION_BRIDGE_CLIENT_SECRET'
+    },
+    timeout: {
+      doc: 'Timeout for Integration Bridge requests in milliseconds',
+      format: Number,
+      default: 30_000,
+      env: 'INTEGRATION_BRIDGE_TIMEOUT'
     }
   }
 })

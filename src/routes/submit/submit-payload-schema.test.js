@@ -93,12 +93,17 @@ const section = {
 const validPayload = {
   journeyId: 'journeyId',
   journeyVersion: { major: 1, minor: 0 },
-  sections: [section]
+  sections: [section],
+  keyFacts: { licenceType: { type: 'text', value: 'TB15' } }
 }
 
 const missingSectionsPayload = {
   journeyId: 'journeyId',
   journeyVersion: { major: 1, minor: 0 }
+}
+
+const validKeyFacts = {
+  licenceType: { type: 'text', value: 'TB15' }
 }
 
 describe('ApplicationSchema - answer types', () => {
@@ -113,7 +118,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [textQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -138,7 +144,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [emptyTextQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -212,7 +219,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [checkboxQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -237,7 +245,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [emptyCheckboxQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -311,7 +320,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [radioQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -385,7 +395,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [fileQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -410,7 +421,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [fileSkippedNoPath]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payloadSkippedNoPath)
       expect(error).toBeUndefined()
@@ -463,7 +475,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [fileNotSkippedWithPath]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error: errorNotSkippedWithPath } = ApplicationSchema.validate(
         payloadNotSkippedWithPath
@@ -595,7 +608,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [addressQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -624,7 +638,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [incompleteAddressQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
@@ -661,7 +676,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [addressWithMissingOptionalFields]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -679,7 +695,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [nameQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -788,7 +805,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [nameMissingBoth]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeDefined()
@@ -841,7 +859,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [dateQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -968,7 +987,8 @@ describe('ApplicationSchema - answer types', () => {
             title: 'Section Title',
             questionAnswers: [numberQuestion]
           }
-        ]
+        ],
+        keyFacts: validKeyFacts
       }
       const { error } = ApplicationSchema.validate(payload)
       expect(error).toBeUndefined()
@@ -1185,14 +1205,31 @@ describe('ApplicationSchema - section and question structure', () => {
 })
 
 describe('ApplicationSchema - keyFacts field', () => {
-  it('accepts a valid payload without keyFacts field', () => {
+  it('fails if keyFacts field is missing', () => {
     const payload = {
       journeyId: 'journeyId',
       journeyVersion: { major: 1, minor: 0 },
       sections: [section]
     }
     const { error } = ApplicationSchema.validate(payload)
-    expect(error).toBeUndefined()
+    expect(error).toBeDefined()
+    expect(error?.details[0].message).toEqual('"keyFacts" is required')
+  })
+
+  it('fails if a keyFact has a type that is not allowed', () => {
+    const payload = {
+      journeyId: 'journeyId',
+      journeyVersion: { major: 1, minor: 0 },
+      sections: [section],
+      keyFacts: {
+        licenceType: { type: 'notAllowedType', value: 'TB15' }
+      }
+    }
+    const { error } = ApplicationSchema.validate(payload)
+    expect(error).toBeDefined()
+    expect(error?.details[0].message).toEqual(
+      '"keyFacts.licenceType.type" must be one of [file, text, radio, address, checkbox, name, date, number]'
+    )
   })
 
   it('accepts a valid payload with typed keyFacts', () => {

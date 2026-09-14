@@ -1,7 +1,7 @@
 import { Application } from './application.js'
 
 /**
- * @import {RadioAnswer, TextAnswer} from './application.js'
+ * @import {RadioAnswer, TextAnswer, Name} from './application.js'
  */
 
 export class TbApplication extends Application {
@@ -16,11 +16,20 @@ export class TbApplication extends Application {
     return emailAddress || destinationEmail || ''
   }
 
-  get applicantName() {
+  /** @returns {Name | undefined} */
+  get applicantNameParts() {
     const section = this.get('licence')
-    const yourName = section?.get('yourName')?.answer.displayText
-    const fullName = section?.get('fullName')?.answer.displayText
-    return yourName || fullName || ''
+    return /** @type {Name | undefined} */ (
+      section?.get('yourName')?.answer.value ||
+        section?.get('fullName')?.answer.value
+    )
+  }
+
+  get applicantName() {
+    const { firstName, lastName } = this.applicantNameParts ?? {}
+    return firstName || lastName
+      ? `${firstName ?? ''} ${lastName ?? ''}`.trim()
+      : ''
   }
 
   isTbRestricted(premesisType) {

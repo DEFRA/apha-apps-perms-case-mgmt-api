@@ -79,5 +79,5 @@ export const ApplicationSchema = Joi.object({
     minor: Joi.number().required()
   }).required(),
   sections: Joi.array().items(SectionSchema).required(),
-  keyFacts: KeyFactsSchema.optional()
+  keyFacts: KeyFactsSchema.required()
 }).options({ abortEarly: false })
