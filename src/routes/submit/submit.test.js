@@ -5,6 +5,7 @@ import { spyOnConfig } from '../../common/test-helpers/config.js'
 import { sharePointApplicationHandler } from '../../common/helpers/sharepoint/sharepoint.js'
 import { emailApplicationHandler } from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
+import { caseManagementApplicationHandler } from '../../common/helpers/case-management/case-management.js'
 
 const testReferenceNumber = 'TB-1234-5678'
 
@@ -27,6 +28,9 @@ jest.mock('../../common/helpers/email/email.js', () => ({
 jest.mock('../../common/helpers/stub-mode/stub-mode.js', () => ({
   stubModeApplicationHandler: jest.fn()
 }))
+jest.mock('../../common/helpers/case-management/case-management.js', () => ({
+  caseManagementApplicationHandler: jest.fn()
+}))
 
 const mockIsValidRequest = /** @type {jest.Mock} */ (isValidRequest)
 const mockIsValidPayload = /** @type {jest.Mock} */ (isValidPayload)
@@ -38,6 +42,9 @@ const mockEmailApplicationHandler = /** @type {jest.Mock} */ (
 )
 const mockStubModeApplicationHandler = /** @type {jest.Mock} */ (
   stubModeApplicationHandler
+)
+const mockCaseManagementApplicationHandler = /** @type {jest.Mock} */ (
+  caseManagementApplicationHandler
 )
 
 const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
@@ -192,6 +199,27 @@ describe('submit route', () => {
     expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
   })
 
+  it('should call both sharePointApplicationHandler and caseManagementApplicationHandler when both are enabled', async () => {
+    spyOnConfig('featureFlags', {
+      sharepointIntegrationEnabled: true,
+      sharepointBackupEnabled: false,
+      caseManagementIntegrationEnabled: true
+    })
+    mockSharePointApplicationHandler.mockResolvedValue({})
+    mockCaseManagementApplicationHandler.mockResolvedValue({})
+
+    await handler(mockRequest, mockResponse)
+
+    expect(sharePointApplicationHandler).toHaveBeenCalled()
+    expect(caseManagementApplicationHandler).toHaveBeenCalled()
+    expect(emailApplicationHandler).not.toHaveBeenCalled()
+
+    expect(mockResponse.response).toHaveBeenCalledWith({
+      message: testReferenceNumber
+    })
+    expect(mockResponse.code).toHaveBeenCalledWith(statusCodes.ok)
+  })
+
   it('should return error and status code if handler returns an error', async () => {
     const errorResponse = {
       error: { errorCode: 'SOME_ERROR', statusCode: 500 }
@@ -209,6 +237,33 @@ describe('submit route', () => {
 
     expect(mockResponse.response).toHaveBeenCalledWith({
       error: 'SOME_ERROR'
+    })
+    expect(mockResponse.code).toHaveBeenCalledWith(500)
+  })
+
+  it('should log each integration that fails when both sharePoint and caseManagement are enabled', async () => {
+    spyOnConfig('featureFlags', {
+      sharepointIntegrationEnabled: true,
+      sharepointBackupEnabled: false,
+      caseManagementIntegrationEnabled: true
+    })
+    mockSharePointApplicationHandler.mockResolvedValue({
+      error: { errorCode: 'SHAREPOINT_ERROR', statusCode: 500 }
+    })
+    mockCaseManagementApplicationHandler.mockResolvedValue({
+      error: { errorCode: 'CASE_MANAGEMENT_ERROR', statusCode: 500 }
+    })
+
+    await handler(mockRequest, mockResponse)
+
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.stringContaining('sharePoint handler failed')
+    )
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.stringContaining('caseManagement handler failed')
+    )
+    expect(mockResponse.response).toHaveBeenCalledWith({
+      error: 'SHAREPOINT_ERROR'
     })
     expect(mockResponse.code).toHaveBeenCalledWith(500)
   })

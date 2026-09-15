@@ -42,6 +42,9 @@ const licenceSectionWithMissingEmailAndFullName = {
   ...validLicenceSection,
   questionAnswers: []
 }
+const validKeyFacts = {
+  licenceType: { type: 'text', value: 'TB15' }
+}
 
 describe('submit-validation', () => {
   afterEach(jest.clearAllMocks)
@@ -90,7 +93,8 @@ describe('submit-validation', () => {
           journeyId:
             'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
           journeyVersion: { major: 1, minor: 0 },
-          sections: [validLicenceSection]
+          sections: [validLicenceSection],
+          keyFacts: validKeyFacts
         }
       }
       const result = isValidPayload(mockRequest)
@@ -105,7 +109,8 @@ describe('submit-validation', () => {
           journeyId:
             'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
           journeyVersion: { major: 1, minor: 0 },
-          sections: [licenceSectionWithMissingEmail]
+          sections: [licenceSectionWithMissingEmail],
+          keyFacts: validKeyFacts
         }
       }
       const result = isValidPayload(mockRequest)
@@ -121,7 +126,8 @@ describe('submit-validation', () => {
         payload: {
           journeyId: 'journeyId',
           journeyVersion: { major: 1, minor: 0 },
-          sections: [licenceSectionWithMissingFullName]
+          sections: [licenceSectionWithMissingFullName],
+          keyFacts: validKeyFacts
         }
       }
       const result = isValidPayload(mockRequest)
@@ -137,7 +143,8 @@ describe('submit-validation', () => {
         payload: {
           journeyId: 'journeyId',
           journeyVersion: { major: 1, minor: 0 },
-          sections: [licenceSectionWithMissingEmailAndFullName]
+          sections: [licenceSectionWithMissingEmailAndFullName],
+          keyFacts: validKeyFacts
         }
       }
       const result = isValidPayload(mockRequest)
@@ -163,7 +170,7 @@ describe('submit-validation', () => {
       expect(validateMock).toHaveBeenCalled()
       expect(result).toBe(false)
       expect(mockRequest.logger.warn).toHaveBeenCalledWith(
-        'Schema validation failed: "journeyId" is required, "journeyVersion" is required, "sections" is required.'
+        'Schema validation failed: "journeyId" is required, "journeyVersion" is required, "sections" is required, "keyFacts" is required.'
       )
     })
   })

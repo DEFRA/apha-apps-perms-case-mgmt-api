@@ -16,6 +16,7 @@ import {
 } from '../../../common/connectors/notify/notify.js'
 import { statusCodes } from '../../constants/status-codes.js'
 import { escapeMarkdown } from '../escape-text.js'
+import { getApplicantDetails } from '../applicant-details.js'
 
 /**
  * @import {FileAnswer} from '../../../common/helpers/data-extract/application.js'
@@ -76,8 +77,8 @@ const sendEmails = async (request, reference, linkToFile) => {
   const application = createApplication(request.payload)
 
   // Send emails to case worker and applicant
-  const applicantEmail = application.emailAddress
-  const applicantFullName = application.applicantName
+  const { emailAddress: applicantEmail, fullName: applicantFullName } =
+    getApplicantDetails(application)
 
   const caseWorkerEmailContent = generateEmailContent(
     request.payload,
@@ -94,7 +95,7 @@ const sendEmails = async (request, reference, linkToFile) => {
 
   await sendEmailToApplicant(
     {
-      email: applicantEmail ?? '',
+      email: applicantEmail,
       fullName: escapeMarkdown(applicantFullName) ?? '',
       reference: reference ?? ''
     },

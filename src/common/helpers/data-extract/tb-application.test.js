@@ -39,8 +39,8 @@ const FULL_NAME_QUESTION = {
   question: 'Full name',
   questionKey: 'fullName',
   answer: {
-    type: /** @type {'text'} */ ('text'),
-    value: 'John Doe',
+    type: /** @type {'name'} */ ('name'),
+    value: { firstName: 'John', lastName: 'Doe' },
     displayText: 'John Doe'
   }
 }
@@ -49,8 +49,8 @@ const YOUR_NAME_QUESTION = {
   question: 'Your name',
   questionKey: 'yourName',
   answer: {
-    type: /** @type {'text'} */ ('text'),
-    value: 'Jane Smith',
+    type: /** @type {'name'} */ ('name'),
+    value: { firstName: 'Jane', lastName: 'Smith' },
     displayText: 'Jane Smith'
   }
 }
@@ -276,6 +276,62 @@ describe('TbApplication', () => {
       const application = new TbApplication(applicationData)
 
       expect(application.applicantName).toBe('')
+    })
+  })
+
+  describe('applicantNameParts', () => {
+    it('should return yourName parts when both yourName and fullName exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [YOUR_NAME_QUESTION, FULL_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantNameParts).toEqual({
+        firstName: 'Jane',
+        lastName: 'Smith'
+      })
+    })
+
+    it('should return fullName parts when yourName does not exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: [FULL_NAME_QUESTION]
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantNameParts).toEqual({
+        firstName: 'John',
+        lastName: 'Doe'
+      })
+    })
+
+    it('should return undefined when neither yourName nor fullName exist', () => {
+      const applicationData = {
+        ...BASE_APPLICATION_DATA,
+        sections: [
+          {
+            ...LICENCE_SECTION_BASE,
+            questionAnswers: []
+          }
+        ]
+      }
+
+      const application = new TbApplication(applicationData)
+
+      expect(application.applicantNameParts).toBeUndefined()
     })
   })
 

@@ -40,7 +40,7 @@ export class Application {
    * @returns {Section | undefined}
    */
   get(sectionKey) {
-    const sectionData = this._data.sections.find(
+    const sectionData = this._data.sections?.find(
       (section) => section.sectionKey === sectionKey
     )
 
@@ -53,6 +53,21 @@ export class Application {
 
   get emailConfig() {
     return config.get('notify')?.[this.configKey]
+  }
+
+  /** @returns {string | undefined} */
+  get emailAddress() {
+    return undefined
+  }
+
+  /** @returns {string | undefined} */
+  get applicantName() {
+    return undefined
+  }
+
+  /** @returns {{ firstName?: string, lastName?: string } | undefined} */
+  get applicantNameParts() {
+    return undefined
   }
 
   getNewReference() {
