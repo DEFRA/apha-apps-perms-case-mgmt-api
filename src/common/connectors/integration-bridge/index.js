@@ -65,7 +65,7 @@ export async function sendToCaseManagement(payload, reference) {
     }
   }
 
-  return await postCase(completePayload, response.access_token, configValues)
+  return postCase(completePayload, response.access_token, configValues)
 }
 
 /**
@@ -75,7 +75,7 @@ export async function sendToCaseManagement(payload, reference) {
  * @returns {Promise<unknown>}
  */
 const postCase = async (payload, accessToken, configValues) => {
-  return await post(
+  return post(
     `${configValues.baseUrl}/case-management/case`,
     payload,
     {
