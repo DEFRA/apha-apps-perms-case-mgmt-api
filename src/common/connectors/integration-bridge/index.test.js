@@ -1,7 +1,6 @@
 import Wreck from '@hapi/wreck'
-import { config } from '../../../config.js'
-
 import { sendToCaseManagement } from './index.js'
+import { spyOnConfig } from '../../test-helpers/config.js'
 
 describe('Integration bridge API', () => {
   const CONFIG_VALUES = {
@@ -49,8 +48,6 @@ describe('Integration bridge API', () => {
   }
   const TEST_REFERENCE = 'APP-123'
 
-  const originalConfigGet = config.get.bind(config)
-
   /**
    * @param {number} statusCode
    * @param {any} payload
@@ -72,12 +69,7 @@ describe('Integration bridge API', () => {
    */
   beforeEach(() => {
     jest.restoreAllMocks()
-    jest.spyOn(config, 'get').mockImplementation((name) => {
-      if (name === 'integrationBridge') {
-        return CONFIG_VALUES
-      }
-      return originalConfigGet(name)
-    })
+    spyOnConfig('integrationBridge', CONFIG_VALUES)
   })
 
   afterEach(() => {
