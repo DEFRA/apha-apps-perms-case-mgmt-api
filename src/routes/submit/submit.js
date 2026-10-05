@@ -93,9 +93,9 @@ const runHandlers = async (application, reference, featureFlags, logger) => {
   } else {
     try {
       if (runEmailBackup) {
-        return emailApplicationHandler(application, reference)
+        return await emailApplicationHandler(application, reference)
       } else {
-        return sendApplicantConfirmationEmail(application, reference)
+        return await sendApplicantConfirmationEmail(application, reference)
       }
     } catch (error) {
       logger.error(`Failed to send email to applicant: ${error.message}`)
