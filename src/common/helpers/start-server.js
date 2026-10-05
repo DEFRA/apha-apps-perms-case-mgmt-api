@@ -22,7 +22,9 @@ async function startServer() {
     )
 
     if (config.get('featureFlags').sharepointIntegrationEnabled) {
-      startSQSQueuePolling()
+      startSQSQueuePolling().catch((error) => {
+        server.logger.error(`SQS queue polling stopped unexpectedly: ${error}`)
+      })
       server.logger.info('SQS queue polling started')
 
       server.events.on('stop', () => {

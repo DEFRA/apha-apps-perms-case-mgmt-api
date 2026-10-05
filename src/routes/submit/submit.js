@@ -4,8 +4,10 @@ import { createApplication } from '../../common/helpers/data-extract/data-extrac
 import { TbApplication } from '../../common/helpers/data-extract/tb-application.js'
 import { config } from '../../config.js'
 import { queueApplication } from '../../common/helpers/queue/queue.js'
-import { sendApplicantConfirmationEmail } from '../../common/helpers/email/email.js'
-import { emailApplicationHandler } from '../../common/helpers/email/email.js'
+import {
+  emailApplicationHandler,
+  sendApplicantConfirmationEmail
+} from '../../common/helpers/email/email.js'
 import { stubModeApplicationHandler } from '../../common/helpers/stub-mode/stub-mode.js'
 
 /** @import { Logger} from 'pino' */

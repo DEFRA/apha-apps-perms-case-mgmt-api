@@ -1,5 +1,5 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // inside tests, import.meta.url is undefined - a fallback
 // to __filename is needed there

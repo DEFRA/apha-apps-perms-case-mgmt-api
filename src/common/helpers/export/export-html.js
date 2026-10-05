@@ -1,6 +1,6 @@
 import { escapeJsonValues } from '../escape-text.js'
 import { readFileSync } from 'node:fs'
-import path from 'path'
+import path from 'node:path'
 import { srcFolder } from '../path-utils.js'
 
 /**

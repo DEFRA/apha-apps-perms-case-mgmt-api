@@ -83,55 +83,60 @@ export const closeSQSConsumerClient = () => consumerClient.destroy()
  * @param {Message} message
  */
 const processApplicationAndAcknowledge = async (message) => {
-  if (message?.Body) {
+  if (!message?.Body) {
+    return
+  }
+
+  let queuedApplicationData
+  let application
+  try {
+    queuedApplicationData = /** @type {QueuedApplication} */ (
+      JSON.parse(message.Body)
+    )
+    application = createApplication(queuedApplicationData.application)
+  } catch (error) {
+    logger.error(`Error processing message from SQS: ${error}`)
+    return
+  }
+
+  const featureFlags = config.get('featureFlags')
+  const reference = queuedApplicationData.reference
+  let processingFailed = false
+
+  if (featureFlags.sharepointIntegrationEnabled) {
     try {
-      const queuedApplicationData = /** @type {QueuedApplication} */ (
-        JSON.parse(message.Body)
+      await processApplicationSharepoint(application, reference)
+      logger.info(
+        `Application processed successfully into Sharepoint: ${reference}`
       )
-      const application = createApplication(queuedApplicationData.application)
-      const reference = queuedApplicationData.reference
-
-      const featureFlags = config.get('featureFlags')
-      let processingFailed = false
-
-      if (featureFlags.sharepointIntegrationEnabled) {
-        try {
-          await processApplicationSharepoint(application, reference)
-          logger.info(
-            `Application processed successfully into Sharepoint: ${reference}`
-          )
-        } catch (error) {
-          processingFailed = true
-          logger.error(`Error processing application into SharePoint: ${error}`)
-        }
-      }
-      if (featureFlags.caseManagementIntegrationEnabled) {
-        try {
-          await processApplicationCaseManagement(application, reference)
-          logger.info(
-            `Application processed successfully into Case Management: ${reference}`
-          )
-        } catch (error) {
-          processingFailed = true
-          logger.error(
-            `Error processing application into Case Management: ${error}`
-          )
-        }
-      }
-
-      if (processingFailed) {
-        return
-      }
-
-      try {
-        await deleteMessageFromSQS(message)
-        logger.info(`Application deleted from the queue: ${reference}`)
-      } catch (error) {
-        logger.error(`Error deleting message from SQS: ${error}`)
-      }
     } catch (error) {
-      logger.error(`Error processing message from SQS: ${error}`)
+      processingFailed = true
+      logger.error(`Error processing application into SharePoint: ${error}`)
     }
+  }
+  if (featureFlags.caseManagementIntegrationEnabled) {
+    try {
+      await processApplicationCaseManagement(application, reference)
+      logger.info(
+        `Application processed successfully into Case Management: ${reference}`
+      )
+    } catch (error) {
+      processingFailed = true
+      logger.error(
+        `Error processing application into Case Management: ${error}`
+      )
+    }
+  }
+
+  if (processingFailed) {
+    return
+  }
+
+  try {
+    await deleteMessageFromSQS(message)
+    logger.info(`Application deleted from the queue: ${reference}`)
+  } catch (error) {
+    logger.error(`Error deleting message from SQS: ${error}`)
   }
 }
 
