@@ -84,8 +84,6 @@ describe('Integration bridge API', () => {
         .mockResolvedValueOnce(mockTokenResponse())
         .mockResolvedValueOnce(createMockResponse(200, { caseId: 'CASE-123' }))
 
-      console.log(TEST_APPLICATION.data)
-
       const result = await sendToCaseManagement(
         TEST_APPLICATION,
         TEST_REFERENCE
