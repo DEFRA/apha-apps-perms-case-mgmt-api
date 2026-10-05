@@ -3,6 +3,7 @@ import {
   sendEmailToApplicant,
   sendEmailToCaseWorker
 } from '../../../common/connectors/notify/notify.js'
+import { createApplication } from '../data-extract/data-extract.js'
 import { statusCodes } from '../../../common/constants/status-codes.js'
 import {
   compressFile,
@@ -64,42 +65,32 @@ const fileQuestion = {
   }
 }
 
-const mockLogger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
+const mockApplication = createApplication({
+  journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+  sections: [
+    {
+      section: 'licence',
+      sectionKey: 'licence',
+      questionAnswers: [emailQuestion, fullNameQuestion]
+    }
+  ]
+})
 
-const mockRequest = {
-  logger: mockLogger,
-  payload: {
-    journeyId:
-      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-    sections: [
-      {
-        section: 'licence',
-        sectionKey: 'licence',
-        questionAnswers: [emailQuestion, fullNameQuestion]
-      }
-    ]
-  }
-}
-
-const mockRequestWithFile = {
-  logger: mockLogger,
-  payload: {
-    journeyId:
-      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-    sections: [
-      {
-        section: 'licence',
-        sectionKey: 'licence',
-        questionAnswers: [emailQuestion, fullNameQuestion]
-      },
-      {
-        section: 'biosecurity-map',
-        sectionKey: 'biosecurity-map',
-        questionAnswers: [fileQuestion]
-      }
-    ]
-  }
-}
+const mockApplicationWithFile = createApplication({
+  journeyId: 'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+  sections: [
+    {
+      section: 'licence',
+      sectionKey: 'licence',
+      questionAnswers: [emailQuestion, fullNameQuestion]
+    },
+    {
+      section: 'biosecurity-map',
+      sectionKey: 'biosecurity-map',
+      questionAnswers: [fileQuestion]
+    }
+  ]
+})
 
 const mockFile = {
   file: 'mock-file',
@@ -117,7 +108,7 @@ describe('emailApplicationHandler', () => {
     mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 12 })
 
     const response = await emailApplicationHandler(
-      mockRequestWithFile,
+      mockApplicationWithFile,
       testReferenceNumber
     )
     expect(response).toEqual({
@@ -134,7 +125,7 @@ describe('emailApplicationHandler', () => {
     mockCompressFile.mockResolvedValue(mockFileData)
 
     const response = await emailApplicationHandler(
-      mockRequestWithFile,
+      mockApplicationWithFile,
       testReferenceNumber
     )
     expect(response).toEqual({
@@ -149,7 +140,7 @@ describe('emailApplicationHandler', () => {
     mockFetchFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
 
     const response = await emailApplicationHandler(
-      mockRequestWithFile,
+      mockApplicationWithFile,
       testReferenceNumber
     )
     expect(mockCompressFile).not.toHaveBeenCalled()
@@ -176,7 +167,7 @@ describe('emailApplicationHandler', () => {
     mockCompressFile.mockResolvedValue({ ...mockFile, fileSizeInMB: 1 })
 
     const response = await emailApplicationHandler(
-      mockRequestWithFile,
+      mockApplicationWithFile,
       testReferenceNumber
     )
     expect(mockCompressFile).toHaveBeenCalled()
@@ -200,7 +191,7 @@ describe('emailApplicationHandler', () => {
 
   it('should only call sendEmailToCaseWorker (without link) and sendEmailToApplicant if no biosecurity map provided', async () => {
     const response = await emailApplicationHandler(
-      mockRequest,
+      mockApplication,
       testReferenceNumber
     )
 

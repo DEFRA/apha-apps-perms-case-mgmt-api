@@ -112,7 +112,7 @@ export class TbApplication extends Application {
   /**
    * @return {string} The CPH number of the requester
    */
-  get requesterCphNumber() {
+  get requesterCph() {
     const origin = this.get('origin')
     const destination = this.get('destination')
 

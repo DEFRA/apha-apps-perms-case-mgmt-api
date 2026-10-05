@@ -1,10 +1,9 @@
 import { config } from '../../../config.js'
 import { getFileExtension } from '../file/file-utils.js'
-import { createApplication } from '../data-extract/data-extract.js'
 import { escapeMarkdown } from '../escape-text.js'
 
 /**
- * @import {ApplicationData} from '../data-extract/application.js'
+ * @import {Application} from '../data-extract/application.js'
  * @import {FileData} from '../file/file-utils.js'
  */
 
@@ -13,11 +12,11 @@ import { escapeMarkdown } from '../escape-text.js'
  */
 
 /**
- * @param {ApplicationData} payload
+ * @param {Application} application
  * @param {string} reference
  * @returns {string}
  */
-export const generateEmailContent = (payload, reference) => {
+export const generateEmailContent = (application, reference) => {
   /**
    * @type {string[]}
    */
@@ -29,7 +28,7 @@ export const generateEmailContent = (payload, reference) => {
   lines.push('')
   lines.push('---')
 
-  Object.values(payload.sections).forEach((section) => {
+  Object.values(application.sections).forEach((section) => {
     lines.push(`# ${section.title}`)
     lines.push('')
     lines.push('---')
@@ -45,19 +44,18 @@ export const generateEmailContent = (payload, reference) => {
 }
 
 /**
- * @param {ApplicationData} applicationData
+ * @param {Application} application
  * @param {string} reference
  * @param {string} link
  * @returns {string}
  */
 export const generateSharepointNotificationContent = (
-  applicationData,
+  application,
   reference,
   link
 ) => {
-  const application = createApplication(applicationData)
   const licenceType = application.licenceType
-  const cphOfRequester = escapeMarkdown(application.requesterCphNumber)
+  const cphOfRequester = escapeMarkdown(application.requesterCph ?? '')
 
   const section = application.get('licence')
   const yourName = section?.get('yourName')?.answer.displayText
@@ -73,7 +71,7 @@ export const generateSharepointNotificationContent = (
     `A Bovine TB licence application has been received with the following details:`
   )
   lines.push('## Licence type:')
-  lines.push(licenceType ?? '')
+  lines.push(licenceType?.toString() ?? '')
   lines.push('## CPH of requester:')
   lines.push(cphOfRequester ?? '')
   lines.push('## Name of requester:')

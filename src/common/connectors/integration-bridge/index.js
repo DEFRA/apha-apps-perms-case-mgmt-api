@@ -1,7 +1,8 @@
 import Wreck from '@hapi/wreck'
 import { config } from '../../../config.js'
-import { createApplication } from '../../helpers/data-extract/data-extract.js'
 import { getApplicantDetails } from '../../helpers/applicant-details.js'
+
+/** @import {Application} from '../../helpers/data-extract/application.js' */
 
 const MINIMUM_ERROR_STATUS_CODE = 400
 
@@ -44,19 +45,18 @@ const getAccessToken = async ({
 }
 
 /**
- * @param {object} payload
+ * @param {Application} application
  * @param {string} reference
  */
-export async function sendToCaseManagement(payload, reference) {
+export async function sendToCaseManagement(application, reference) {
   const configValues = config.get('integrationBridge')
 
   const response = await getAccessToken(configValues)
 
-  const application = createApplication(payload)
   const { emailAddress, firstName, lastName } = getApplicantDetails(application)
 
   const completePayload = {
-    ...payload,
+    ...application.data,
     applicationReferenceNumber: reference,
     applicant: {
       type: 'guest',

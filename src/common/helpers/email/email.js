@@ -2,10 +2,7 @@ import {
   compressFile,
   fetchFile
 } from '../../../common/helpers/file/file-utils.js'
-import {
-  createApplication,
-  getQuestionFromSections
-} from '../../../common/helpers/data-extract/data-extract.js'
+import { getQuestionFromSections } from '../../../common/helpers/data-extract/data-extract.js'
 import {
   generateEmailContent,
   getFileProps
@@ -19,23 +16,23 @@ import { escapeMarkdown } from '../escape-text.js'
 import { getApplicantDetails } from '../applicant-details.js'
 
 /**
- * @import {FileAnswer} from '../../../common/helpers/data-extract/application.js'
+ * @import {FileAnswer, Application} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
  */
 
 /**
- * @param {object} request
+ * @param {Application} application
  * @param {string} reference
  * @returns {Promise<void|HandlerError>}
  */
-export const emailApplicationHandler = async (request, reference) => {
+export const emailApplicationHandler = async (application, reference) => {
   // Upload the biosecurity map if it exists
   let linkToFile = null
   const fileAnswer = /** @type {FileAnswer} */ (
     getQuestionFromSections(
       'upload-plan',
       'biosecurity-map',
-      request.payload?.sections
+      application.sections
     )?.answer
   )
 
@@ -54,7 +51,7 @@ export const emailApplicationHandler = async (request, reference) => {
     let compressedFileData = null
 
     if (fileData.fileSizeInMB > 2) {
-      compressedFileData = await compressFile(fileData, request)
+      compressedFileData = await compressFile(fileData, application)
 
       if (compressedFileData.fileSizeInMB > 2) {
         return {
@@ -69,29 +66,21 @@ export const emailApplicationHandler = async (request, reference) => {
     linkToFile = getFileProps(compressedFileData ?? fileData)
   }
 
-  await sendEmails(request, reference, linkToFile)
+  await sendEmails(application, reference, linkToFile)
   return undefined
 }
 
-const sendEmails = async (request, reference, linkToFile) => {
-  const application = createApplication(request.payload)
-
-  // Send emails to case worker and applicant
+/**
+ * @param {Application} application
+ * @param {string} reference
+ * @returns {Promise<void>}
+ */
+export const sendApplicantConfirmationEmail = async (
+  application,
+  reference
+) => {
   const { emailAddress: applicantEmail, fullName: applicantFullName } =
     getApplicantDetails(application)
-
-  const caseWorkerEmailContent = generateEmailContent(
-    request.payload,
-    reference
-  )
-
-  await sendEmailToCaseWorker(
-    {
-      content: escapeMarkdown(caseWorkerEmailContent),
-      ...(linkToFile ? { link_to_file: linkToFile } : {})
-    },
-    application.emailConfig.caseDelivery
-  )
 
   await sendEmailToApplicant(
     {
@@ -101,4 +90,18 @@ const sendEmails = async (request, reference, linkToFile) => {
     },
     application.emailConfig.applicantConfirmation
   )
+}
+
+const sendEmails = async (application, reference, linkToFile) => {
+  const caseWorkerEmailContent = generateEmailContent(application, reference)
+
+  await sendEmailToCaseWorker(
+    {
+      content: escapeMarkdown(caseWorkerEmailContent),
+      ...(linkToFile ? { link_to_file: linkToFile } : {})
+    },
+    application.emailConfig.caseDelivery
+  )
+
+  await sendApplicantConfirmationEmail(application, reference)
 }

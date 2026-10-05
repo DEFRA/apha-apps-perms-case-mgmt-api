@@ -1,8 +1,9 @@
 /** @import {HandlerError} from '../../../common/helpers/types.js' */
+/** @import {Application} from '../../../common/helpers/data-extract/application.js' */
 
 /**
- * @param {object} _request
+ * @param {Application} _application
  * @param {string} _reference
  * @returns {Promise<void|HandlerError>}
  */
-export const stubModeApplicationHandler = async (_request, _reference) => {}
+export const stubModeApplicationHandler = async (_application, _reference) => {}

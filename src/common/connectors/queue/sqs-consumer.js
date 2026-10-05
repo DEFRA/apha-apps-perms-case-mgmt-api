@@ -4,10 +4,14 @@ import {
   DeleteMessageCommand
 } from '@aws-sdk/client-sqs'
 import { config } from '../../../config.js'
-import { processApplication } from '../../helpers/sharepoint/sharepoint.js'
+import { processApplication as processApplicationSharepoint } from '../../helpers/sharepoint/sharepoint.js'
+import { processApplication as processApplicationCaseManagement } from '../../helpers/case-management/case-management.js'
 import { createLogger } from '../../helpers/logging/logger.js'
 import { Agent } from 'node:https'
 import CacheableLookup from 'cacheable-lookup'
+import { createApplication } from '../../helpers/data-extract/data-extract.js'
+
+/** @import {QueuedApplication} from '../../helpers/queue/queue.js' */
 
 const retryTimeout = 5000 // 5 seconds
 
@@ -81,16 +85,47 @@ export const closeSQSConsumerClient = () => consumerClient.destroy()
 const processApplicationAndAcknowledge = async (message) => {
   if (message?.Body) {
     try {
-      const queuedApplicationData = JSON.parse(message.Body)
-      await processApplication(queuedApplicationData)
-      logger.info(
-        `Application processed successfully: ${queuedApplicationData.reference}`
+      const queuedApplicationData = /** @type {QueuedApplication} */ (
+        JSON.parse(message.Body)
       )
+      const application = createApplication(queuedApplicationData.application)
+      const reference = queuedApplicationData.reference
+
+      const featureFlags = config.get('featureFlags')
+      let processingFailed = false
+
+      if (featureFlags.sharepointIntegrationEnabled) {
+        try {
+          await processApplicationSharepoint(application, reference)
+          logger.info(
+            `Application processed successfully into Sharepoint: ${reference}`
+          )
+        } catch (error) {
+          processingFailed = true
+          logger.error(`Error processing application into SharePoint: ${error}`)
+        }
+      }
+      if (featureFlags.caseManagementIntegrationEnabled) {
+        try {
+          await processApplicationCaseManagement(application, reference)
+          logger.info(
+            `Application processed successfully into Case Management: ${reference}`
+          )
+        } catch (error) {
+          processingFailed = true
+          logger.error(
+            `Error processing application into Case Management: ${error}`
+          )
+        }
+      }
+
+      if (processingFailed) {
+        return
+      }
+
       try {
         await deleteMessageFromSQS(message)
-        logger.info(
-          `Application deleted from the queue: ${queuedApplicationData.reference}`
-        )
+        logger.info(`Application deleted from the queue: ${reference}`)
       } catch (error) {
         logger.error(`Error deleting message from SQS: ${error}`)
       }

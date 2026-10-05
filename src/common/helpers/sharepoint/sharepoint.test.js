@@ -1,26 +1,17 @@
-import {
-  sendEmailToApplicant,
-  sendEmailToCaseWorker
-} from '../../../common/connectors/notify/notify.js'
-import { statusCodes } from '../../../common/constants/status-codes.js'
+import { sendEmailToCaseWorker } from '../../../common/connectors/notify/notify.js'
 import { generateHtmlBuffer } from '../../../common/helpers/export/export-html.js'
 import { fetchFile } from '../../../common/helpers/file/file-utils.js'
 import {
   getListItemByFieldValue,
   uploadFile
 } from '../../../common/connectors/sharepoint/sharepoint.js'
-import {
-  processApplication,
-  sharePointApplicationHandler
-} from './sharepoint.js'
-import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
+import { processApplication } from './sharepoint.js'
 import { createSharepointItem } from './sharepoint-item.js'
 import { config } from '../../../config.js'
-import { spyOnConfig } from '../../test-helpers/config.js'
+import { createApplication } from '../data-extract/data-extract.js'
 
 /**
  * @import {TextAnswer, NameAnswer, FileAnswer} from '../../../common/helpers/data-extract/application.js'
- * @import {QueuedApplication} from './sharepoint.js'
  */
 
 jest.mock('../../../common/connectors/notify/notify.js')
@@ -50,10 +41,6 @@ jest.mock('./sharepoint-item.js', () => ({
   createSharepointItem: jest.fn(),
   validateKeyFactsPayload: jest.fn()
 }))
-jest.mock('../../connectors/queue/sqs-producer.js', () => ({
-  sendMessageToSQS: jest.fn()
-}))
-
 const mockLoggerInfo = jest.fn()
 const mockLoggerError = jest.fn()
 const mockLoggerWarn = jest.fn()
@@ -71,7 +58,6 @@ const mockUploadFile = /** @type {jest.Mock} */ (uploadFile)
 const mockGetListItemByFieldValue = /** @type {jest.Mock} */ (
   getListItemByFieldValue
 )
-const mockSendMessageToSQS = /** @type {jest.Mock} */ (sendMessageToSQS)
 const mockCreateSharepointItem = /** @type {jest.Mock} */ (createSharepointItem)
 const mockSendEmailToCaseWorker = /** @type {jest.Mock} */ (
   sendEmailToCaseWorker
@@ -165,84 +151,11 @@ describe('SharePoint Handler', () => {
 
   afterAll(jest.restoreAllMocks)
 
-  describe('sharePointApplicationHandler', () => {
-    it('should enqueue application for processing and send email to applicant', async () => {
-      spyOnConfig('featureFlags', {
-        sharepointBackupEnabled: false
-      })
-
-      mockSendMessageToSQS.mockResolvedValue(undefined)
-
-      const response = await sharePointApplicationHandler(
-        mockRequest,
-        testReferenceNumber
-      )
-
-      expect(sendMessageToSQS).toHaveBeenCalledWith(
-        mockRequest.payload,
-        testReferenceNumber
-      )
-
-      expect(sendEmailToApplicant).toHaveBeenCalledTimes(1)
-      expect(sendEmailToApplicant).toHaveBeenCalledWith(
-        {
-          email: testEmail,
-          fullName: 'Name Surname',
-          reference: testReferenceNumber
-        },
-        config.get('notify').tb.applicantConfirmation
-      )
-      expect(response).toBeUndefined()
-    })
-
-    it('should enqueue application for processing and not send the confirmation email', async () => {
-      spyOnConfig('featureFlags', {
-        sharepointBackupEnabled: true
-      })
-
-      mockSendMessageToSQS.mockResolvedValue(undefined)
-
-      const response = await sharePointApplicationHandler(
-        mockRequest,
-        testReferenceNumber
-      )
-
-      expect(sendMessageToSQS).toHaveBeenCalledWith(
-        mockRequest.payload,
-        testReferenceNumber
-      )
-
-      expect(sendEmailToApplicant).not.toHaveBeenCalled()
-      expect(response).toBeUndefined()
-    })
-
-    it('should return MESSAGE_ENQUEUEING_FAILED if sendMessageToSQS fails and not send email to applicant', async () => {
-      mockSendMessageToSQS.mockRejectedValue(new Error('SQS error'))
-
-      const response = await sharePointApplicationHandler(
-        mockRequest,
-        testReferenceNumber
-      )
-
-      expect(response).toEqual({
-        error: {
-          errorCode: 'MESSAGE_ENQUEUEING_FAILED',
-          statusCode: statusCodes.serverError
-        }
-      })
-      expect(sendEmailToApplicant).not.toHaveBeenCalled()
-    })
-  })
-
   describe('processApplication', () => {
-    const mockQueuedApplicationData = {
-      reference: testReferenceNumber,
-      application: mockRequest.payload
-    }
-    const mockQueuedApplicationDataWithFile = {
-      reference: testReferenceNumber,
-      application: mockRequestWithFile.payload
-    }
+    const mockApplication = createApplication(mockRequest.payload)
+    const mockApplicationWithFile = createApplication(
+      mockRequestWithFile.payload
+    )
 
     describe('processApplication', () => {
       beforeEach(() => {
@@ -253,10 +166,13 @@ describe('SharePoint Handler', () => {
       it('should upload application html to SharePoint, create item in list and send email to case worker', async () => {
         mockUploadFile.mockResolvedValue(undefined)
 
-        const result = await processApplication(mockQueuedApplicationData)
+        const result = await processApplication(
+          mockApplication,
+          testReferenceNumber
+        )
 
         expect(mockGenerateHtmlBuffer).toHaveBeenCalledWith(
-          mockRequest.payload,
+          mockApplication,
           testReferenceNumber
         )
         expect(uploadFile).toHaveBeenCalledWith(
@@ -269,7 +185,7 @@ describe('SharePoint Handler', () => {
           testReferenceNumber
         )
         expect(createSharepointItem).toHaveBeenCalledWith(
-          mockRequest.payload,
+          mockApplication,
           testReferenceNumber
         )
 
@@ -288,11 +204,12 @@ describe('SharePoint Handler', () => {
         mockUploadFile.mockResolvedValue(undefined)
 
         const response = await processApplication(
-          mockQueuedApplicationDataWithFile
+          mockApplicationWithFile,
+          testReferenceNumber
         )
 
         expect(mockGenerateHtmlBuffer).toHaveBeenCalledWith(
-          mockRequestWithFile.payload,
+          mockApplicationWithFile,
           testReferenceNumber
         )
         expect(uploadFile).toHaveBeenCalledTimes(2)
@@ -314,7 +231,7 @@ describe('SharePoint Handler', () => {
           testReferenceNumber
         )
         expect(createSharepointItem).toHaveBeenCalledWith(
-          mockRequestWithFile.payload,
+          mockApplicationWithFile,
           testReferenceNumber
         )
 
@@ -331,7 +248,7 @@ describe('SharePoint Handler', () => {
       it('should throw and log if uploadSubmittedApplication fails', async () => {
         mockUploadFile.mockRejectedValue(new Error('upload failed'))
         await expect(
-          processApplication(mockQueuedApplicationDataWithFile)
+          processApplication(mockApplicationWithFile, testReferenceNumber)
         ).rejects.toThrow('upload failed')
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to upload submitted application to SharePoint: upload failed'
@@ -346,7 +263,7 @@ describe('SharePoint Handler', () => {
           .mockResolvedValueOnce(undefined)
           .mockRejectedValueOnce(new Error('biosecurity upload failed'))
         await expect(
-          processApplication(mockQueuedApplicationDataWithFile)
+          processApplication(mockApplicationWithFile, testReferenceNumber)
         ).rejects.toThrow('biosecurity upload failed')
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to upload biosecurity map to SharePoint: biosecurity upload failed'
@@ -361,7 +278,10 @@ describe('SharePoint Handler', () => {
         mockGetListItemByFieldValue.mockResolvedValue({
           value: [testSharepointItem]
         })
-        const result = await processApplication(mockQueuedApplicationData)
+        const result = await processApplication(
+          mockApplication,
+          testReferenceNumber
+        )
 
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           `SharePoint item for reference ${testReferenceNumber} already exists, skipping creation.`
@@ -379,7 +299,7 @@ describe('SharePoint Handler', () => {
         mockCreateSharepointItem.mockRejectedValue(new Error('item failed'))
 
         await expect(
-          processApplication(mockQueuedApplicationData)
+          processApplication(mockApplication, testReferenceNumber)
         ).rejects.toThrow('item failed')
 
         expect(uploadFile).toHaveBeenCalled()
@@ -398,7 +318,7 @@ describe('SharePoint Handler', () => {
           new Error('caseworker email failed')
         )
         await expect(
-          processApplication(mockQueuedApplicationData)
+          processApplication(mockApplication, testReferenceNumber)
         ).rejects.toThrow('caseworker email failed')
         expect(mockLoggerWarn).toHaveBeenCalledWith(
           'Failed to send email to case worker: caseworker email failed'
@@ -427,41 +347,38 @@ describe('SharePoint Handler', () => {
           }
         }
 
-        const mockApplicationWithBothApproaches =
-          /** @type {QueuedApplication} */ ({
-            reference: testReferenceNumber,
-            application: {
-              journeyId:
-                'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-              sections: [
-                {
-                  title: 'licence',
-                  sectionKey: 'licence',
-                  questionAnswers: [emailQuestion, fullNameQuestion]
-                },
-                {
-                  title: 'biosecurity-map',
-                  sectionKey: 'biosecurity-map',
-                  questionAnswers: [biosecurityMapQuestion]
-                }
-              ],
-              keyFacts: {
-                licenceType: { type: 'text', value: 'TB16' },
-                movementDirection: { type: 'text', value: 'on' },
-                requesterCph: { type: 'text', value: '12/345/0000' },
-                biosecurityMaps: {
-                  type: 'file',
-                  value: [
-                    'biosecurity-map/keyfacts-file1.pdf',
-                    'biosecurity-map/keyfacts-file2.pdf'
-                  ]
-                }
-              }
+        const mockApplicationWithBothApproaches = createApplication({
+          journeyId:
+            'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+          sections: [
+            {
+              title: 'licence',
+              sectionKey: 'licence',
+              questionAnswers: [emailQuestion, fullNameQuestion]
+            },
+            {
+              title: 'biosecurity-map',
+              sectionKey: 'biosecurity-map',
+              questionAnswers: [biosecurityMapQuestion]
             }
-          })
+          ],
+          keyFacts: {
+            licenceType: { type: 'text', value: 'TB16' },
+            movementDirection: { type: 'text', value: 'on' },
+            requesterCph: { type: 'text', value: '12/345/0000' },
+            biosecurityMaps: {
+              type: 'file',
+              value: [
+                'biosecurity-map/keyfacts-file1.pdf',
+                'biosecurity-map/keyfacts-file2.pdf'
+              ]
+            }
+          }
+        })
 
         const response = await processApplication(
-          mockApplicationWithBothApproaches
+          mockApplicationWithBothApproaches,
+          testReferenceNumber
         )
 
         expect(uploadFile).toHaveBeenCalledTimes(2)

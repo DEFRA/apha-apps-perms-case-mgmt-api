@@ -1,6 +1,7 @@
 import Wreck from '@hapi/wreck'
 import { sendToCaseManagement } from './index.js'
 import { spyOnConfig } from '../../test-helpers/config.js'
+import { createApplication } from '../../helpers/data-extract/data-extract.js'
 
 describe('Integration bridge API', () => {
   const CONFIG_VALUES = {
@@ -12,7 +13,7 @@ describe('Integration bridge API', () => {
   }
 
   const MOCK_TOKEN = 'abc123'
-  const TEST_PAYLOAD = {
+  const TEST_APPLICATION = createApplication({
     applicationReference: 'APP-123',
     status: 'submitted',
     journeyId:
@@ -40,7 +41,7 @@ describe('Integration bridge API', () => {
         ]
       }
     ]
-  }
+  })
   const TEST_APPLICANT = {
     type: 'guest',
     emailAddress: 'test@example.com',
@@ -83,7 +84,12 @@ describe('Integration bridge API', () => {
         .mockResolvedValueOnce(mockTokenResponse())
         .mockResolvedValueOnce(createMockResponse(200, { caseId: 'CASE-123' }))
 
-      const result = await sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+      console.log(TEST_APPLICATION.data)
+
+      const result = await sendToCaseManagement(
+        TEST_APPLICATION,
+        TEST_REFERENCE
+      )
 
       expect(Wreck.post).toHaveBeenNthCalledWith(1, CONFIG_VALUES.tokenUrl, {
         payload:
@@ -100,7 +106,7 @@ describe('Integration bridge API', () => {
         `${CONFIG_VALUES.baseUrl}/case-management/case`,
         {
           payload: {
-            ...TEST_PAYLOAD,
+            ...TEST_APPLICATION.data,
             applicationReferenceNumber: TEST_REFERENCE,
             applicant: TEST_APPLICANT
           },
@@ -123,7 +129,7 @@ describe('Integration bridge API', () => {
         .mockResolvedValueOnce(createMockResponse(503, {}))
 
       await expect(
-        sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+        sendToCaseManagement(TEST_APPLICATION, TEST_REFERENCE)
       ).rejects.toThrow(`Request failed (503): ${CONFIG_VALUES.tokenUrl}`)
     })
 
@@ -133,7 +139,7 @@ describe('Integration bridge API', () => {
         .mockResolvedValueOnce(createMockResponse(200, {}))
 
       await expect(
-        sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+        sendToCaseManagement(TEST_APPLICATION, TEST_REFERENCE)
       ).rejects.toThrow(
         'Integration bridge token response did not include an access token'
       )
@@ -148,7 +154,7 @@ describe('Integration bridge API', () => {
       )
 
       await expect(
-        sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+        sendToCaseManagement(TEST_APPLICATION, TEST_REFERENCE)
       ).rejects.toThrow(
         'Integration bridge token response did not include an access token'
       )
@@ -163,7 +169,7 @@ describe('Integration bridge API', () => {
         .mockResolvedValueOnce(createMockResponse(400, {}))
 
       await expect(
-        sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+        sendToCaseManagement(TEST_APPLICATION, TEST_REFERENCE)
       ).rejects.toThrow(
         `Request failed (400): ${CONFIG_VALUES.baseUrl}/case-management/case`
       )
@@ -181,7 +187,7 @@ describe('Integration bridge API', () => {
         )
 
       await expect(
-        sendToCaseManagement(TEST_PAYLOAD, TEST_REFERENCE)
+        sendToCaseManagement(TEST_APPLICATION, TEST_REFERENCE)
       ).resolves.toEqual({
         caseId: 'CASE-123'
       })
