@@ -1,7 +1,4 @@
-import {
-  createApplication,
-  getQuestionFromSections
-} from '../data-extract/data-extract.js'
+import { getQuestionFromSections } from '../data-extract/data-extract.js'
 import { generateHtmlBuffer } from '../export/export-html.js'
 import {
   getListItemByFieldValue,
@@ -11,64 +8,29 @@ import {
 import { statusCodes } from '../../constants/status-codes.js'
 import { generateSharepointNotificationContent } from '../email-content/email-content.js'
 import { fetchFile, getFileExtension } from '../file/file-utils.js'
-import {
-  sendEmailToApplicant,
-  sendEmailToCaseWorker
-} from '../../connectors/notify/notify.js'
-import { escapeMarkdown } from '../escape-text.js'
+import { sendEmailToCaseWorker } from '../../connectors/notify/notify.js'
 import {
   createSharepointItem,
   validateKeyFactsPayload
 } from './sharepoint-item.js'
-import { sendMessageToSQS } from '../../connectors/queue/sqs-producer.js'
 import { createLogger } from '../logging/logger.js'
 import { config } from '../../../config.js'
 
 /**
- * @import {FileAnswer, ApplicationData} from '../../../common/helpers/data-extract/application.js'
+ * @import {FileAnswer} from '../../../common/helpers/data-extract/application.js'
  * @import {HandlerError} from '../../../common/helpers/types.js'
- * @typedef {{ application: ApplicationData, reference: string }} QueuedApplication
+ * @import {Application} from '../../../common/helpers/data-extract/application.js'
  */
 
 const logger = createLogger()
 
 /**
- * @param {object} request
+ * @param {Application} application
  * @param {string} reference
  * @returns {Promise<void|HandlerError>}
  */
-export const sharePointApplicationHandler = async (request, reference) => {
-  const featureFlags = config.get('featureFlags')
-
-  try {
-    await sendMessageToSQS(request.payload, reference)
-  } catch (error) {
-    return {
-      error: {
-        errorCode: 'MESSAGE_ENQUEUEING_FAILED',
-        statusCode: statusCodes.serverError
-      }
-    }
-  }
-  try {
-    if (!featureFlags.sharepointBackupEnabled) {
-      await sendApplicantConfirmationEmail(request.payload, reference)
-    }
-  } catch (error) {
-    logger.error(`Failed to send email to applicant: ${error.message}`)
-  }
-  return undefined // No error, return undefined
-}
-
-/**
- * @param {QueuedApplication} queuedApplicationData
- * @returns {Promise<void|HandlerError>}
- */
-export const processApplication = async (queuedApplicationData) => {
-  const { reference, application } = queuedApplicationData
-
+export const processApplication = async (application, reference) => {
   validateKeyFactsPayload(application, reference)
-
   try {
     await uploadSubmittedApplication(application, reference)
   } catch (error) {
@@ -120,7 +82,7 @@ export const processApplication = async (queuedApplicationData) => {
 }
 
 /**
- * @param {ApplicationData} application
+ * @param {Application} application
  * @param {string} reference
  * @returns {Promise<void>}
  */
@@ -134,7 +96,7 @@ const uploadSubmittedApplication = async (application, reference) => {
 }
 
 /**
- * @param {ApplicationData} application
+ * @param {Application} application
  * @param {string} reference
  * @returns {Promise<void>}
  */
@@ -143,7 +105,7 @@ const uploadBiosecurityMap = async (application, reference) => {
     getQuestionFromSections(
       'upload-plan',
       'biosecurity-map',
-      application?.sections
+      application.sections
     )?.answer
   )
 
@@ -156,7 +118,7 @@ const uploadBiosecurityMap = async (application, reference) => {
 }
 
 /**
- * @param {ApplicationData} application
+ * @param {Application} application
  * @param {string} reference
  * @param {object} sharePointItem
  * @returns {Promise<void>}
@@ -177,25 +139,5 @@ const sendCaseworkerNotificationEmail = async (
       content: emailContent // escape markdown is done when generating the content as some parts should not be escaped (urls)
     },
     config.get('notify').tb.caseDelivery
-  )
-}
-
-/**
- * @param {ApplicationData} application
- * @param {string} reference
- * @returns {Promise<void>}
- */
-const sendApplicantConfirmationEmail = async (application, reference) => {
-  const app = createApplication(application)
-  const applicantEmail = app.emailAddress
-  const applicantFullName = app.applicantName
-
-  await sendEmailToApplicant(
-    {
-      email: applicantEmail ?? '',
-      fullName: escapeMarkdown(applicantFullName) ?? '',
-      reference: reference ?? ''
-    },
-    config.get('notify').tb.applicantConfirmation
   )
 }

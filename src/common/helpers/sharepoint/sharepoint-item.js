@@ -263,7 +263,7 @@ const generateLegacyFields = (applicationData, reference) => {
     escapeHtml(additionalInfo?.value)
   )
 
-  const cphNumber = application.requesterCphNumber
+  const cphNumber = application.requesterCph
 
   const originAddress = /** @type {AddressAnswer} */ (
     origin?.get('address')?.answer

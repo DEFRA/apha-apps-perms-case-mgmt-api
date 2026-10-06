@@ -1,4 +1,3 @@
-import { Application, Section } from './application.js'
 import { ExoticsApplication } from './exotics-application.js'
 import { FmdApplication } from './fmd-application.js'
 import { TbApplication } from './tb-application.js'
@@ -25,7 +24,7 @@ export const createApplication = (data) => {
   return new ApplicationConstructor(data)
 }
 
-export { Application, Section }
+export { Application, Section } from './application.js'
 
 /**
  * @param {string} questionKey

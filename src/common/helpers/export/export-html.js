@@ -1,10 +1,10 @@
 import { escapeJsonValues } from '../escape-text.js'
 import { readFileSync } from 'node:fs'
-import path from 'path'
+import path from 'node:path'
 import { srcFolder } from '../path-utils.js'
 
 /**
- * @import { ApplicationData } from '../data-extract/application.js'
+ * @import { Application, ApplicationData } from '../data-extract/application.js'
  */
 
 const cssPath = path.join(
@@ -21,22 +21,22 @@ const govUkLogo = `
   `
 
 /**
- * @param {ApplicationData} data
+ * @param {Application} application
  * @param {string} reference
  * @returns {Uint8Array<ArrayBufferLike>}
  */
-export const generateHtmlBuffer = (data, reference) => {
-  const html = buildHtml(data, reference)
+export const generateHtmlBuffer = (application, reference) => {
+  const html = buildHtml(application, reference)
   return Buffer.from(html, 'utf-8')
 }
 
 /**
- * @param {ApplicationData} data
+ * @param {Application} application
  * @param {string} reference
  * @returns {string}
  */
-const buildHtml = (data, reference) => {
-  const escapedData = escapeJsonValues(data)
+const buildHtml = (application, reference) => {
+  const escapedData = escapeJsonValues(application.data)
   const sectionsHtml = escapedData.sections
     .map((section) => {
       const questionsHtml = section.questionAnswers

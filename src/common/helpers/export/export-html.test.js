@@ -23,37 +23,39 @@ describe('generateHtmlBuffer', () => {
   }
 
   const sampleData = {
-    journeyId:
-      'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
-    sections: [
-      {
-        title: 'Section 1',
-        sectionKey: 'section1',
-        questionAnswers: [
-          {
-            question: 'Q1',
-            questionKey: 'q1',
-            answer: answer1
-          },
-          {
-            question: 'Q2',
-            questionKey: 'q2',
-            answer: answer2
-          }
-        ]
-      },
-      {
-        title: 'Section 2',
-        sectionKey: 'section2',
-        questionAnswers: [
-          {
-            question: 'Q3',
-            questionKey: 'q3',
-            answer: answer3
-          }
-        ]
-      }
-    ]
+    data: {
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      sections: [
+        {
+          title: 'Section 1',
+          sectionKey: 'section1',
+          questionAnswers: [
+            {
+              question: 'Q1',
+              questionKey: 'q1',
+              answer: answer1
+            },
+            {
+              question: 'Q2',
+              questionKey: 'q2',
+              answer: answer2
+            }
+          ]
+        },
+        {
+          title: 'Section 2',
+          sectionKey: 'section2',
+          questionAnswers: [
+            {
+              question: 'Q3',
+              questionKey: 'q3',
+              answer: answer3
+            }
+          ]
+        }
+      ]
+    }
   }
 
   afterAll(jest.restoreAllMocks)
@@ -62,7 +64,7 @@ describe('generateHtmlBuffer', () => {
     const reference = 'TB-1234-5678'
     const bufferFromSpy = jest.spyOn(Buffer, 'from')
 
-    await generateHtmlBuffer(sampleData, reference)
+    await generateHtmlBuffer(/** @type {any} */ (sampleData), reference)
     const htmlPassed = bufferFromSpy.mock.calls[0][0]
 
     expect(htmlPassed).toMatchSnapshot()

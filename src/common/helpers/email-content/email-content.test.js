@@ -4,6 +4,7 @@ import {
   generateSharepointNotificationContent,
   getFileProps
 } from './email-content.js'
+import { createApplication } from '../data-extract/data-extract.js'
 
 /**
  * @import {ApplicationData} from '../data-extract/application.js'
@@ -14,8 +15,7 @@ const testRetention = '7 days'
 
 describe('generateEmailContent', () => {
   it('should generate email content with the correct structure', () => {
-    /** @type {ApplicationData} */
-    const payload = {
+    const application = createApplication({
       journeyId: 'journeyId',
       sections: [
         {
@@ -46,9 +46,9 @@ describe('generateEmailContent', () => {
           ]
         }
       ]
-    }
+    })
 
-    const result = generateEmailContent(payload, testReference)
+    const result = generateEmailContent(application, testReference)
 
     const expectedContent = [
       '# Application reference',
@@ -73,13 +73,13 @@ describe('generateEmailContent', () => {
   })
 
   it('should handle empty sections gracefully', () => {
-    const payload = {
+    const application = createApplication({
       journeyId:
         'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: []
-    }
+    })
 
-    const result = generateEmailContent(payload, testReference)
+    const result = generateEmailContent(application, testReference)
 
     const expectedContent = [
       '# Application reference',
@@ -92,7 +92,7 @@ describe('generateEmailContent', () => {
   })
 
   it('should handle sections with no questionAnswers gracefully', () => {
-    const payload = {
+    const application = createApplication({
       journeyId:
         'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
       sections: [
@@ -102,9 +102,9 @@ describe('generateEmailContent', () => {
           questionAnswers: []
         }
       ]
-    }
+    })
 
-    const result = generateEmailContent(payload, testReference)
+    const result = generateEmailContent(application, testReference)
 
     const expectedContent = [
       '# Application reference',
@@ -121,8 +121,7 @@ describe('generateEmailContent', () => {
 
   describe('should handle file answers correctly', () => {
     it('should include displayText when skipped is true', () => {
-      /** @type {ApplicationData} */
-      const payload = {
+      const application = createApplication({
         journeyId:
           'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
@@ -142,9 +141,9 @@ describe('generateEmailContent', () => {
             ]
           }
         ]
-      }
+      })
 
-      const result = generateEmailContent(payload, testReference)
+      const result = generateEmailContent(application, testReference)
 
       const expectedContent = [
         '# Application reference',
@@ -162,8 +161,7 @@ describe('generateEmailContent', () => {
     })
 
     it('should ignore displayText when skipped is false', () => {
-      /** @type {ApplicationData} */
-      const payload = {
+      const application = createApplication({
         journeyId:
           'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
         sections: [
@@ -183,9 +181,9 @@ describe('generateEmailContent', () => {
             ]
           }
         ]
-      }
+      })
 
-      const result = generateEmailContent(payload, testReference)
+      const result = generateEmailContent(application, testReference)
 
       const expectedContent = [
         '# Application reference',
@@ -255,28 +253,69 @@ describe('getFileProps', () => {
   })
 })
 
-const { createApplication } = jest.requireMock(
-  '../data-extract/data-extract.js'
-)
-
-jest.mock('../data-extract/data-extract.js', () => ({
-  createApplication: jest.fn()
-}))
-
-/**
- * @param {Record<string, any>} data - The data structure to mock
- */
-const buildMockGetter = (data) =>
-  jest.fn((key) => {
-    const value = data[key]
-    if (value && typeof value === 'object' && !value.answer) {
-      return { get: buildMockGetter(value) }
-    }
-    return value
-  })
-
 describe('generateSharepointNotificationContent', () => {
   const link = 'https://example.com/tb25'
+
+  const createTbApplication = (licenceQuestions) =>
+    createApplication({
+      journeyId:
+        'GET_PERMISSION_TO_MOVE_ANIMALS_UNDER_DISEASE_CONTROLS_TB_ENGLAND',
+      sections: [
+        {
+          title: 'Receiving the licence',
+          sectionKey: 'licence',
+          questionAnswers: licenceQuestions
+        },
+        {
+          title: 'Origin',
+          sectionKey: 'origin',
+          questionAnswers: [
+            {
+              question: 'Origin type',
+              questionKey: 'originType',
+              answer: {
+                type: 'radio',
+                value: 'unrestricted-farm',
+                displayText: 'Unrestricted farm'
+              }
+            },
+            {
+              question: 'On or off farm',
+              questionKey: 'onOffFarm',
+              answer: {
+                type: 'radio',
+                value: 'off',
+                displayText: 'Off farm'
+              }
+            },
+            {
+              question: 'CPH number',
+              questionKey: 'cphNumber',
+              answer: {
+                type: 'text',
+                value: '12/3456/7890',
+                displayText: '12/3456/7890'
+              }
+            }
+          ]
+        },
+        {
+          title: 'Destination',
+          sectionKey: 'destination',
+          questionAnswers: [
+            {
+              question: 'Destination type',
+              questionKey: 'destinationType',
+              answer: {
+                type: 'radio',
+                value: 'tb-restricted-farm',
+                displayText: 'TB restricted farm'
+              }
+            }
+          ]
+        }
+      ]
+    })
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -287,41 +326,20 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should generate content with licence type, CPH, name, reference and link using fullName', () => {
-    const mockStructure = {
-      licence: {
-        yourName: { answer: { displayText: undefined } },
-        fullName: { answer: { displayText: 'Name Surname' } }
-      }
-    }
-
-    createApplication.mockReturnValue({
-      licenceType: 'TB Test Licence',
-      requesterCphNumber: '12/3456/7890',
-      get: buildMockGetter(mockStructure)
-    })
-
-    const applicationData = /** @type {ApplicationData} */ ({
-      sections: [
-        {
-          title: 'Receiving the licence',
-          sectionKey: 'licence',
-          questionAnswers: [
-            {
-              question: 'fullName',
-              questionKey: 'fullName',
-              answer: {
-                type: 'name',
-                value: { firstName: 'Name', lastName: 'Surname' },
-                displayText: 'Name Surname'
-              }
-            }
-          ]
+    const application = createTbApplication([
+      {
+        question: 'fullName',
+        questionKey: 'fullName',
+        answer: {
+          type: 'name',
+          value: { firstName: 'Name', lastName: 'Surname' },
+          displayText: 'Name Surname'
         }
-      ]
-    })
+      }
+    ])
 
     const result = generateSharepointNotificationContent(
-      applicationData,
+      application,
       testReference,
       link
     )
@@ -329,7 +347,7 @@ describe('generateSharepointNotificationContent', () => {
     const expectedContent = [
       'A Bovine TB licence application has been received with the following details:',
       '## Licence type:',
-      'TB Test Licence',
+      'TB15',
       '## CPH of requester:',
       '12/3456/7890',
       '## Name of requester:',
@@ -345,50 +363,29 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should prioritize yourName over fullName when both exist', () => {
-    const mockStructure = {
-      licence: {
-        yourName: { answer: { displayText: 'Your Name Value' } },
-        fullName: { answer: { displayText: 'Full Name Value' } }
-      }
-    }
-
-    createApplication.mockReturnValue({
-      licenceType: 'TB Test Licence',
-      requesterCphNumber: '12/3456/7890',
-      get: buildMockGetter(mockStructure)
-    })
-
-    const applicationData = /** @type {ApplicationData} */ ({
-      sections: [
-        {
-          title: 'Receiving the licence',
-          sectionKey: 'licence',
-          questionAnswers: [
-            {
-              question: 'yourName',
-              questionKey: 'yourName',
-              answer: {
-                type: 'name',
-                value: { firstName: 'Your', lastName: 'Name Value' },
-                displayText: 'Your Name Value'
-              }
-            },
-            {
-              question: 'fullName',
-              questionKey: 'fullName',
-              answer: {
-                type: 'name',
-                value: { firstName: 'Full', lastName: 'Name Value' },
-                displayText: 'Full Name Value'
-              }
-            }
-          ]
+    const application = createTbApplication([
+      {
+        question: 'yourName',
+        questionKey: 'yourName',
+        answer: {
+          type: 'name',
+          value: { firstName: 'Your', lastName: 'Name Value' },
+          displayText: 'Your Name Value'
         }
-      ]
-    })
+      },
+      {
+        question: 'fullName',
+        questionKey: 'fullName',
+        answer: {
+          type: 'name',
+          value: { firstName: 'Full', lastName: 'Name Value' },
+          displayText: 'Full Name Value'
+        }
+      }
+    ])
 
     const result = generateSharepointNotificationContent(
-      applicationData,
+      application,
       testReference,
       link
     )
@@ -396,7 +393,7 @@ describe('generateSharepointNotificationContent', () => {
     const expectedContent = [
       'A Bovine TB licence application has been received with the following details:',
       '## Licence type:',
-      'TB Test Licence',
+      'TB15',
       '## CPH of requester:',
       '12/3456/7890',
       '## Name of requester:',
@@ -412,41 +409,20 @@ describe('generateSharepointNotificationContent', () => {
   })
 
   it('should use fullName when yourName does not exist', () => {
-    const mockStructure = {
-      licence: {
-        yourName: { answer: { displayText: undefined } },
-        fullName: { answer: { displayText: 'Only Full Name' } }
-      }
-    }
-
-    createApplication.mockReturnValue({
-      licenceType: 'TB Test Licence',
-      requesterCphNumber: '12/3456/7890',
-      get: buildMockGetter(mockStructure)
-    })
-
-    const applicationData = /** @type {ApplicationData} */ ({
-      sections: [
-        {
-          title: 'Receiving the licence',
-          sectionKey: 'licence',
-          questionAnswers: [
-            {
-              question: 'fullName',
-              questionKey: 'fullName',
-              answer: {
-                type: 'name',
-                value: { firstName: 'Only', lastName: 'Full Name' },
-                displayText: 'Only Full Name'
-              }
-            }
-          ]
+    const application = createTbApplication([
+      {
+        question: 'fullName',
+        questionKey: 'fullName',
+        answer: {
+          type: 'name',
+          value: { firstName: 'Only', lastName: 'Full Name' },
+          displayText: 'Only Full Name'
         }
-      ]
-    })
+      }
+    ])
 
     const result = generateSharepointNotificationContent(
-      applicationData,
+      application,
       testReference,
       link
     )
@@ -454,7 +430,7 @@ describe('generateSharepointNotificationContent', () => {
     const expectedContent = [
       'A Bovine TB licence application has been received with the following details:',
       '## Licence type:',
-      'TB Test Licence',
+      'TB15',
       '## CPH of requester:',
       '12/3456/7890',
       '## Name of requester:',

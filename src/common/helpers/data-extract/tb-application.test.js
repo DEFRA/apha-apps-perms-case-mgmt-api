@@ -469,7 +469,7 @@ describe('TbApplication', () => {
     })
   })
 
-  describe('requesterCphNumber', () => {
+  describe('requesterCph', () => {
     it('should return destination CPH when movement is on farm (to farm)', () => {
       const applicationData = {
         ...BASE_APPLICATION_DATA,
@@ -490,7 +490,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('98/765/4321')
+      expect(application.requesterCph).toBe('98/765/4321')
     })
 
     it('should return origin CPH when movement is off farm (from farm)', () => {
@@ -513,7 +513,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('12/345/6789')
+      expect(application.requesterCph).toBe('12/345/6789')
     })
 
     it('should return empty string when origin section is missing', () => {
@@ -529,7 +529,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('')
+      expect(application.requesterCph).toBe('')
     })
 
     it('should return empty string when destination section is missing', () => {
@@ -548,7 +548,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('')
+      expect(application.requesterCph).toBe('')
     })
 
     it('should return empty string when CPH numbers are missing', () => {
@@ -568,7 +568,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('')
+      expect(application.requesterCph).toBe('')
     })
 
     it('should handle null CPH answer gracefully', () => {
@@ -595,7 +595,7 @@ describe('TbApplication', () => {
 
       const application = new TbApplication(applicationData)
 
-      expect(application.requesterCphNumber).toBe('')
+      expect(application.requesterCph).toBe('')
     })
   })
 

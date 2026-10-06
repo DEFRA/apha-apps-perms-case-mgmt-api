@@ -73,6 +73,24 @@ export class Application {
   getNewReference() {
     return getApplicationReference(this.referencePrefix)
   }
+
+  get sections() {
+    return (
+      this._data.sections?.map((sectionData) => new Section(sectionData)) ?? []
+    )
+  }
+
+  get licenceType() {
+    return this._data.keyFacts?.licenceType?.value
+  }
+
+  get requesterCph() {
+    return this._data.keyFacts?.requesterCph?.value
+  }
+
+  get data() {
+    return this._data
+  }
 }
 
 export class Section {
@@ -81,12 +99,24 @@ export class Section {
     this._data = data
   }
 
+  get title() {
+    return this._data.title
+  }
+
+  get sectionKey() {
+    return this._data.sectionKey
+  }
+
+  get questionAnswers() {
+    return this._data.questionAnswers ?? []
+  }
+
   /**
    * @param {string} questionKey
    * @returns {QuestionAnswerData | undefined}
    */
   get(questionKey) {
-    return this._data?.questionAnswers.find(
+    return this.questionAnswers.find(
       (question) => question.questionKey === questionKey
     )
   }

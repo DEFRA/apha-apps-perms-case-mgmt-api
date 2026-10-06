@@ -1,13 +1,15 @@
 import { sendToCaseManagement } from '../../connectors/integration-bridge/index.js'
 
-/** @import {HandlerError} from '../types.js' */
+/**
+ * @import {HandlerError} from '../types.js'
+ * @import {Application} from '../../helpers/data-extract/application.js'
+ */
 
 /**
- * @param {object} request
+ * @param {Application} application
  * @param {string} reference
  * @returns {Promise<void|HandlerError>}
  */
-export const caseManagementApplicationHandler = async (request, reference) => {
-  await sendToCaseManagement(request.payload, reference)
-  return undefined
+export const processApplication = async (application, reference) => {
+  await sendToCaseManagement(application, reference)
 }
