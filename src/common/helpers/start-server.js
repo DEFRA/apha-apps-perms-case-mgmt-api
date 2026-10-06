@@ -21,7 +21,11 @@ async function startServer() {
       `Access your backend on http://localhost:${config.get('port')}`
     )
 
-    if (config.get('featureFlags').sharepointIntegrationEnabled) {
+    const featureFlags = config.get('featureFlags')
+    if (
+      featureFlags.sharepointIntegrationEnabled ||
+      featureFlags.caseManagementIntegrationEnabled
+    ) {
       startSQSQueuePolling().catch((error) => {
         server.logger.error(`SQS queue polling stopped unexpectedly: ${error}`)
       })
