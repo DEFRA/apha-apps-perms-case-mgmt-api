@@ -2,7 +2,9 @@ import convict from 'convict'
 import convictFormatWithValidator from 'convict-format-with-validator'
 
 import { convictValidateMongoUri } from './common/helpers/convict/validate-mongo-uri.js'
+import { convictValidateTrafficSplitting } from './common/helpers/convict/validate-traffic-splitting.js'
 
+convict.addFormat(convictValidateTrafficSplitting)
 convict.addFormat(convictValidateMongoUri)
 convict.addFormats(convictFormatWithValidator)
 
@@ -399,6 +401,12 @@ const config = convict({
       default: 30_000,
       env: 'INTEGRATION_BRIDGE_TIMEOUT'
     }
+  },
+  trafficSplitting: {
+    doc: 'Traffic splitting configuration',
+    format: 'traffic-splitting',
+    default: [],
+    env: 'TRAFFIC_SPLITTING'
   }
 })
 
