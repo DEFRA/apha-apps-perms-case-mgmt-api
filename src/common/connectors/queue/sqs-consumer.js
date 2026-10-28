@@ -103,25 +103,21 @@ const processApplicationAndAcknowledge = async (message) => {
   const reference = queuedApplicationData.reference
   let processingFailed = false
 
-let sendToSharepoint = featureFlags.sharepointIntegrationEnabled
-let sendToCaseManagement = featureFlags.caseManagementIntegrationEnabled
+  let sendToSharepoint = featureFlags.sharepointIntegrationEnabled
+  let sendToCaseManagement = featureFlags.caseManagementIntegrationEnabled
 
-if (
-  sendToSharepoint &&
-  sendToCaseManagement &&
-  application.licenceType
-) {
-  const split = config
-    .get('trafficSplitting')
-    .find(({ value }) => value === application.licenceType)
+  if (sendToSharepoint && sendToCaseManagement && application.licenceType) {
+    const split = config
+      .get('trafficSplitting')
+      .find(({ value }) => value === application.licenceType)
 
-  if (split) {
-    const trafficRoll = Math.random() * 100
+    if (split) {
+      const trafficRoll = Math.random() * 100
 
-    sendToSharepoint = trafficRoll < split.sharepoint
-    sendToCaseManagement = !sendToSharepoint
+      sendToSharepoint = trafficRoll < split.sharepoint
+      sendToCaseManagement = !sendToSharepoint
+    }
   }
-}
 
   if (sendToSharepoint) {
     try {
