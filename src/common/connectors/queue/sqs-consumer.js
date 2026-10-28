@@ -103,7 +103,23 @@ const processApplicationAndAcknowledge = async (message) => {
   const reference = queuedApplicationData.reference
   let processingFailed = false
 
-  if (featureFlags.sharepointIntegrationEnabled) {
+  let sendToSharepoint = featureFlags.sharepointIntegrationEnabled
+  let sendToCaseManagement = featureFlags.caseManagementIntegrationEnabled
+
+  if (sendToSharepoint && sendToCaseManagement && application.licenceType) {
+    const split = config
+      .get('trafficSplitting')
+      .find(({ value }) => value === application.licenceType)
+
+    if (split) {
+      const trafficRoll = Math.random() * 100
+
+      sendToSharepoint = trafficRoll < split.sharepoint
+      sendToCaseManagement = !sendToSharepoint
+    }
+  }
+
+  if (sendToSharepoint) {
     try {
       await processApplicationSharepoint(application, reference)
       logger.info(
@@ -114,7 +130,7 @@ const processApplicationAndAcknowledge = async (message) => {
       logger.error(`Error processing application into SharePoint: ${error}`)
     }
   }
-  if (featureFlags.caseManagementIntegrationEnabled) {
+  if (sendToCaseManagement) {
     try {
       await processApplicationCaseManagement(application, reference)
       logger.info(
