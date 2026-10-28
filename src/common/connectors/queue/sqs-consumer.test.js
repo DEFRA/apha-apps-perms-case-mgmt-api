@@ -7,8 +7,9 @@ import { mockClient } from 'aws-sdk-client-mock'
 import * as sqs from './sqs-consumer.js'
 import * as sharepoint from '../../helpers/sharepoint/sharepoint.js'
 import * as caseManagement from '../../helpers/case-management/case-management.js'
-import { spyOnConfig } from '../../test-helpers/config.js'
+import { spyOnConfig, spyOnConfigMany } from '../../test-helpers/config.js'
 import { createApplication } from '../../helpers/data-extract/data-extract.js'
+import { TbApplication } from '../../helpers/data-extract/tb-application.js'
 
 /**
  * @import {ApplicationData} from '../../helpers/data-extract/application.js'
@@ -45,7 +46,6 @@ const applicationData = {
   ]
 }
 const expectedApplication = createApplication(applicationData)
-
 const sqsMessage = {
   Body: JSON.stringify({
     application: applicationData,
@@ -223,6 +223,7 @@ describe('SQS Consumer Connector', () => {
         )
       })
     })
+
     describe('when multiple messages are received', () => {
       beforeEach(() => {
         sqsMock.on(ReceiveMessageCommand).resolves({
@@ -330,6 +331,105 @@ describe('SQS Consumer Connector', () => {
           .mockImplementation(() => {})
         sqs.closeSQSConsumerClient()
         expect(consumerDestroySpy).toHaveBeenCalled()
+      })
+    })
+
+    describe('traffic splitting', () => {
+      beforeEach(() => {
+        sqsMock.on(ReceiveMessageCommand).resolves({ Messages: [sqsMessage] })
+        jest
+          .spyOn(TbApplication.prototype, 'licenceType', 'get')
+          .mockReturnValue('TB15')
+      })
+
+      it.each([
+        [59, 60, 'SharePoint'],
+        [60, 60, 'Case Management'],
+        [0, 0, 'Case Management'],
+        [99, 100, 'SharePoint'],
+        [100, 100, 'Case Management']
+      ])(
+        'should route a roll of %i with a %i%% SharePoint split to %s only',
+        async (trafficRoll, sharepointPercentage, destination) => {
+          jest.spyOn(Math, 'random').mockReturnValue(trafficRoll / 100)
+          spyOnConfigMany({
+            featureFlags: {
+              sharepointIntegrationEnabled: true,
+              caseManagementIntegrationEnabled: true
+            },
+            trafficSplitting: [
+              {
+                value: 'TB15',
+                sharepoint: sharepointPercentage,
+                salesforce: 100 - sharepointPercentage
+              }
+            ]
+          })
+
+          await sqs.pollOnce()
+
+          expect(mockedSharepoint).toHaveBeenCalledTimes(
+            destination === 'SharePoint' ? 1 : 0
+          )
+          expect(mockedCaseManagement).toHaveBeenCalledTimes(
+            destination === 'Case Management' ? 1 : 0
+          )
+          expect(
+            mockedSharepoint.mock.calls.length +
+              mockedCaseManagement.mock.calls.length
+          ).toBe(1)
+        }
+      )
+
+      it('should use only SharePoint when Case Management is disabled', async () => {
+        spyOnConfig('featureFlags', {
+          sharepointIntegrationEnabled: true,
+          caseManagementIntegrationEnabled: false
+        })
+
+        await sqs.pollOnce()
+
+        expect(mockedSharepoint).toHaveBeenCalledWith(
+          expectedApplication,
+          testReference
+        )
+        expect(mockedCaseManagement).not.toHaveBeenCalled()
+      })
+
+      it('should use only Case Management when SharePoint is disabled', async () => {
+        spyOnConfig('featureFlags', {
+          sharepointIntegrationEnabled: false,
+          caseManagementIntegrationEnabled: true
+        })
+
+        await sqs.pollOnce()
+
+        expect(mockedSharepoint).not.toHaveBeenCalled()
+        expect(mockedCaseManagement).toHaveBeenCalledWith(
+          expectedApplication,
+          testReference
+        )
+      })
+
+      it('should process through both integrations when no split is configured for the licence type', async () => {
+        spyOnConfigMany({
+          featureFlags: {
+            sharepointIntegrationEnabled: true,
+            caseManagementIntegrationEnabled: true
+          },
+          trafficSplitting: []
+        })
+
+        await sqs.pollOnce()
+
+        expect(mockedSharepoint).toHaveBeenCalledWith(
+          expectedApplication,
+          testReference
+        )
+        expect(mockedCaseManagement).toHaveBeenCalledWith(
+          expectedApplication,
+          testReference
+        )
       })
     })
   })
